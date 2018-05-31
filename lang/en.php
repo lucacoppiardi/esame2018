@@ -76,7 +76,7 @@
 	define("confermare", "Confirm?");
 	define("inserisci_news", "Insert news");
 	define("immagine_facoltativa", "Image (optional)");
-	define("cambio_mail", "Updating email address");
+	define("cambio_mail", "Update email address");
 	define("tabella_inesistente", "Table does not exist in the database");
 	define("Prenotazione_modificata", "Reservation edited");
 	define("Prenotazione_cancellata", "Reservation deleted");

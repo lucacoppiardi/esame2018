@@ -30,11 +30,11 @@
 		echo "</form>";
 	}
 		
-	function form_prenotazione($result) {				
+	function form_prenotazione() {
+		$cod = $_SESSION["cod_utente"];
 		echo "<form method='get' action='prenotazioni.php'>";
 		echo "<input type='hidden' name='stato' value='inserisci'>";
 		echo "<input type='hidden' name='lang' value='".getLang()."'>";
-		echo "<input type='hidden' name='id_utente' value='$result[0]'>";
 		echo Data.": ";
 		echo "<input type='date' name='data' required><br/>";
 		echo Ora.": ";
@@ -47,8 +47,6 @@
 		echo "<textarea name='richieste' rows='6' cols='40' maxlength='250'></textarea><br/>";
 		echo "<input type='submit' value='".Inserisci."'>";
 		echo "<input type='reset'>";
-		echo "<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-			<input type='hidden' name='password' value='".$_REQUEST["password"]."'>";
 		echo "</form>";
 	}
 	
@@ -124,9 +122,20 @@
 			break;
 			
 		case "login":
-			$mail = $_REQUEST["mail"];
-			$pass = md5($_REQUEST["password"]);
+			$mail = null;
+			$pass = null;
+			if(isset($_REQUEST["mail"]) and isset($_REQUEST["password"])) {
+				$mail = $_REQUEST["mail"];
+				$pass = md5($_REQUEST["password"]);
+			}
+			if(!isset($_REQUEST["mail"]) and !isset($_REQUEST["password"])) {
+				$mail = $_SESSION["mail"];
+				$pass = $_SESSION["password"];
+			}
 			$result = login($mail, $pass);
+			$_SESSION["mail"] = $result[1];
+			$_SESSION["password"] = $result[3];
+			$_SESSION["cod_utente"] = $result[0];
 			if (!$result) {
 				form_accedi();
 				echo "<h2 class='errore'>".Login_errato."</h2>";
@@ -135,37 +144,29 @@
 				echo "<h4 class='avviso'>".Ultimo_accesso.": ".$result[2]."</h4>";
 				echo "<form action='prenotazioni.php' method='get' style='display:inline'>
 						<input type='hidden' name='lang' value='".getLang()."'>
+						<input type='hidden' name='stato' value='logout'>
 						<input type='submit' value='Logout'>
 					</form>";
 				echo "<form action='prenotazioni.php' method='get' style='display:inline'>
 						<input type='hidden' name='stato' value='reset_password'>
 						<input type='hidden' name='lang' value='".getLang()."'>
-						<input type='hidden' name='id_utente' value='$result[0]'>
-						<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-						<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
 						<input type='submit' value='Reset password'>
 					</form>";
 				echo "<form action='prenotazioni.php' method='get' style='display:inline'>
 						<input type='hidden' name='stato' value='disiscrizione'>
 						<input type='hidden' name='lang' value='".getLang()."'>
-						<input type='hidden' name='id_utente' value='$result[0]'>
-						<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-						<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
 						<input type='submit' value='".Cancella." account'>
 					</form>";
 				echo "<form action='prenotazioni.php' method='get' style='display:inline'>
 						<input type='hidden' name='stato' value='cambia_email'>
 						<input type='hidden' name='lang' value='".getLang()."'>
-						<input type='hidden' name='id_utente' value='$result[0]'>
-						<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-						<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
 						<input type='submit' value='".cambio_mail."'>
 					</form>";
 				crea_tab_prenotazioni();
 				echo "<p>".Ora_attuale.": <br/>";
 				echo "<iframe src=\"https://freesecure.timeanddate.com/clock/i69cc1t8/n2177/tlit6/fn15/fs20/ahl/avb/tt0/th1/ta1/tb1\" frameborder=\"0\" width=\"372\" height=\"26\"></iframe></p>";
 				echo "<h3>".Nuova_prenotazione."</h3>";
-				form_prenotazione($result);
+				form_prenotazione();
 				echo "<h3>".Prenotazioni_inserite."</h3>";
 				prenotazioni_utente($result);
 			}
@@ -176,20 +177,17 @@
 			break;
 			
 		case "inserisci":
-			$id_utente = $_REQUEST["id_utente"];
 			$data = $_REQUEST["data"];
 			$ora = $_REQUEST["ora"];
 			$nome = addslashes($_REQUEST["nome"]);
 			$num_persone = $_REQUEST["num_persone"];
 			$richieste = addslashes($_REQUEST["richieste"]);
-			inserisci_prenotazione($id_utente, $data, $ora, $nome, $num_persone, $richieste);
+			inserisci_prenotazione($data, $ora, $nome, $num_persone, $richieste);
 			echo "<h3 class='avviso'>".Prenotazione_inserita."</h3>";
-			mail_riepilogo($id_utente,$data, $ora, $nome, $num_persone, $richieste);
+			mail_riepilogo($data, $ora, $nome, $num_persone, $richieste);
 			echo "<form action='prenotazioni.php' method='get'>
 						<input type='hidden' name='lang' value='".getLang()."'>
 						<input type='hidden' name='stato' value='login'>
-						<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-						<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
 						<input type='submit' value='OK'>
 					</form>";
 			break;
@@ -200,9 +198,9 @@
 			$dati = select_prenotazione($codice);
 			echo "<form action='prenotazioni.php' method='get'>";
 			echo "<input type='hidden' name='stato' value='update_prenotazione'>";
-			echo "<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-					<input type='hidden' name='password' value='".$_REQUEST["password"]."'>";
-			echo "<input type='hidden' name='codice' value='$codice'>";
+			echo "<input type='hidden' name='lang' value='".getLang()."'>";
+			echo "<input type='hidden' name='codice' value='$codice'>
+					<input type='hidden' name='cod_utente' value='$dati[5]'>";
 			echo Data.": ";
 			echo "<input type='date' name='data' value='$dati[0]' required><br/>";
 			echo Ora.": ";
@@ -213,14 +211,12 @@
 			echo "<input type='number' name='num_persone' min='1' value='$dati[3]' required><br/>";
 			echo Richieste_particolari."? ";
 			echo "<textarea name='richieste' rows='6' cols='40' maxlength='250'>$dati[4]</textarea><br/>";
-			echo "<input type='submit' value='Aggiorna'>";
+			echo "<input type='submit' value='".Aggiorna."'>";
 			echo "</form>";
-			echo "<form method='get' action='prenotazioni.php'>";		
-			echo "<input type='hidden' name='lang' value='".getLang()."'>
-				<input type='hidden' name='stato' value='login'>";
-			echo "<input type='submit' value='".Annulla."'>
-					<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-					<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
+			echo "<form method='get' action='prenotazioni.php'>
+					<input type='hidden' name='lang' value='".getLang()."'>
+					<input type='hidden' name='stato' value='login'>
+					<input type='submit' value='".Annulla."'>
 				</form>";
 			break;
 			
@@ -231,17 +227,13 @@
 			echo "<form action='prenotazioni.php' method='get'>";
 			echo "<input type='hidden' name='stato' value='delete_prenotazione'>
 					<input type='hidden' name='lang' value='".getLang()."'>";
-			echo "<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-					<input type='hidden' name='password' value='".$_REQUEST["password"]."'>";
 			echo "<input type='hidden' name='codice' value='$codice'>";
-			echo "<input type='submit' value='Cancella'>";
+			echo "<input type='submit' value='".Cancella."'>";
 			echo "</form>";
 			echo "<form action='prenotazioni.php' method='get'>
 					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='hidden' name='stato' value='login'>
 					<input type='submit' value='".Annulla."'>
-					<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-					<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
 				</form>";
 			break;
 			
@@ -251,8 +243,6 @@
 			echo "<form action='prenotazioni.php' method='get'>
 						<input type='hidden' name='lang' value='".getLang()."'>
 						<input type='hidden' name='stato' value='login'>
-						<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-						<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
 						<input type='submit' value='OK'>
 					</form>";
 			break;
@@ -268,55 +258,44 @@
 			echo "<form action='prenotazioni.php' method='get'>
 						<input type='hidden' name='lang' value='".getLang()."'>
 						<input type='hidden' name='stato' value='login'>
-						<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-						<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
 						<input type='submit' value='OK'>
 					</form>";
 			break;
 			
 		case "reset_password":
-			$id_utente = $_REQUEST["id_utente"];
 			echo "<h3>Reset password</h3>";
 			echo "<form action='prenotazioni.php' method='get' onSubmit='return checkPw()'>";
 			echo "<input type='hidden' name='lang' value='".getLang()."'>";
 			echo "<input type='hidden' name='stato' value='reset_password_conferma'>";
-			echo "<input type='hidden' name='id_utente' value='$id_utente'>";
 			echo Vecchia_password.": ";
 			echo "<input type='password' name='old_pw' required><br/>";
 			echo Nuova_password.": ";
 			echo "<input type='password' name='new_pw' id='new_pw' required><br/>";
 			echo Nuova_password_conferma.": ";
 			echo "<input type='password' name='new_pw_conferma' id='new_pw_conferma' required><br/>";
-			echo "<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>";
-			echo "<input type='hidden' name='password' value='".$_REQUEST["password"]."'>";
 			echo "<input type='submit' value='Reset'>";
 			echo "<input type='reset'>";
 			echo "</form>";
 			echo "<form method='get' action='prenotazioni.php'>";		
 			echo "<input type='submit' value='".Annulla."'>";
 			echo "<input type='hidden' name='stato' value='login'>";
-			echo "<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>";
-			echo "<input type='hidden' name='password' value='".$_REQUEST["password"]."'>";
 			echo "<input type='hidden' name='lang' value='".getLang()."'>";
 			echo "</form>";
 			break;
 			
 		case "reset_password_conferma":
-			$id_utente = $_REQUEST["id_utente"];
 			$old_pw = md5($_REQUEST["old_pw"]);
 			$new_pw = md5($_REQUEST["new_pw"]);
 			$new_pw_conferma = md5($_REQUEST["new_pw_conferma"]);
-			if (!reset_password($id_utente, $old_pw, $new_pw)) {
+			if (!reset_password($old_pw, $new_pw)) {
 				echo "<h2 class='errore'>".Ricontrollare_password."</h2>";
 				echo "<form action='prenotazioni.php' method='get'>
 						<input type='hidden' name='stato' value='reset_password'>
 						<input type='hidden' name='lang' value='".getLang()."'>
-						<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-						<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
-						<input type='hidden' name='id_utente' value='".$_REQUEST["id_utente"]."'>
 						<input type='submit' value='OK'>
 					</form>";
 			} else {
+				$_SESSION["password"] = md5($_REQUEST["new_pw"]);
 				echo "<h3 class='avviso'>".Password_cambiata_correttamente."</h3>";
 				echo "<form action='prenotazioni.php' method='get'>
 						<input type='hidden' name='stato' value='accedi'>
@@ -349,23 +328,17 @@
 			echo "<form action='prenotazioni.php' method='get'>
 					<input type='hidden' name='stato' value='delete_account'>
 					<input type='hidden' name='lang' value='".getLang()."'>
-					<input type='hidden' name='codice' value='".$_REQUEST["id_utente"]."'>
-					<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-					<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
 					<input type='submit' value='".Conferma."'>
 				</form>";
 			echo "<form action='prenotazioni.php' method='get'>
 					<input type='hidden' name='stato' value='login'>
 					<input type='hidden' name='lang' value='".getLang()."'>
-					<input type='hidden' name='codice' value='".$_REQUEST["id_utente"]."'>
-					<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-					<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
 					<input type='submit' value='".Annulla."'>
 				</form>";
 			break;
 
 		case "delete_account":
-			delete_account($_REQUEST["codice"], $_REQUEST["mail"], md5($_REQUEST["password"]));
+			delete_account($_SESSION["cod_utente"], $_SESSION["mail"], $_SESSION["password"]);
 			echo "<form action='prenotazioni.php' method='get'>
 					<input type='hidden' name='stato' value=''>
 					<input type='hidden' name='lang' value='".getLang()."'>
@@ -379,32 +352,35 @@
 					".Nuovo_indirizzo.": 
 					<input type='hidden' name='stato' value='cambio_mail'>
 					<input type='hidden' name='lang' value='".getLang()."'>
-					<input type='hidden' name='codice' value='".$_REQUEST["id_utente"]."'>
-					<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-					<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
 					<input type='mail' name='newmail' required>
 					<input type='submit' value='OK'>
 				</form>";
 			echo "<form action='prenotazioni.php' method='get'>
 					<input type='hidden' name='stato' value='login'>
 					<input type='hidden' name='lang' value='".getLang()."'>
-					<input type='hidden' name='codice' value='".$_REQUEST["id_utente"]."'>
-					<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-					<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
 					<input type='submit' value='".Annulla."'>
 				</form>";
 			break;
 		
 		case "cambio_mail":
-			update_indirizzo_mail($_REQUEST["mail"], $_REQUEST["newmail"]);
+			$old_mail = $_SESSION["mail"];
+			update_indirizzo_mail($old_mail, $_REQUEST["newmail"]);
 			echo "<form action='prenotazioni.php' method='get'>
 					<input type='hidden' name='stato' value='accedi'>
 					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='OK'>
 				</form>";
 			break;
-		
+			
+		case "logout":
+			session_unset();
+			session_destroy();
+			pagina();
+			break;
+			
 		default:
+			session_unset();
+			session_destroy();
 			pagina();
 			break;
 	}

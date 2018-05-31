@@ -1,7 +1,17 @@
 <?php
 
-	include("libreria.php");
+	session_start();
 	
+	ini_set('session.use_only_cookies', 1);
+	ini_set('session.cookie_httponly', 1);
+	ini_set('session.cookie_secure', 1);
+
+	include("libreria.php");
+
+	function isDebug() {
+		return true;
+	}
+
 	function getStato() {
 		if (!isset($_REQUEST["stato"])) {
 			$stato="";
@@ -31,13 +41,21 @@
 		echo "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">";
 		echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\">";
 		echo "<script language=\"JavaScript\" type=\"text/javascript\" src=\"scripts.js\"></script>";
-		echo "<link href=\"https://fonts.googleapis.com/css?family=Cookie\" rel=\"stylesheet\"/>";
+		//echo "<link href=\"https://fonts.googleapis.com/css?family=Cookie\" rel=\"stylesheet\"/>";
 		/*echo "<link rel=\"icon\" href=\"media/logo.png\">";*/
 		echo "</head>";
 		echo "<body>";
 	}
 	
 	function tail() {
+	
+		if (isDebug()) {
+			echo "<pre>";
+			print_r($_SESSION);
+			echo "PHPSESSID: ".session_id();
+			echo "</pre>";
+		}
+		
 		echo "</div>";
 
 		echo "<footer>";
@@ -48,6 +66,7 @@
 		echo "</div>";
 		echo "</body>";
 		echo "</html>";
+		
 	}
 
 	function topbar($pagina_attiva) {

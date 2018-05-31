@@ -25,16 +25,16 @@
 	}
 	
 	echo "<h1 class='titolo_pagina'>".Amministrazione."</h1>";
-	
-	define("UPLOAD_DIR", "./uploads/");
-	
-	$checkUpload = false;
-	
-	$newFileName = "";
-	$checkImg = 0;
-	$temp = "";
-			
+				
 	if(isset($_POST['action']) and $_POST['action'] == 'upload') {
+		define("UPLOAD_DIR", "./uploads/");
+		
+		$checkUpload = false;
+		
+		$newFileName = "";
+		$checkImg = 0;
+		$temp = "";
+		
 		if(isset($_FILES['file'])) {
 			$file = $_FILES['file'];
 			if ($file["name"] != "") {
@@ -75,58 +75,66 @@
 	} /*else if (isDebug()) {
 		echo "!post";
 	}*/
+	
+	function paginaLogged() {
+		$mail = null;
+		$pass = null;
+		if(isset($_REQUEST["mail"]) and isset($_REQUEST["password"])) {
+			$mail = $_REQUEST["mail"];
+			$pass = md5($_REQUEST["password"]);
+		}
+		if(!isset($_REQUEST["mail"]) and !isset($_REQUEST["password"])) {
+			$mail = $_SESSION["mail_admin"];
+			$pass = $_SESSION["password_admin"];
+		}
+		$login = admin_login($mail, $pass);
+		$_SESSION["mail_admin"] = $login[1];
+		$_SESSION["password_admin"] = $login[3];
+		$_SESSION["cod_admin"] = $login[0];
+		if (!$login) {
+			pagina();
+			echo "<h2 class='errore'>".Login_errato."</h2>";
+		} else {
+			echo "<h3 class='avviso'>".Login_riuscito.": ".$login[1]."</h3>";
+			echo "<h4 class='avviso'>".Ultimo_accesso.": ";
+			if (!empty($login[2])) {
+				echo $login[2];
+			} else {
+				echo Primo_accesso;
+			}
+			echo "</h4>";
+			echo "<form action='admin.php' method='get'>
+					<input type='hidden' name='stato' value='gestione_prenotazioni'>
+					<input type='hidden' name='lang' value='".getLang()."'>
+					<input type='submit' value='".Prenotazioni."'>
+				</form>";
+			echo "<form action='admin.php' method='get'>
+					<input type='hidden' name='stato' value='gestione_news'>
+					<input type='hidden' name='lang' value='".getLang()."'>
+					<input type='submit' value='News'>
+				</form>";
+			echo "<form action='admin.php' method='get'>
+					<input type='hidden' name='stato' value='gestione_utenti'>
+					<input type='hidden' name='lang' value='".getLang()."'>
+					<input type='submit' value='".Utenti."'>
+				</form>";
+			echo "<form method='get' action='admin.php' style='margin-top:20px'>
+					<input type='hidden' name='lang' value='".getLang()."'>
+					<input type='submit' value='Logout'>
+				</form>";
+			echo "<form action='admin.php' method='get' style='margin-top:20px'>
+					<input type='hidden' name='stato' value='killer'>
+					<input type='submit' value='DISTRUGGI TUTTO'>
+				</form>";
+		}
+	}
+	
 			
 	switch(getStato()) {
 		
 		case "login":
-			$mail = $_REQUEST["mail"];
-			$pass = md5($_REQUEST["password"]);
-			$login = admin_login($mail, $pass);
-			if (!$login) {
-				pagina();
-				echo "<h2 class='errore'>".Login_errato."</h2>";
-			} else {
-				echo "<h3 class='avviso'>".Login_riuscito.": ".$login[1]."</h3>";
-				echo "<h4 class='avviso'>".Ultimo_accesso.": ";
-				if (!empty($login[2])) {
-					echo $login[2];
-				} else {
-					echo Primo_accesso;
-				}
-				echo "</h4>";
-				echo "<form action='admin.php' method='get'>
-						<input type='hidden' name='stato' value='gestione_prenotazioni'>
-						<input type='hidden' name='lang' value='".getLang()."'>
-						<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-						<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
-						<input type='submit' value='".Prenotazioni."'>
-					</form>";
-				echo "<form action='admin.php' method='get'>
-						<input type='hidden' name='stato' value='gestione_news'>
-						<input type='hidden' name='lang' value='".getLang()."'>
-						<input type='hidden' name='cod_admin' value='".$login[0]."'>
-						<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-						<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
-						<input type='submit' value='News'>
-					</form>";
-				echo "<form action='admin.php' method='get'>
-						<input type='hidden' name='stato' value='gestione_utenti'>
-						<input type='hidden' name='lang' value='".getLang()."'>
-						<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-						<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
-						<input type='submit' value='".Utenti."'>
-					</form>";
-				echo "<form method='get' action='admin.php' style='margin-top:20px'>
-						<input type='hidden' name='lang' value='".getLang()."'>
-						<input type='submit' value='Logout'>
-					</form>";
-				echo "<form action='admin.php' method='get' style='margin-top:20px'>
-						<input type='hidden' name='stato' value='killer'>
-						<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-						<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
-						<input type='submit' value='DISTRUGGI TUTTO'>
-					</form>";
-			}
+		
+			paginaLogged();
 			break;
 			
 		case "gestione_prenotazioni":
@@ -138,8 +146,6 @@
 					<input type='hidden' name='stato' value='login'>
 					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='OK'>
-					<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-					<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
 				</form>";
 			break;
 			
@@ -148,9 +154,6 @@
 			echo "<form action='admin.php' method='get'>
 					<input type='hidden' name='stato' value='inserisci_news'>
 					<input type='hidden' name='lang' value='".getLang()."'>
-					<input type='hidden' name='cod_admin' value='".$_REQUEST["cod_admin"]."'>
-					<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-					<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
 					<input type='submit' value='".inserisci_news."'>
 				</form>";
 			crea_tab_news();
@@ -159,9 +162,6 @@
 					<input type='hidden' name='stato' value='login'>
 					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='OK'>
-					<input type='hidden' name='cod_admin' value='".$_REQUEST["cod_admin"]."'>
-					<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-					<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
 				</form>";
 			break;
 			
@@ -173,8 +173,6 @@
 					<input type='hidden' name='stato' value='login'>
 					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='OK'>
-					<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-					<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
 				</form>";
 			break;
 			
@@ -183,29 +181,21 @@
 					".confermare_eliminazione_account."
 					<input type='hidden' name='stato' value='delete_account_admin'>
 					<input type='hidden' name='lang' value='".getLang()."'>
-					<input type='hidden' name='codice' value='".$_REQUEST["codice"]."'>
-					<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-					<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
 					<input type='submit' value='OK'>
 				</form>";
 			echo "<form action='admin.php' method='get'>
 					<input type='hidden' name='stato' value='gestione_utenti'>
 					<input type='hidden' name='lang' value='".getLang()."'>
-					<input type='hidden' name='codice' value='".$_REQUEST["codice"]."'>
-					<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-					<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
 					<input type='submit' value='".Annulla."'>
 				</form>";
 			break;
 			
 		case "delete_account_admin":
-			delete_account_admin($_REQUEST["codice"]);
+			delete_account_admin($_SESSION["codice"]);
 			echo "<form method='get' action='admin.php'>
 					<input type='hidden' name='stato' value='gestione_utenti'>
 					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='OK'>
-					<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-					<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
 				</form>";
 			break;
 			
@@ -219,12 +209,11 @@
 					echo "<input type='hidden' name='stato' value='rifiuta_prenotazione'>";
 				};
 				echo "<input type='hidden' name='codice' value='$codice_prenotazione'>";
-				echo "<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-					<input type='hidden' name='password' value='".$_REQUEST["password"]."'>";
 				echo "<input type='submit' name='conferma' value='OK'>
 				</form>";
 			echo "<form action='admin.php' method='get' style='display:inline'>
-				<input type='submit' name='conferma' value='No'>
+					<input type='hidden' name='stato' value='gestione_prenotazioni'>
+					<input type='submit' name='conferma' value='No'>
 				</form>";
 			break;
 			
@@ -234,8 +223,6 @@
 			echo "<form action='admin.php' method='get'>
 						<input type='hidden' name='stato' value='gestione_prenotazioni'>
 						<input type='hidden' name='lang' value='".getLang()."'>
-						<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-						<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
 						<input type='submit' value='OK'>
 					</form>";
 			break;
@@ -246,15 +233,13 @@
 			echo "<form action='admin.php' method='get'>
 						<input type='hidden' name='stato' value='gestione_prenotazioni'>
 						<input type='hidden' name='lang' value='".getLang()."'>
-						<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-						<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
 						<input type='submit' value='OK'>
 					</form>";
 			break;
 			
 		case "inserisci_news":
 			echo "<h2>".inserisci_news."</h2>";
-			$cod_admin = $_REQUEST["cod_admin"];
+			$cod_admin = $_SESSION["cod_admin"];
 			echo "<form action='admin.php' method='post' enctype='multipart/form-data'><br/>
 					<input type='hidden' name='stato' value='insert_news'>
 					<input type='hidden' name='lang' value='".getLang()."'>
@@ -264,18 +249,12 @@
 					".Testo." (english): <textarea name='contenuto_en' rows='6' cols='40' maxlength='250' required></textarea><br/>
 					".immagine_facoltativa.": <input type='file' name='file'><br/>
 					<input type='submit' value='".Inserisci."'>
-					<input type='hidden' name='cod_admin' value='".$_REQUEST["cod_admin"]."'>
 					<input type='hidden' name='action' value='upload'>
-					<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-					<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
 				</form>";
 			echo "<form method='get' action='admin.php'>
 					<input type='hidden' name='stato' value='gestione_news'>
 					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='".Annulla."'>
-					<input type='hidden' name='cod_admin' value='".$_REQUEST["cod_admin"]."'>
-					<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-					<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
 				</form>";
 			break;
 		
@@ -291,9 +270,6 @@
 					".Testo." (inglese): <textarea name='contenuto_en' rows='6' cols='40' maxlength='250' required>$dati[5]</textarea><br/>
 					".immagine_facoltativa.": <input type='file' name='file'><br/>
 					<input type='submit' value='".Aggiorna."'>
-					<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-					<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
-					<input type='hidden' name='cod_admin' value='".$_REQUEST["cod_admin"]."'>
 					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='hidden' name='action' value='upload'>
 				</form>";	
@@ -301,9 +277,6 @@
 					<input type='hidden' name='stato' value='gestione_news'>
 					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='".Annulla."'>
-					<input type='hidden' name='cod_admin' value='".$_REQUEST["cod_admin"]."'>
-					<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-					<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
 				</form>";
 			break;
 			
@@ -313,9 +286,6 @@
 			echo "<form action='admin.php' method='get'>";
 			echo "<input type='hidden' name='stato' value='delete_news'>";
 			echo "<input type='hidden' name='lang' value='".getLang()."'>";
-			echo "<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-					<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
-					<input type='hidden' name='cod_admin' value='".$_REQUEST["cod_admin"]."'>";
 			echo "<input type='hidden' name='codice' value='$codice'>";
 			echo "<input type='submit' value='".Cancella."'>";
 			echo "</form>";
@@ -323,9 +293,6 @@
 					<input type='hidden' name='stato' value='gestione_news'>
 					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='".Annulla."'>
-					<input type='hidden' name='cod_admin' value='".$_REQUEST["cod_admin"]."'>
-					<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-					<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
 				</form>";
 			break;
 			
@@ -335,9 +302,6 @@
 			echo "<form action='admin.php' method='get'>
 						<input type='hidden' name='stato' value='gestione_news'>
 						<input type='hidden' name='lang' value='".getLang()."'>
-						<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-						<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
-						<input type='hidden' name='cod_admin' value='".$_REQUEST["cod_admin"]."'>
 						<input type='submit' value='OK'>
 					</form>";
 			break;
@@ -347,7 +311,7 @@
 			$titolo_en = addslashes($_REQUEST["titolo_en"]);
 			$contenuto = addslashes($_REQUEST["contenuto"]);
 			$contenuto_en = addslashes($_REQUEST["contenuto_en"]);
-			$cod_admin = $_REQUEST["cod_admin"];
+			$cod_admin = $_SESSION["cod_admin"];
 					
 			insert_news($cod_admin, $titolo, $contenuto, $contenuto_en, $titolo_en, $newFileName);
 			
@@ -355,9 +319,6 @@
 					<input type='hidden' name='stato' value='gestione_news'>
 					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='OK'>
-					<input type='hidden' name='cod_admin' value='".$_REQUEST["cod_admin"]."'>
-					<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-					<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
 				</form>";
 			break;
 		
@@ -375,9 +336,6 @@
 					<input type='hidden' name='stato' value='gestione_news'>
 					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='OK'>
-					<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-					<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
-					<input type='hidden' name='cod_admin' value='".$_REQUEST["cod_admin"]."'>
 				</form>";
 			break;
 			
@@ -389,8 +347,6 @@
 			echo "<form action='admin.php' method='get'>
 					<input type='hidden' name='stato' value='login'>
 					<input type='hidden' name='lang' value='".getLang()."'>
-					<input type='hidden' name='mail' value='".$_REQUEST["mail"]."'>
-					<input type='hidden' name='password' value='".$_REQUEST["password"]."'>
 					<input type='submit' value='".Annulla."'>
 				</form>";
 			break;
@@ -399,9 +355,18 @@
 			if (isset($_REQUEST["conferma"]) and ($_REQUEST["conferma"] === "DISTRUGGI TUTTE LE TABELLE")) 
 				drop();
 			break;
+			
+		case "logout":
+			session_unset();
+			session_destroy();
+			pagina();
+			break;
 		
 		default:
 			crea_tab_admin();
+			if (isset($_SESSION["mail"])) paginaLogged();			
+			/*session_unset();
+			session_destroy();*/
 			pagina();
 			break;
 	}

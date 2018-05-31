@@ -59,7 +59,7 @@ html, body {
 }
 
 .titolo_big {
-	font-family: 'Cookie';
+	font-family: 'Cookie-local';
 	font-size:60px;
 }
 
@@ -74,7 +74,7 @@ html, body {
 }
 
 #logo_txt {
-	font-family: 'Cookie','Cookie-local';
+	font-family: 'Cookie-local';
 	font-size: 34px;
 	padding: 8px 20px 2px 20px;
 	margin: 2px 2px 2px 2px; /* top-right-bottom-left */
