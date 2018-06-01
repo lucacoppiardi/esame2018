@@ -26,23 +26,17 @@ function query($s, $conn, $tab) {
 		echo "<p style='font-family: monospace'>".$tab."<br/>".$s."</p>";
 	}
 	if (!$request=mysqli_query($conn, $s)) {
-		echo "<h2 class='errore'>".Errore_query.". </h2>";
 		if (isDebug()) {
-			echo "<h3>".mysqli_error($conn)." (".mysqli_errno($conn).")</h3>";
+			echo "<h3>".mysqli_error($conn)." (".mysqli_errno($conn).")</h3>"; // se il debug è attivo mostro l'errore e il suo codice
 		}
 		if (mysqli_errno($conn) == 1062 and $tab == "insert utenti") {
-			echo "<h3 class='errore'>".utente_esistente."</h3>";
+			echo "<h3 class='errore'>".utente_esistente."</h3>"; // un utente inserito già in tabella
 		}
 		if (mysqli_errno($conn) == 1146 or mysqli_errno($conn) == 1051) {
-			echo "<h3 class='errore'>".tabella_inesistente."</h3>";			
+			echo "<h3 class='errore'>".tabella_inesistente."</h3>"; // la tabella non esiste
 		}
-		if ($tab != "drop") {
-			echo "<form action='".basename($_SERVER['PHP_SELF'])."' method='get'>
-					<input type='hidden' name='lang' value='".getLang()."'>
-					<input type='submit' value='".Torna_indietro."'>
-				</form>";
-			tail();
-			die();
+		if ($tab != "drop") { // pulsante per tornare indietro, in caso la query non fosse eseguita
+			torna_indietro();
 		}
 	}
 	return $request;
@@ -212,10 +206,10 @@ function crea_utente($mail,$password,$nome,$telefono) {
 			if (isDebug()) {
 				echo $esito_mail;
 				if (!$esito_mail) {
-					echo "EMAIL ERROR"."<br/>";
+					echo " EMAIL ERROR"."<br/>";
 				}			
 				else {
-					echo "EMAIL OK"."<br/>";
+					echo " EMAIL OK"."<br/>";
 				}
 				echo $to."<br/>";
 				echo $subject."<br/>";
@@ -257,17 +251,16 @@ function login($mail, $pass) {
 				if (isDebug()) {
 					echo $esito_mail;
 					if (!$esito_mail) {
-						echo "EMAIL ERROR"."<br/>";
+						echo " EMAIL ERROR"."<br/>";
 					}			
 					else {
-						echo "EMAIL OK"."<br/>";
+						echo " EMAIL OK"."<br/>";
 					}
 					echo $to."<br/>";
 					echo $subject."<br/>";
 					echo $message."<br/>";
 					echo $headers."<br/>";
 				}
-				
 				
 				if (!isDebug()) {
 					echo $message;
@@ -315,9 +308,9 @@ function admin_login($mail, $pass) {
 	close($db_conn);
 }
 
-function visualizza_utenti() {
+function visualizza_utenti() { /*SEI QUI*/
 	$db_conn=connessione();
-	if ($db_conn) {
+	if ($db_conn and !empty($_SESSION["mail_admin"]) and !empty($_SESSION["password_admin"]) and !empty($_SESSION["cod_admin"])) {
 		$s="SELECT codice,nome,mail,telefono,data_iscrizione FROM utenti ORDER BY data_iscrizione";
 		$result=query($s, $db_conn, "select utenti");
 		echo "<div id='scroll_tabella'>";

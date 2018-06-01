@@ -79,11 +79,11 @@
 	function paginaLogged() {
 		$mail = null;
 		$pass = null;
-		if(isset($_REQUEST["mail"]) and isset($_REQUEST["password"])) {
+		if(!empty($_REQUEST["mail"]) and !empty($_REQUEST["password"])) {
 			$mail = $_REQUEST["mail"];
 			$pass = md5($_REQUEST["password"]);
 		}
-		if(!isset($_REQUEST["mail"]) and !isset($_REQUEST["password"])) {
+		if(empty($_REQUEST["mail"]) and empty($_REQUEST["password"]) and !empty($_SESSION["mail_admin"]) and !empty($_SESSION["password_admin"])) {
 			$mail = $_SESSION["mail_admin"];
 			$pass = $_SESSION["password_admin"];
 		}
@@ -93,13 +93,13 @@
 			die();
 		}
 		$login = admin_login($mail, $pass);
-		$_SESSION["mail_admin"] = $login[1];
-		$_SESSION["password_admin"] = $login[3];
-		$_SESSION["cod_admin"] = $login[0];
 		if (!$login) {
-			pagina();
 			echo "<h2 class='errore'>".Login_errato."</h2>";
+			pagina();
 		} else {
+			$_SESSION["mail_admin"] = $login[1];
+			$_SESSION["password_admin"] = $login[3];
+			$_SESSION["cod_admin"] = $login[0];
 			echo "<h3 class='avviso'>".Login_riuscito.": ".$login[1]."</h3>";
 			echo "<h4 class='avviso'>".Ultimo_accesso.": ";
 			if (!empty($login[2])) {
@@ -196,7 +196,7 @@
 			break;
 			
 		case "delete_account_admin":
-			delete_account_admin($_SESSION["codice"]);
+			delete_account_admin($_REQUEST["codice"]);
 			echo "<form method='get' action='admin.php'>
 					<input type='hidden' name='stato' value='gestione_utenti'>
 					<input type='hidden' name='lang' value='".getLang()."'>
