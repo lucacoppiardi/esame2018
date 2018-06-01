@@ -119,6 +119,7 @@
 					<input type='submit' value='".Utenti."'>
 				</form>";
 			echo "<form method='get' action='admin.php' style='margin-top:20px'>
+					<input type='hidden' name='stato' value='logout'>
 					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='Logout'>
 				</form>";
@@ -133,7 +134,6 @@
 	switch(getStato()) {
 		
 		case "login":
-		
 			paginaLogged();
 			break;
 			
@@ -363,11 +363,13 @@
 			break;
 		
 		default:
-			crea_tab_admin();
-			if (isset($_SESSION["mail"])) paginaLogged();			
-			/*session_unset();
-			session_destroy();*/
-			pagina();
+			if (isset($_SESSION["mail_admin"]) and isset($_SESSION["password_admin"]) and isset($_SESSION["cod_admin"])) {
+				crea_tab_admin();
+				paginaLogged();
+			} else {
+				crea_tab_admin();
+				pagina();
+			}
 			break;
 	}
 	

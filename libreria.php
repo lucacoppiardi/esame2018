@@ -48,6 +48,16 @@ function query($s, $conn, $tab) {
 	return $request;
 }
 
+function torna_indietro() {
+	echo "<h2 class='errore'>".Errore_query.". </h2>";
+	echo "<form action='".basename($_SERVER['PHP_SELF'])."' method='get'>
+			<input type='hidden' name='lang' value='".getLang()."'>
+			<input type='submit' value='".Torna_indietro."'>
+		</form>";
+	tail();
+	die();
+}
+
 function fetch_row($result) {
 	$row=mysqli_fetch_row($result);
 	return $row;
@@ -452,19 +462,18 @@ function visualizza_news() {
 
 function inserisci_prenotazione($data, $ora, $nome, $partecipanti, $richieste) {
 	$db_conn=connessione();
-	if ($db_conn and !empty($data) and !empty($ora) and !empty($nome) and !empty($partecipanti)) {
+	$cod = $_SESSION["cod_utente"];
+	if ($db_conn and !empty($cod) and !empty($data) and !empty($ora) and !empty($nome) and !empty($partecipanti)) {
 		if ($richieste == "") {
-			$s="INSERT INTO prenotazioni (cod_utente,data,ora,nome,partecipanti,richieste,stato) VALUES (";
-			if(isset($_SESSION["cod_utente"])) {
-				$s .= $_SESSION["cod_utente"];
-			} else {
-				$s .= "0";
-			}
-			$s .= ", '$data','$ora','$nome','$partecipanti',null,0) ";
+			$s="INSERT INTO prenotazioni (cod_utente,data,ora,nome,partecipanti,richieste,stato) VALUES ($cod, '$data','$ora','$nome','$partecipanti',null,0) ";
 		} else {
-			//$s="INSERT INTO prenotazioni (cod_utente,data,ora,nome,partecipanti,richieste,stato) VALUES ('$data','$ora','$nome','$partecipanti','$richieste',0) ";
+			$s="INSERT INTO prenotazioni (cod_utente,data,ora,nome,partecipanti,richieste,stato) VALUES ($cod, '$data','$ora','$nome','$partecipanti','$richieste',0) ";
 		}
-		query($s, $db_conn, "insert prenotazioni");
+		if (query($s, $db_conn, "insert prenotazioni")) {
+			echo "<h3 class='avviso'>".Prenotazione_inserita."</h3>";
+		} else {
+			echo "<h2 class='errore'>".Errore_query."</h2>";
+		}
 	} else {
 		echo "<h2 class='errore'>".Errore_connessione_database."</h2>";
 	}
@@ -629,12 +638,15 @@ function prenotazioni_utente($result) {
 
 function select_prenotazione($codice) {
 	$db_conn=connessione();
-	if ($db_conn and !empty($codice)) {
-		$s="SELECT data,ora,nome,partecipanti,richieste,cod_utente FROM prenotazioni WHERE codice = $codice";
+	$cod = $_SESSION["cod_utente"];
+	if ($db_conn and !empty($codice) and !empty($cod)) {
+		$s="SELECT data,ora,nome,partecipanti,richieste,cod_utente FROM prenotazioni WHERE codice = $codice AND cod_utente = $cod";
 		$result = query($s, $db_conn, "select prenotazione");
 		if (mysqli_num_rows($result) == 1) {
 			$row = fetch_row($result);
 			return $row;
+		} else {
+			torna_indietro();
 		}
 	} else {
 		echo "<h2 class='errore'>".Errore_connessione_database."</h2>";
@@ -644,8 +656,9 @@ function select_prenotazione($codice) {
 
 function select_news($codice) {
 	$db_conn=connessione();
-	if ($db_conn and !empty($codice)) {
-		$s="SELECT titolo,testo,data,immagine,cod_admin,testo_en,titolo_en FROM news WHERE codice = $codice";
+	$cod_admin = $_SESSION["cod_admin"];
+	if ($db_conn and !empty($codice) and !empty($cod_admin)) {
+		$s="SELECT titolo,testo,data,immagine,cod_admin,testo_en,titolo_en FROM news WHERE codice = $codice AND cod_admin = $cod_admin";
 		$result = query($s, $db_conn, "select news");
 		if (mysqli_num_rows($result) == 1) {
 			$row = fetch_row($result);
@@ -661,18 +674,20 @@ function update_prenotazione($codice, $data, $ora, $nome, $num_persone, $richies
 	$db_conn=connessione();
 	if ($db_conn and !empty($codice) and !empty($data) and !empty($ora) and !empty($nome) and !empty($num_persone) and $num_persone>0) {
 		$cod_utente = $_SESSION["cod_utente"];
-		$s="SELECT mail,password FROM utenti WHERE codice=$cod_utente";
-		$result=query($s, $db_conn, "select per controllo mail e password update prenotazione");
+		$s="SELECT cod_utente FROM prenotazioni WHERE codice=$codice";
+		$result=query($s, $db_conn, "select per controllo update prenotazione");
 		$row = null;
 		if (mysqli_num_rows($result) == 1) {
 			$row = fetch_row($result);
+		} else {
+			torna_indietro();
 		}
-		$mail = $_SESSION["mail"];
-		$password = $_SESSION["password"];
-		if ($mail == $row[0] and $password == $row[1]) {
+		if ($cod_utente == $row[0]) {
 			$s="UPDATE prenotazioni SET data='$data', ora='$ora', nome='$nome', partecipanti=$num_persone, richieste='$richieste' WHERE codice = $codice AND cod_utente=$cod_utente";
 			if (query($s, $db_conn, "update prenotazione")) {
 				echo "<h3 class='avviso'>".Prenotazione_modificata."</h3>";
+			} else {
+				torna_indietro();
 			}
 		}
 	} else {
@@ -702,18 +717,20 @@ function delete_prenotazione($codice) {
 	$db_conn=connessione();
 	if ($db_conn and !empty($codice)) {
 		$cod_utente = $_SESSION["cod_utente"];
-		$s="SELECT mail,password FROM utenti WHERE codice=$cod_utente";
+		$s="SELECT cod_utente FROM prenotazioni WHERE codice=$codice";
 		$result=query($s, $db_conn, "select per controllo mail e password delete prenotazione");
 		$row = null;
 		if (mysqli_num_rows($result) == 1) {
 			$row = fetch_row($result);
+		} else {
+			torna_indietro();
 		}
-		$mail = $_SESSION["mail"];
-		$password = $_SESSION["password"];
-		if ($mail == $row[0] and $password == $row[1]) {
+		if ($cod_utente == $row[0]) {
 			$s="DELETE FROM prenotazioni WHERE codice = $codice";
 			if (query($s, $db_conn, "delete prenotazione")) {
 				echo "<h3 class='avviso'>".Prenotazione_cancellata."</h3>";
+			} else {
+				torna_indietro();
 			}
 		}
 	} else {

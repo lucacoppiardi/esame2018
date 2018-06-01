@@ -31,7 +31,6 @@
 	}
 		
 	function form_prenotazione() {
-		$cod = $_SESSION["cod_utente"];
 		echo "<form method='get' action='prenotazioni.php'>";
 		echo "<input type='hidden' name='stato' value='inserisci'>";
 		echo "<input type='hidden' name='lang' value='".getLang()."'>";
@@ -89,6 +88,62 @@
 		echo "</form>";
 	}
 	
+	function paginaLogged() {
+		$mail = null;
+		$pass = null;
+		if(isset($_REQUEST["mail"]) and isset($_REQUEST["password"])) {
+			$mail = $_REQUEST["mail"];
+			$pass = md5($_REQUEST["password"]);
+		}
+		if(!isset($_REQUEST["mail"]) and !isset($_REQUEST["password"])) {
+			$mail = $_SESSION["mail"];
+			$pass = $_SESSION["password"];
+		}
+		if (empty($mail) and empty($password)) {
+			pagina();
+			tail();
+			die();
+		}
+		$result = login($mail, $pass);
+		$_SESSION["mail"] = $result[1];
+		$_SESSION["password"] = $result[3];
+		$_SESSION["cod_utente"] = $result[0];
+		if (!$result) {
+			form_accedi();
+			echo "<h2 class='errore'>".Login_errato."</h2>";
+		} else {
+			echo "<h3 class='avviso'>".Login_riuscito.": ".$result[1]."</h3>";
+			echo "<h4 class='avviso'>".Ultimo_accesso.": ".$result[2]."</h4>";
+			echo "<form action='prenotazioni.php' method='get' style='display:inline'>
+					<input type='hidden' name='lang' value='".getLang()."'>
+					<input type='hidden' name='stato' value='logout'>
+					<input type='submit' value='Logout'>
+				</form>";
+			echo "<form action='prenotazioni.php' method='get' style='display:inline'>
+					<input type='hidden' name='stato' value='reset_password'>
+					<input type='hidden' name='lang' value='".getLang()."'>
+					<input type='submit' value='Reset password'>
+				</form>";
+			echo "<form action='prenotazioni.php' method='get' style='display:inline'>
+					<input type='hidden' name='stato' value='disiscrizione'>
+					<input type='hidden' name='lang' value='".getLang()."'>
+					<input type='submit' value='".Cancella." account'>
+				</form>";
+			echo "<form action='prenotazioni.php' method='get' style='display:inline'>
+					<input type='hidden' name='stato' value='cambia_email'>
+					<input type='hidden' name='lang' value='".getLang()."'>
+					<input type='submit' value='".cambio_mail."'>
+				</form>";
+			crea_tab_prenotazioni();
+			echo "<p>".Ora_attuale.": <br/>";
+			echo "<iframe src=\"https://freesecure.timeanddate.com/clock/i69cc1t8/n2177/tlit6/fn15/fs20/ahl/avb/tt0/th1/ta1/tb1\" frameborder=\"0\" width=\"372\" height=\"26\"></iframe></p>";
+			echo "<h3>".Nuova_prenotazione."</h3>";
+			form_prenotazione();
+			echo "<h3>".Prenotazioni_inserite."</h3>";
+			prenotazioni_utente($result);
+		}
+	}
+	
 	switch(getStato()) {
 		
 		case "registra":
@@ -122,54 +177,7 @@
 			break;
 			
 		case "login":
-			$mail = null;
-			$pass = null;
-			if(isset($_REQUEST["mail"]) and isset($_REQUEST["password"])) {
-				$mail = $_REQUEST["mail"];
-				$pass = md5($_REQUEST["password"]);
-			}
-			if(!isset($_REQUEST["mail"]) and !isset($_REQUEST["password"])) {
-				$mail = $_SESSION["mail"];
-				$pass = $_SESSION["password"];
-			}
-			$result = login($mail, $pass);
-			$_SESSION["mail"] = $result[1];
-			$_SESSION["password"] = $result[3];
-			$_SESSION["cod_utente"] = $result[0];
-			if (!$result) {
-				form_accedi();
-				echo "<h2 class='errore'>".Login_errato."</h2>";
-			} else {
-				echo "<h3 class='avviso'>".Login_riuscito.": ".$result[1]."</h3>";
-				echo "<h4 class='avviso'>".Ultimo_accesso.": ".$result[2]."</h4>";
-				echo "<form action='prenotazioni.php' method='get' style='display:inline'>
-						<input type='hidden' name='lang' value='".getLang()."'>
-						<input type='hidden' name='stato' value='logout'>
-						<input type='submit' value='Logout'>
-					</form>";
-				echo "<form action='prenotazioni.php' method='get' style='display:inline'>
-						<input type='hidden' name='stato' value='reset_password'>
-						<input type='hidden' name='lang' value='".getLang()."'>
-						<input type='submit' value='Reset password'>
-					</form>";
-				echo "<form action='prenotazioni.php' method='get' style='display:inline'>
-						<input type='hidden' name='stato' value='disiscrizione'>
-						<input type='hidden' name='lang' value='".getLang()."'>
-						<input type='submit' value='".Cancella." account'>
-					</form>";
-				echo "<form action='prenotazioni.php' method='get' style='display:inline'>
-						<input type='hidden' name='stato' value='cambia_email'>
-						<input type='hidden' name='lang' value='".getLang()."'>
-						<input type='submit' value='".cambio_mail."'>
-					</form>";
-				crea_tab_prenotazioni();
-				echo "<p>".Ora_attuale.": <br/>";
-				echo "<iframe src=\"https://freesecure.timeanddate.com/clock/i69cc1t8/n2177/tlit6/fn15/fs20/ahl/avb/tt0/th1/ta1/tb1\" frameborder=\"0\" width=\"372\" height=\"26\"></iframe></p>";
-				echo "<h3>".Nuova_prenotazione."</h3>";
-				form_prenotazione();
-				echo "<h3>".Prenotazioni_inserite."</h3>";
-				prenotazioni_utente($result);
-			}
+			paginaLogged();
 			break;
 			
 		case "conferma_registrazione":
@@ -183,7 +191,6 @@
 			$num_persone = $_REQUEST["num_persone"];
 			$richieste = addslashes($_REQUEST["richieste"]);
 			inserisci_prenotazione($data, $ora, $nome, $num_persone, $richieste);
-			echo "<h3 class='avviso'>".Prenotazione_inserita."</h3>";
 			mail_riepilogo($data, $ora, $nome, $num_persone, $richieste);
 			echo "<form action='prenotazioni.php' method='get'>
 						<input type='hidden' name='lang' value='".getLang()."'>
@@ -373,15 +380,18 @@
 			break;
 			
 		case "logout":
-			session_unset();
-			session_destroy();
+			unset($_SESSION["mail"], $_SESSION["password"], $_SESSION["cod_utente"]);
 			pagina();
 			break;
 			
 		default:
-			session_unset();
-			session_destroy();
-			pagina();
+			if (isset($_SESSION["mail"]) and isset($_SESSION["password"]) and isset($_SESSION["cod_utente"])) {
+				crea_tab_utenti();
+				paginaLogged();
+			} else {
+				crea_tab_utenti();
+				pagina();
+			}
 			break;
 	}
 	
