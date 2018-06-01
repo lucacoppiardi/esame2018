@@ -91,11 +91,11 @@
 	function paginaLogged() {
 		$mail = null;
 		$pass = null;
-		if(isset($_REQUEST["mail"]) and isset($_REQUEST["password"])) {
+		if(!empty($_REQUEST["mail"]) and !empty($_REQUEST["password"])) {
 			$mail = $_REQUEST["mail"];
 			$pass = md5($_REQUEST["password"]);
 		}
-		if(!isset($_REQUEST["mail"]) and !isset($_REQUEST["password"])) {
+		if(empty($_REQUEST["mail"]) and empty($_REQUEST["password"]) and !empty($_SESSION["mail"]) and !empty($_SESSION["password"])) {
 			$mail = $_SESSION["mail"];
 			$pass = $_SESSION["password"];
 		}
@@ -105,13 +105,13 @@
 			die();
 		}
 		$result = login($mail, $pass);
-		$_SESSION["mail"] = $result[1];
-		$_SESSION["password"] = $result[3];
-		$_SESSION["cod_utente"] = $result[0];
 		if (!$result) {
 			form_accedi();
 			echo "<h2 class='errore'>".Login_errato."</h2>";
 		} else {
+			$_SESSION["mail"] = $result[1];
+			$_SESSION["password"] = $result[3];
+			$_SESSION["cod_utente"] = $result[0];
 			echo "<h3 class='avviso'>".Login_riuscito.": ".$result[1]."</h3>";
 			echo "<h4 class='avviso'>".Ultimo_accesso.": ".$result[2]."</h4>";
 			echo "<form action='prenotazioni.php' method='get' style='display:inline'>
@@ -206,8 +206,7 @@
 			echo "<form action='prenotazioni.php' method='get'>";
 			echo "<input type='hidden' name='stato' value='update_prenotazione'>";
 			echo "<input type='hidden' name='lang' value='".getLang()."'>";
-			echo "<input type='hidden' name='codice' value='$codice'>
-					<input type='hidden' name='cod_utente' value='$dati[5]'>";
+			echo "<input type='hidden' name='codice' value='$codice'>";
 			echo Data.": ";
 			echo "<input type='date' name='data' value='$dati[0]' required><br/>";
 			echo Ora.": ";

@@ -87,6 +87,11 @@
 			$mail = $_SESSION["mail_admin"];
 			$pass = $_SESSION["password_admin"];
 		}
+		if (empty($mail) and empty($password)) {
+			pagina();
+			tail();
+			die();
+		}
 		$login = admin_login($mail, $pass);
 		$_SESSION["mail_admin"] = $login[1];
 		$_SESSION["password_admin"] = $login[3];
@@ -357,8 +362,7 @@
 			break;
 			
 		case "logout":
-			session_unset();
-			session_destroy();
+			unset($_SESSION["mail_admin"], $_SESSION["password_admin"], $_SESSION["cod_admin"]);
 			pagina();
 			break;
 		

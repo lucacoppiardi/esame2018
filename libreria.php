@@ -893,8 +893,8 @@ function update_indirizzo_mail($mail, $newmail) {
 		$s = "UPDATE utenti SET mail='$newmail' WHERE mail='$mail'";
 		if (query($s, $db_conn, "cambio mail")) {
 			echo "<h3 class='avviso'>".Indirizzo_aggiornato."</h3>";
-			session_unset();
-			session_destroy();
+		} else {
+			torna_indietro();
 		}
 	} else {
 		echo "<h2 class='errore'>".Errore_connessione_database."</h2>";
