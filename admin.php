@@ -185,6 +185,7 @@
 			echo "<form action='admin.php' method='get'>
 					".confermare_eliminazione_account."
 					<input type='hidden' name='stato' value='delete_account_admin'>
+					<input type='hidden' name='codice' value='".$_REQUEST["codice"]."'>
 					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='OK'>
 				</form>";

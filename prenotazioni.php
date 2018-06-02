@@ -140,7 +140,7 @@
 			echo "<h3>".Nuova_prenotazione."</h3>";
 			form_prenotazione();
 			echo "<h3>".Prenotazioni_inserite."</h3>";
-			prenotazioni_utente($result);
+			prenotazioni_utente();
 		}
 	}
 	
@@ -344,7 +344,7 @@
 			break;
 
 		case "delete_account":
-			delete_account($_SESSION["cod_utente"], $_SESSION["mail"], $_SESSION["password"]);
+			delete_account();
 			echo "<form action='prenotazioni.php' method='get'>
 					<input type='hidden' name='stato' value=''>
 					<input type='hidden' name='lang' value='".getLang()."'>
@@ -369,13 +369,8 @@
 			break;
 		
 		case "cambio_mail":
-			$old_mail = $_SESSION["mail"];
-			update_indirizzo_mail($old_mail, $_REQUEST["newmail"]);
-			echo "<form action='prenotazioni.php' method='get'>
-					<input type='hidden' name='stato' value='accedi'>
-					<input type='hidden' name='lang' value='".getLang()."'>
-					<input type='submit' value='OK'>
-				</form>";
+			unset($_SESSION["mail"], $_SESSION["password"], $_SESSION["cod_utente"]);
+			update_indirizzo_mail($_REQUEST["newmail"]);
 			break;
 			
 		case "logout":
