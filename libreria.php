@@ -29,9 +29,6 @@ function query($s, $conn, $tab) {
 		if (isDebug()) {
 			echo "<h3>".mysqli_error($conn)." (".mysqli_errno($conn).")</h3>"; // se il debug è attivo mostro l'errore e il suo codice
 		}
-		if (mysqli_errno($conn) == 1062 and $tab == "insert utenti") {
-			echo "<h3 class='errore'>".utente_esistente."</h3>"; // un utente inserito già in tabella
-		}
 		if (mysqli_errno($conn) == 1146 or mysqli_errno($conn) == 1051) {
 			echo "<h3 class='errore'>".tabella_inesistente."</h3>"; // la tabella non esiste
 		}
@@ -72,7 +69,9 @@ function crea_tab_utenti() {
 		ultimo_accesso DATETIME,
 		PRIMARY KEY (codice)
 		);";
-		query($s, $db_conn, "creata utenti");
+		if (!query($s, $db_conn, "creata utenti")) {
+			torna_indietro();
+		}
 	} else {
 		echo Errore_connessione_database."<br/>";
 	}
@@ -95,7 +94,9 @@ function crea_tab_prenotazioni() {
 		FOREIGN KEY (cod_utente) REFERENCES utenti(codice)
 		ON DELETE CASCADE
 		);";
-		query($s, $db_conn, "creata prenotazioni");
+		if (!query($s, $db_conn, "creata prenotazioni")) {
+			torna_indietro();
+		}
 	} else {
 		echo Errore_connessione_database."<br/>";
 	}
@@ -119,7 +120,9 @@ function crea_tab_news() {
 		FOREIGN KEY (cod_admin) REFERENCES amministratori(codice)
 		ON DELETE CASCADE
 		);";
-		query($s, $db_conn, "creata news");
+		if (!query($s, $db_conn, "creata news")) {
+			torna_indietro();
+		}
 	} else {
 		echo Errore_connessione_database."<br/>";
 	}
@@ -138,7 +141,9 @@ function crea_tab_admin() {
 		ultimo_accesso DATETIME,
 		PRIMARY KEY (codice)
 		);";
-		query($s, $db_conn, "creata amministratori");
+		if (!query($s, $db_conn, "creata amministratori")) {
+			torna_indietro();
+		}
 		file_insert_admin();
 	} else {
 		echo Errore_connessione_database."<br/>";
@@ -154,10 +159,12 @@ function file_insert_admin() {
 		if ($db_conn) {
 			$s = fgets($file);
 			if ($s!="") {
-				query($s, $db_conn, "import $i");
+				if (!query($s, $db_conn, "import $i")) {
+					torna_indietro();
+				}
 			}
 		} else {
-			echo("error");
+			torna_indietro();
 		}
 		$i++;
 	}
@@ -180,7 +187,7 @@ function drop() {
 				<input type='submit' value='".Torna_indietro."'>
 			</form>";
 	} else {
-		echo "<h2 class='errore'>".Errore_connessione_database."</h2>";
+		torna_indietro();
 	}
 	close($db_conn);
 }
@@ -191,10 +198,10 @@ function crea_utente($mail,$password,$nome,$telefono) {
 		$s="INSERT INTO utenti (mail,password,nome,telefono,data_iscrizione,hash) VALUES ('$mail','$password','$nome','$telefono',NOW(),'".md5($mail)."') ";
 		$result = query($s, $db_conn, "insert utenti");
 		
-		if ($result != false) {
+		if ($result != false and mysqli_affected_rows($db_conn) == 1) {
 			$to = $mail;
 			$subject = grazie_iscrizione;
-			$message = conferma_a_questo_link.": <a href='prenotazioni.php?stato=conferma_registrazione&lang=".getLang()."&hash=".md5($mail)."'>".Conferma."</a>";
+			$message = conferma_a_questo_link.": <a href='prenotazioni.php?stato=conferma_registrazione&lang=".getLang()."&hash=".md5($mail)."'>".Conferma."</a>".ringraziamenti_email;
 			$headers = "From: lucacoppiardi@altervista.org";
 
 			$esito_mail = mail($to,$subject,$message,$headers);
@@ -221,7 +228,7 @@ function crea_utente($mail,$password,$nome,$telefono) {
 		}
 				
 	} else {
-		echo "<h2 class='errore'>".Errore_connessione_database."</h2>";
+		torna_indietro();
 	}
 	close($db_conn);
 }
@@ -238,7 +245,7 @@ function login($mail, $pass) {
 				
 				$to = $mail;
 				$subject = grazie_iscrizione;
-				$message = conferma_a_questo_link.": <a href='prenotazioni.php?stato=conferma_registrazione&lang=".getLang()."&hash=".md5($mail)."'>".Conferma."</a>";
+				$message = conferma_a_questo_link.": <a href='prenotazioni.php?stato=conferma_registrazione&lang=".getLang()."&hash=".md5($mail)."'>".Conferma."</a>".ringraziamenti_email;
 				$headers = "From: lucacoppiardi@altervista.org";
 				
 				$esito_mail = mail($to,$subject,$message,$headers);
@@ -283,7 +290,7 @@ function login($mail, $pass) {
 			}
 		}
 	} else {
-		echo "<h2 class='errore'>".Errore_connessione_database."</h2>";
+		torna_indietro();
 	}
 	close($db_conn);
 }
@@ -302,7 +309,7 @@ function admin_login($mail, $pass) {
 			torna_indietro();
 		}
 	} else {
-		echo "<h2 class='errore'>".Errore_connessione_database."</h2>";
+		torna_indietro();
 	}
 	close($db_conn);
 }
@@ -333,7 +340,7 @@ function visualizza_utenti() {
 		echo "</table>";
 		echo "</div>";
 	} else {
-		echo "<h2 class='errore'>".Errore_connessione_database."</h2>";
+		torna_indietro();
 	}
 	close($db_conn);
 }
@@ -349,7 +356,7 @@ function delete_account_admin($id) {
 			torna_indietro();
 		}
 	} else {
-		echo "<h2 class='errore'>".Errore_connessione_database."</h2>";
+		torna_indietro();
 	}
 	close($db_conn);
 }
@@ -397,7 +404,7 @@ function visualizza_prenotazioni() {
 		echo "</table>\n";
 		echo "</div>";
 	} else {
-		echo "<h2 class='errore'>".Errore_connessione_database."</h2>";
+		torna_indietro();
 	}
 	close($db_conn);
 }
@@ -450,7 +457,7 @@ function visualizza_news() {
 		echo "</table>";
 		echo "</div>";
 	} else {
-		echo "<h2 class='errore'>".Errore_connessione_database."</h2>";
+		torna_indietro();
 	}
 	close($db_conn);
 }
@@ -470,7 +477,7 @@ function inserisci_prenotazione($data, $ora, $nome, $partecipanti, $richieste) {
 			torna_indietro();
 		}
 	} else {
-		echo "<h2 class='errore'>".Errore_connessione_database."</h2>";
+		torna_indietro();
 	}
 	close($db_conn);
 }
@@ -526,69 +533,176 @@ function mail_riepilogo($data, $ora, $nome, $num_persone, $richieste) {
 		}		
 		
 	} else {
-		echo "<h2 class='errore'>".Errore_connessione_database."</h2>";
+		torna_indietro();
+	}
+	close($db_conn);
+}
+
+function mail_riepilogo_cancella($data, $ora, $nome, $num_persone, $richieste) {
+	$db_conn=connessione();
+	if ($db_conn and !empty($_SESSION["mail"]) and !empty($_SESSION["password"]) and !empty($_SESSION["cod_utente"]) and !empty($data) and !empty($ora) and !empty($nome) and !empty($num_persone) and $num_persone>0) {
+		$id_utente = $_SESSION["cod_utente"];
+		$s="SELECT mail FROM utenti WHERE codice=$id_utente";
+		$result = query($s, $db_conn, "select mail");
+		if (mysqli_num_rows($result) == 1) {
+			$mail = fetch_row($result);
+		} else {
+			torna_indietro();
+		}
+		
+		$to = $mail[0];
+		$subject = Prenotazione_cancellata;
+			$message = Prenotazione_cancellata."\n"
+			.Data.": ".$data."\n".
+			Ora.": ".$ora."\n".
+			Nome_tavolo.": ".$nome."\n".
+			Numero_persone.": ".$num_persone."\n".
+			Richieste_particolari.": ".$richieste."\n\n".
+			ringraziamenti_email
+			;
+		$headers = "From: lucacoppiardi@altervista.org";
+		
+		$esito_mail = mail($to,$subject,$message,$headers);
+		
+		if (isDebug()) {
+			echo $esito_mail;
+			if (!$esito_mail) {
+				echo "EMAIL ERROR"."<br/>";
+			}			
+			else {
+				echo "EMAIL OK"."<br/>";
+			}
+			echo $to."<br/>";
+			echo $subject."<br/>";
+			echo $message."<br/>";
+			echo $headers."<br/>";
+		}		
+		
+	} else {
+		torna_indietro();
+	}
+	close($db_conn);
+}
+
+function mail_riepilogo_modifica($data, $ora, $nome, $num_persone, $richieste) {
+	$db_conn=connessione();
+	if ($db_conn and !empty($_SESSION["mail"]) and !empty($_SESSION["password"]) and !empty($_SESSION["cod_utente"]) and !empty($data) and !empty($ora) and !empty($nome) and !empty($num_persone) and $num_persone>0) {
+		$id_utente = $_SESSION["cod_utente"];
+		$s="SELECT mail FROM utenti WHERE codice=$id_utente";
+		$result = query($s, $db_conn, "select mail");
+		if (mysqli_num_rows($result) == 1) {
+			$mail = fetch_row($result);
+		} else {
+			torna_indietro();
+		}
+		
+		$to = $mail[0];
+		$subject = Prenotazione_modificata;
+			$message = Prenotazione_modificata."\n"
+			.Data.": ".$data."\n".
+			Ora.": ".$ora."\n".
+			Nome_tavolo.": ".$nome."\n".
+			Numero_persone.": ".$num_persone."\n".
+			Richieste_particolari.": ".$richieste."\n\n".
+			ringraziamenti_email
+			;
+		$headers = "From: lucacoppiardi@altervista.org";
+		
+		$esito_mail = mail($to,$subject,$message,$headers);
+		
+		if (isDebug()) {
+			echo $esito_mail;
+			if (!$esito_mail) {
+				echo "EMAIL ERROR"."<br/>";
+			}			
+			else {
+				echo "EMAIL OK"."<br/>";
+			}
+			echo $to."<br/>";
+			echo $subject."<br/>";
+			echo $message."<br/>";
+			echo $headers."<br/>";
+		}		
+		
+	} else {
+		torna_indietro();
 	}
 	close($db_conn);
 }
 
 function conferma_prenotazione($cod_prenotazione, $stato) {
 	$db_conn=connessione();
-	if ($db_conn and !empty($cod_prenotazione) and !empty($stato) and !empty($_SESSION["mail"]) and !empty($_SESSION["password"]) and !empty($_SESSION["cod_utente"])) {
-		$s="SELECT cod_utente FROM prenotazioni WHERE codice=$cod_prenotazione";
-		$result=query($s, $db_conn, "select cod_utente prenotazioni");
-		if (mysqli_num_rows($result) == 1) {
-			$row = fetch_row($result);
-		}
-		
-		$s="SELECT mail,password FROM utenti WHERE codice=$row[0]";
-		$result=query($s, $db_conn, "select mail utente");
-		if (mysqli_num_rows($result) == 1) {
-			$row = fetch_row($result);
-		}
-		
-		if ( ($row[0] == $_SESSION["mail"]) and ($row[1] == $_SESSION["password"]) ) {
-			$sql = "UPDATE prenotazioni SET stato=$stato WHERE codice=$cod_prenotazione";
-			if (query($sql, $db_conn, "update stato confermato") and $stato == 1 and mysqli_affected_rows($db_conn)==1) {
-				echo "<h3 class='avviso'>".Prenotazione_confermata."</h3>";
-			} else if (query($sql, $db_conn, "update stato confermato") and $stato == 2 and mysqli_affected_rows($db_conn)==1) {
-				echo "<h3 class='avviso'>".Prenotazione_rifiutata."</h3>";
-			}
-			
-			$to = $row[0];
-			if($stato == 1) {
-				$subject = Prenotazione_inserita;
-				$message = Prenotazione_confermata."\n".
-				ringraziamenti_email
-				;
-			}
-			else if ($stato == 2) {
-				$subject = Prenotazione_non_inserita;
-				$message = Prenotazione_rifiutata."\n".
-				ringraziamenti_email
-				;
-			}
-			$headers = "From: lucacoppiardi@altervista.org";
-			
-			$esito_mail = mail($to,$subject,$message,$headers);
-			
-			if (isDebug()) {
-				echo $esito_mail;
-				if ($esito_mail == false) {
-					echo "EMAIL ERROR"."<br/>";
-				}			
-				else if($esito_mail == true) {
-					echo "EMAIL OK"."<br/>";
-				}
-				echo $to."<br/>";
-				echo $subject."<br/>";
-				echo $message."<br/>";
-				echo $headers."<br/>";
-			}
+	if ($db_conn and !empty($cod_prenotazione) and !empty($stato) and !empty($_SESSION["mail_admin"]) and !empty($_SESSION["password_admin"]) and !empty($_SESSION["cod_admin"])) {
+		$sql = "UPDATE prenotazioni SET stato=$stato WHERE codice=$cod_prenotazione";
+		query($sql, $db_conn, "update stato confermato");
+		if ($stato == 1 and mysqli_affected_rows($db_conn)==1) {
+			echo "<h3 class='avviso'>".Prenotazione_confermata."</h3>";
+		} else if ($stato == 2 and mysqli_affected_rows($db_conn)==1) {
+			echo "<h3 class='avviso'>".Prenotazione_rifiutata."</h3>";
 		} else {
 			torna_indietro();
 		}
+		$s = "SELECT cod_utente FROM prenotazioni WHERE codice = $cod_prenotazione";
+		$result = query($s, $db_conn, "select cod_utente");
+		$row = fetch_row($result);
+		$s = "SELECT mail FROM utenti WHERE codice = $row[0]";
+		$result = query($s, $db_conn, "select cod_utente");
+		if (mysqli_num_rows($result) == 1) {
+			$row = fetch_row($result);
+		} else {
+			torna_indietro();
+		}
+		$to = $row[0];
+		
+		$s = "SELECT data, ora, nome, partecipanti, richieste FROM prenotazioni WHERE codice = $cod_prenotazione";
+		$result = query($s, $db_conn, "select prenotazione");
+		if (mysqli_num_rows($result) == 1) {
+			$row = fetch_row($result);
+		} else {
+			torna_indietro();
+		}
+		
+		if($stato == 1) {
+			$subject = Prenotazione_inserita;
+			$message = Prenotazione_confermata.":\n"
+			.Data.": ".$row[0]."\n".
+			Ora.": ".$row[1]."\n".
+			Nome_tavolo.": ".$row[2]."\n".
+			Numero_persone.": ".$row[3]."\n".
+			Richieste_particolari.": ".$row[4]."\n\n".
+			ringraziamenti_email
+			;
+		}
+		else if ($stato == 2) {
+			$subject = Prenotazione_non_inserita;
+			$message = Prenotazione_rifiutata.":\n"
+			.Data.": ".$row[0]."\n".
+			Ora.": ".$row[1]."\n".
+			Nome_tavolo.": ".$row[2]."\n".
+			Numero_persone.": ".$row[3]."\n".
+			Richieste_particolari.": ".$row[4]."\n\n".
+			ringraziamenti_email
+			;
+		}
+		$headers = "From: lucacoppiardi@altervista.org";
+		
+		$esito_mail = mail($to,$subject,$message,$headers);
+		
+		if (isDebug()) {
+			echo $esito_mail;
+			if ($esito_mail == false) {
+				echo "EMAIL ERROR"."<br/>";
+			}			
+			else if($esito_mail == true) {
+				echo "EMAIL OK"."<br/>";
+			}
+			echo $to."<br/>";
+			echo $subject."<br/>";
+			echo $message."<br/>";
+			echo $headers."<br/>";
+		}
 	} else {
-		echo "<h2 class='errore'>".Errore_connessione_database."</h2>";
+		torna_indietro();
 	}
 	close($db_conn);
 }
@@ -632,7 +746,7 @@ function prenotazioni_utente() {
 		echo "</table>";
 		echo "</div>";
 	} else {
-		echo "<h2 class='errore'>".Errore_connessione_database."</h2>";
+		torna_indietro();
 	}
 	close($db_conn);
 }
@@ -650,7 +764,7 @@ function select_prenotazione($codice) {
 			torna_indietro();
 		}
 	} else {
-		echo "<h2 class='errore'>".Errore_connessione_database."</h2>";
+		torna_indietro();
 	}
 	close($db_conn);
 }	
@@ -668,7 +782,7 @@ function select_news($codice) {
 			torna_indietro();
 		}
 	} else {
-		echo "<h2 class='errore'>".Errore_connessione_database."</h2>";
+		torna_indietro();
 	}
 	close($db_conn);
 }
@@ -686,7 +800,7 @@ function update_prenotazione($codice, $data, $ora, $nome, $num_persone, $richies
 			torna_indietro();
 		}
 		if ($cod_utente == $row[0]) {
-			$s="UPDATE prenotazioni SET data='$data', ora='$ora', nome='$nome', partecipanti=$num_persone, richieste='$richieste' WHERE codice = $codice AND cod_utente=$cod_utente";
+			$s="UPDATE prenotazioni SET data='$data', ora='$ora', nome='$nome', partecipanti=$num_persone, richieste='$richieste' WHERE codice=$codice AND cod_utente=$cod_utente";
 			if (query($s, $db_conn, "update prenotazione") and mysqli_affected_rows($db_conn)==1) {
 				echo "<h3 class='avviso'>".Prenotazione_modificata."</h3>";
 			} else {
@@ -696,7 +810,7 @@ function update_prenotazione($codice, $data, $ora, $nome, $num_persone, $richies
 			torna_indietro();
 		}
 	} else {
-		echo "<h2 class='errore'>".Errore_connessione_database."</h2>";
+		torna_indietro();
 	}
 	close($db_conn);
 }
@@ -728,7 +842,7 @@ function update_news($codice, $titolo, $contenuto, $contenuto_en, $titolo_en, $f
 			torna_indietro();
 		}
 	} else {
-		echo "<h2 class='errore'>".Errore_connessione_database."</h2>";
+		torna_indietro();
 	}
 	close($db_conn);
 }
@@ -754,7 +868,7 @@ function delete_prenotazione($codice) {
 			}
 		}
 	} else {
-		echo "<h2 class='errore'>".Errore_connessione_database."</h2>";
+		torna_indietro();
 	}
 	close($db_conn);
 }
@@ -771,8 +885,8 @@ function delete_news($codice) {
 		} else {
 			torna_indietro();
 		}
-		if ($cod_utente == $row[0]) {
-			$s="DELETE FROM news WHERE codice = $codice";
+		if ($cod_admin == $row[0]) {
+			$s="DELETE FROM news WHERE codice = $codice AND cod_admin = $cod_admin";
 			if (query($s, $db_conn, "delete news") and mysqli_affected_rows($db_conn)==1) {
 				echo "<h3 class='avviso'>".News_cancellata."</h3>";
 			} else {
@@ -782,7 +896,7 @@ function delete_news($codice) {
 			torna_indietro();
 		}
 	} else {
-		echo "<h2 class='errore'>".Errore_connessione_database."</h2>";
+		torna_indietro();
 	}
 	close($db_conn);
 }
@@ -805,7 +919,7 @@ function reset_password($old_pw, $new_pw) {
 			}
 		}
 	} else {
-		echo "<h2 class='errore'>".Errore_connessione_database."</h2>";
+		torna_indietro();
 	}
 	close($db_conn);
 }
@@ -822,7 +936,7 @@ function insert_news($cod_admin, $titolo, $contenuto, $contenuto_en, $titolo_en,
 			echo "<h3 class='avviso'>".News_inserita."</h3>";
 		}
 	} else {
-		echo "<h2 class='errore'>".Errore_connessione_database."</h2>";
+		torna_indietro();
 	}
 	close($db_conn);
 }
@@ -856,7 +970,7 @@ function pagina_news() {
 			echo "<hr width='90%'>";
 		}
 	} else {
-		echo "<h2 class='errore'>".Errore_connessione_database."</h2>";
+		torna_indietro();
 	}
 	close($db_conn);
 }
@@ -877,12 +991,10 @@ function mail_recupero_password($mail) {
 		} else {
 			torna_indietro();
 		}
-		
-		if (isDebug()) echo $new_pw;
-						
+								
 		$to = $mail;
 		$subject = Recupero_password;
-		$message = la_tua_nuova_password.": $new_pw";
+		$message = la_tua_nuova_password.": $new_pw".ringraziamenti_email;
 		$headers = "From: lucacoppiardi@altervista.org";
 		
 		$esito_mail = mail($to,$subject,$message,$headers);
@@ -902,11 +1014,11 @@ function mail_recupero_password($mail) {
 		}
 		
 		if (!isDebug()) {
-			echo $message;
+			echo $message."<br/>";
 		}
 		
 	} else {
-		echo "<h2 class='errore'>".Errore_connessione_database."</h2>";
+		torna_indietro();
 	}
 	close($db_conn);
 }
@@ -920,11 +1032,35 @@ function delete_account() {
 		$s = "DELETE FROM utenti WHERE codice=$codice AND mail='$mail' AND password='$password'";
 		if (query($s, $db_conn, "delete user") and mysqli_affected_rows($db_conn)==1) {
 			echo "<h3 class='avviso'>".Account_cancellato."</h3>";
+			$to = $mail;
+			$subject = Account_cancellato;
+			$message = Account_cancellato."\n".ringraziamenti_email;
+			$headers = "From: lucacoppiardi@altervista.org";
+			
+			$esito_mail = mail($to,$subject,$message,$headers);
+			
+			if (isDebug()) {
+				echo $esito_mail;
+				if (!$esito_mail) {
+					echo "EMAIL ERROR"."<br/>";
+				}			
+				else {
+					echo "EMAIL OK"."<br/>";
+				}
+				echo $to."<br/>";
+				echo $subject."<br/>";
+				echo $message."<br/>";
+				echo $headers."<br/>";
+			}
+			
+			if (!isDebug()) {
+				echo $message."<br/>";
+			}
 		} else {
 			torna_indietro();
 		}
 	} else {
-		echo "<h2 class='errore'>".Errore_connessione_database."</h2>";
+		torna_indietro();
 	}
 	close($db_conn);
 }
@@ -933,7 +1069,7 @@ function update_indirizzo_mail($newmail) {
 	$db_conn=connessione();
 	$mail = $_SESSION["mail"];
 	if ($db_conn and !empty($mail) and !empty($newmail)) {
-		$s = "UPDATE utenti SET mail='$newmail' WHERE mail='$mail'";
+		$s = "UPDATE utenti SET mail='$newmail', hash='".md5($newmail)."', confermato=0 WHERE mail='$mail'";
 		if (query($s, $db_conn, "cambio mail") and mysqli_affected_rows($db_conn)==1) {
 			echo "<h3 class='avviso'>".Indirizzo_aggiornato."</h3>";
 			echo "<form action='prenotazioni.php' method='get'>
@@ -941,11 +1077,36 @@ function update_indirizzo_mail($newmail) {
 					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='OK'>
 				</form>";
+			$to = $newmail;
+			$subject = cambio_mail;
+			$message = conferma_a_questo_link.": <a href='prenotazioni.php?stato=conferma_nuova_mail&lang=".getLang()."&hash=".md5($newmail)."'>".Conferma."</a>".ringraziamenti_email;
+			$headers = "From: lucacoppiardi@altervista.org";
+		
+			$esito_mail = mail($to,$subject,$message,$headers);
+			
+			if (isDebug()) {
+				echo $esito_mail;
+				if (!$esito_mail) {
+					echo "EMAIL ERROR"."<br/>";
+				}			
+				else {
+					echo "EMAIL OK"."<br/>";
+				}
+				echo $to."<br/>";
+				echo $subject."<br/>";
+				echo $message."<br/>";
+				echo $headers."<br/>";
+			}
+			
+			if (!isDebug()) {
+				echo $message;
+			}
+			
 		} else {
 			torna_indietro();
 		}
 	} else {
-		echo "<h2 class='errore'>".Errore_connessione_database."</h2>";
+		torna_indietro();
 	}
 	close($db_conn);
 }
@@ -965,10 +1126,29 @@ function registrazione_confermata($hash) {
 			torna_indietro();
 		}
 	} else {
-		echo "<h2 class='errore'>".Errore_connessione_database."</h2>";
+		torna_indietro();
 	}
 	close($db_conn);
 }
 
+function confermata_nuova_mail($hash) {
+	$db_conn=connessione();
+	if ($db_conn and !empty($hash)) {
+		$s = "UPDATE utenti SET confermato=1 WHERE hash='$hash'";
+		if (query($s, $db_conn, "conferma hash") and mysqli_affected_rows($db_conn)==1) {
+			echo "<h3 class='avviso'>".Indirizzo_aggiornato."</h3>";
+			echo "<form action='prenotazioni.php' method='get'>
+					<input type='hidden' name='lang' value='".getLang()."'>
+					<input type='hidden' name='stato' value='accedi'>
+					<input type='submit' value='OK'>
+				</form>";
+		} else {
+			torna_indietro();
+		}
+	} else {
+		torna_indietro();
+	}
+	close($db_conn);
+}
 
 ?>

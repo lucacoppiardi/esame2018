@@ -24,9 +24,11 @@
 	function getLang() {
 		if (isset($_REQUEST["lang"])) {
 			$lang = $_REQUEST["lang"];
+			$_SESSION["lang"] = $lang;
 			include_once("lang/$lang.php");
 		} else {
 			$lang = "it";
+			$_SESSION["lang"] = $lang;
 			include_once("lang/$lang.php");
 		}
 		return $lang;

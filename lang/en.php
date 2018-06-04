@@ -34,7 +34,8 @@
 	define("Nome_prenotazione", "Reservation name");
 	define("subject_email","Your booking");
 	define("riepilogo_email", "Details of your reservation:");
-	define("ringraziamenti_email", "Thank you for choosing us");
+	define("link_al_sito", "https://lucacoppiardi.altervista.org/maturita2018");
+	define("ringraziamenti_email", "\nThank you for choosing us\n".link_al_sito);
 	define("Accetta","Accept");
 	define("Accettata", "Accepted");
 	define("Rifiuta","Deny");
@@ -95,4 +96,5 @@
 	define("News_cancellata", "News deleted");
 	define("Account_cancellato", "Deleted account");
 	define("Modifica", "Update");
+	
 ?>

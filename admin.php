@@ -25,7 +25,7 @@
 	}
 	
 	echo "<h1 class='titolo_pagina'>".Amministrazione."</h1>";
-				
+		
 	if(isset($_POST['action']) and $_POST['action'] == 'upload') {
 		define("UPLOAD_DIR", "./uploads/");
 		
@@ -134,8 +134,7 @@
 				</form>";
 		}
 	}
-	
-			
+
 	switch(getStato()) {
 		
 		case "login":
@@ -150,7 +149,7 @@
 			echo "<form method='get' action='admin.php'>
 					<input type='hidden' name='stato' value='login'>
 					<input type='hidden' name='lang' value='".getLang()."'>
-					<input type='submit' value='OK'>
+					<input type='submit' value='".Torna_indietro."'>
 				</form>";
 			break;
 			
@@ -166,7 +165,7 @@
 			echo "<form method='get' action='admin.php'>
 					<input type='hidden' name='stato' value='login'>
 					<input type='hidden' name='lang' value='".getLang()."'>
-					<input type='submit' value='OK'>
+					<input type='submit' value='".Torna_indietro."'>
 				</form>";
 			break;
 			
@@ -177,7 +176,7 @@
 			echo "<form method='get' action='admin.php'>
 					<input type='hidden' name='stato' value='login'>
 					<input type='hidden' name='lang' value='".getLang()."'>
-					<input type='submit' value='OK'>
+					<input type='submit' value='".Torna_indietro."'>
 				</form>";
 			break;
 			
@@ -287,12 +286,19 @@
 			break;
 			
 		case "cancella_news":
+			echo "<h3>".Cancella." news</h3>";
 			$codice = $_REQUEST["codice"];
-			echo confermare;
+			$dati = select_news($codice);
 			echo "<form action='admin.php' method='get'>";
 			echo "<input type='hidden' name='stato' value='delete_news'>";
 			echo "<input type='hidden' name='lang' value='".getLang()."'>";
 			echo "<input type='hidden' name='codice' value='$codice'>";
+			echo Titolo.": <input type='text' name='titolo' maxlength='250' value='$dati[0]' required disabled><br/>
+					".Titolo." (english): <input type='text' name='titolo_en' maxlength='250' value='$dati[6]' required disabled><br/>
+					".Testo.": <textarea name='contenuto' rows='6' cols='40' maxlength='250' required disabled>$dati[1]</textarea><br/>
+					".Testo." (inglese): <textarea name='contenuto_en' rows='6' cols='40' maxlength='250' required disabled>$dati[5]</textarea><br/>
+					".immagine_facoltativa.": <input type='file' name='file' disabled><br/>";
+			echo "<h4>".confermare."</h4>";
 			echo "<input type='submit' value='".Cancella."'>";
 			echo "</form>";
 			echo "<form method='get' action='admin.php'>
@@ -360,6 +366,7 @@
 		case "drop":
 			if (isset($_REQUEST["conferma"]) and ($_REQUEST["conferma"] === "DISTRUGGI TUTTE LE TABELLE")) 
 				drop();
+			session_unset();
 			break;
 			
 		case "logout":
@@ -368,11 +375,10 @@
 			break;
 		
 		default:
-			if (isset($_SESSION["mail_admin"]) and isset($_SESSION["password_admin"]) and isset($_SESSION["cod_admin"])) {
-				crea_tab_admin();
+			crea_tab_admin();
+			if (!empty($_SESSION["mail_admin"]) and !empty($_SESSION["password_admin"]) and !empty($_SESSION["cod_admin"])) {
 				paginaLogged();
 			} else {
-				crea_tab_admin();
 				pagina();
 			}
 			break;

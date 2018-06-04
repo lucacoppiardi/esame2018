@@ -229,11 +229,22 @@
 		case "cancella_prenotazione":
 			echo "<h3>".Cancella_prenotazione."</h3>";
 			$codice = $_REQUEST["codice"];
-			echo confermare;
+			$dati = select_prenotazione($codice);
 			echo "<form action='prenotazioni.php' method='get'>";
-			echo "<input type='hidden' name='stato' value='delete_prenotazione'>
-					<input type='hidden' name='lang' value='".getLang()."'>";
+			echo "<input type='hidden' name='stato' value='delete_prenotazione'>";
+			echo "<input type='hidden' name='lang' value='".getLang()."'>";
 			echo "<input type='hidden' name='codice' value='$codice'>";
+			echo Data.": ";
+			echo "<input type='date' name='data' value='$dati[0]' required readonly><br/>";
+			echo Ora.": ";
+			echo "<input type='time' name='ora' value='$dati[1]' required readonly><br/>";
+			echo Nome_tavolo.": ";
+			echo "<input type='text' name='nome' maxlength='250' placeholder='".placeholder."' value='$dati[2]' required readonly><br/>";
+			echo Numero_persone.": ";
+			echo "<input type='number' name='num_persone' min='1' value='$dati[3]' required readonly><br/>";
+			echo Richieste_particolari."? ";
+			echo "<textarea name='richieste' rows='6' cols='40' maxlength='250' readonly>$dati[4]</textarea><br/>";
+			echo "<h4>".confermare."</h4>";
 			echo "<input type='submit' value='".Cancella."'>";
 			echo "</form>";
 			echo "<form action='prenotazioni.php' method='get'>
@@ -245,7 +256,13 @@
 			
 		case "delete_prenotazione":
 			$codice = $_REQUEST["codice"];
+			$data = $_REQUEST["data"];
+			$ora = $_REQUEST["ora"];
+			$nome = addslashes($_REQUEST["nome"]);
+			$num_persone = $_REQUEST["num_persone"];
+			$richieste = addslashes($_REQUEST["richieste"]);
 			delete_prenotazione($codice);
+			mail_riepilogo_cancella($data, $ora, $nome, $num_persone, $richieste);
 			echo "<form action='prenotazioni.php' method='get'>
 						<input type='hidden' name='lang' value='".getLang()."'>
 						<input type='hidden' name='stato' value='login'>
@@ -261,6 +278,7 @@
 			$num_persone = $_REQUEST["num_persone"];
 			$richieste = addslashes($_REQUEST["richieste"]);
 			update_prenotazione($codice_prenotazione, $data, $ora, $nome, $num_persone, $richieste);
+			mail_riepilogo_modifica($data, $ora, $nome, $num_persone, $richieste);
 			echo "<form action='prenotazioni.php' method='get'>
 						<input type='hidden' name='lang' value='".getLang()."'>
 						<input type='hidden' name='stato' value='login'>
@@ -308,6 +326,7 @@
 						<input type='hidden' name='lang' value='".getLang()."'>
 						<input type='submit' value='OK'>
 					</form>";
+				unset($_SESSION["mail"], $_SESSION["password"], $_SESSION["cod_utente"]);
 			}
 			break;
 			
@@ -327,6 +346,7 @@
 					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='OK'>
 				</form>";
+			unset($_SESSION["mail"], $_SESSION["password"], $_SESSION["cod_utente"]);
 			break;
 			
 		case "disiscrizione":
@@ -350,6 +370,7 @@
 					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='OK'>
 				</form>";
+			unset($_SESSION["mail"], $_SESSION["password"], $_SESSION["cod_utente"]);
 			break;
 			
 		case "cambia_email":
@@ -369,21 +390,24 @@
 			break;
 		
 		case "cambio_mail":
-			unset($_SESSION["mail"], $_SESSION["password"], $_SESSION["cod_utente"]);
 			update_indirizzo_mail($_REQUEST["newmail"]);
+			unset($_SESSION["mail"], $_SESSION["password"], $_SESSION["cod_utente"]);
 			break;
 			
+		case "conferma_nuova_mail":
+			confermata_nuova_mail($_REQUEST["hash"]);
+			break;
+						
 		case "logout":
 			unset($_SESSION["mail"], $_SESSION["password"], $_SESSION["cod_utente"]);
 			pagina();
 			break;
-			
+		
 		default:
-			if (isset($_SESSION["mail"]) and isset($_SESSION["password"]) and isset($_SESSION["cod_utente"])) {
-				crea_tab_utenti();
+			crea_tab_utenti();
+			if (!empty($_SESSION["mail"]) and !empty($_SESSION["password"]) and !empty($_SESSION["cod_utente"])) {
 				paginaLogged();
 			} else {
-				crea_tab_utenti();
 				pagina();
 			}
 			break;
