@@ -73,7 +73,7 @@
 	define("la_tua_nuova_password", "La tua nuova password &egrave;");
 	define("Utenti", "Utenti");
 	define("Prenotazioni", "Prenotazioni");
-	define("confermare_eliminazione_account", "Confermare l'eliminazione dell'account?");
+	define("confermare_eliminazione_account", "Confermare l'eliminazione dell'account");
 	define("confermare", "Confermare?");
 	define("inserisci_news", "Inserisci news");
 	define("immagine_facoltativa", "Immagine (facoltativa)");

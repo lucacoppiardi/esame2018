@@ -42,7 +42,6 @@ function query($s, $conn, $tab) {
 function torna_indietro() {
 	echo "<h2 class='errore'>".Errore_query.". </h2>";
 	echo "<form action='".basename($_SERVER['PHP_SELF'])."' method='get'>
-			<input type='hidden' name='lang' value='".getLang()."'>
 			<input type='submit' value='".Torna_indietro."'>
 		</form>";
 	tail();
@@ -183,7 +182,6 @@ function drop() {
 		$s="DROP TABLE amministratori";
 		if (query($s, $db_conn, "drop")) echo "amministratori cancellata<br/>";
 		echo "<form action='admin.php' method='get'>
-				<input type='hidden' name='lang' value='".getLang()."'>
 				<input type='submit' value='".Torna_indietro."'>
 			</form>";
 	} else {
@@ -201,7 +199,7 @@ function crea_utente($mail,$password,$nome,$telefono) {
 		if ($result != false and mysqli_affected_rows($db_conn) == 1) {
 			$to = $mail;
 			$subject = grazie_iscrizione;
-			$message = conferma_a_questo_link.": <a href='prenotazioni.php?stato=conferma_registrazione&lang=".getLang()."&hash=".md5($mail)."'>".Conferma."</a>".ringraziamenti_email;
+			$message = conferma_a_questo_link.": <a href='prenotazioni.php?stato=conferma_registrazione&lang=".$_SESSION["lang"]."&hash=".md5($mail)."'>".Conferma."</a>".ringraziamenti_email;
 			$headers = "From: lucacoppiardi@altervista.org";
 
 			$esito_mail = mail($to,$subject,$message,$headers);
@@ -245,7 +243,7 @@ function login($mail, $pass) {
 				
 				$to = $mail;
 				$subject = grazie_iscrizione;
-				$message = conferma_a_questo_link.": <a href='prenotazioni.php?stato=conferma_registrazione&lang=".getLang()."&hash=".md5($mail)."'>".Conferma."</a>".ringraziamenti_email;
+				$message = conferma_a_questo_link.": <a href='prenotazioni.php?stato=conferma_registrazione&lang=".$_SESSION["lang"]."&hash=".md5($mail)."'>".Conferma."</a>".ringraziamenti_email;
 				$headers = "From: lucacoppiardi@altervista.org";
 				
 				$esito_mail = mail($to,$subject,$message,$headers);
@@ -269,7 +267,6 @@ function login($mail, $pass) {
 				}
 				
 				echo "<form action='prenotazioni.php' method='get'>
-						<input type='hidden' name='lang' value='".getLang()."'>
 						<input type='submit' value='OK'>
 					</form>";
 					
@@ -330,9 +327,10 @@ function visualizza_utenti() {
 			echo "<td>
 				<form action='admin.php' method='get' style='display:inline'>
 					<input type='hidden' name='stato' value='cancella_utente'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='".Cancella."'>
 					<input type='hidden' name='codice' value='$row[0]'>
+					<input type='hidden' name='nome' value='$row[1]'>
+					<input type='hidden' name='mail' value='$row[2]'>
 				</form>
 				</td>";
 			echo "</tr>";
@@ -381,14 +379,12 @@ function visualizza_prenotazioni() {
 				echo "<td>
 				<form action='admin.php' method='get' style='display:inline'>
 					<input type='hidden' name='stato' value='conferma_scelta'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' name='accetta' value='".Accetta."'>
 					<input type='hidden' name='codice' value='$row[0]'>
 				</form>
 				&nbsp;&nbsp;&nbsp;&nbsp;
 				<form action='admin.php' method='get' style='display:inline'>
 					<input type='hidden' name='stato' value='conferma_scelta'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' name='rifiuta' value='".Rifiuta."'>
 					<input type='hidden' name='codice' value='$row[0]'>
 				</form>
@@ -421,15 +417,15 @@ function visualizza_news() {
 		while ($row=fetch_row($result)) {	
 			echo "<tr>";
 			echo "<td>$row[1]<br/>$row[2]</td>";
-			echo "<td><a href='news.php?lang=".getLang()."#$row[0]'>";
-			if (getLang() == "en") {
+			echo "<td><a href='news.php#$row[0]'>";
+			if ($_SESSION["lang"] == "en") {
 				echo $row[5];
 			} else {
 				echo $row[3];
 			}
 			echo "</a></td>";
 			echo "<td>";
-			if (getLang() == "en") {
+			if ($_SESSION["lang"] == "en") {
 				echo substr($row[6],0,50);
 				if (strlen($row[6])>=50) echo "...";
 			} else {
@@ -440,14 +436,12 @@ function visualizza_news() {
 			echo "<td>
 				<form action='admin.php' method='get' style='display:inline'>
 					<input type='hidden' name='stato' value='modifica_news'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='".Modifica."'>
 					<input type='hidden' name='codice' value='$row[0]'>
 				</form>
 				&nbsp;&nbsp;&nbsp;&nbsp;
 				<form action='admin.php' method='get' style='display:inline'>
 					<input type='hidden' name='stato' value='cancella_news'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='".Cancella."'>
 					<input type='hidden' name='codice' value='$row[0]'>
 				</form>
@@ -726,13 +720,11 @@ function prenotazioni_utente() {
 					<form action='prenotazioni.php' method='get' style='display:inline'>
 					<input type='submit' value='".Modifica."'>
 					<input type='hidden' name='stato' value='modifica_prenotazione'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='hidden' name='codice' value='$row[0]'>
 					</form>
 					<form action='prenotazioni.php' method='get' style='display:inline'>
 					<input type='submit' value='".Cancella."'>
 					<input type='hidden' name='stato' value='cancella_prenotazione'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='hidden' name='codice' value='$row[0]'>
 					</form>
 					</td>";
@@ -756,6 +748,23 @@ function select_prenotazione($codice) {
 	$cod = $_SESSION["cod_utente"];
 	if ($db_conn and !empty($codice) and !empty($cod)) {
 		$s="SELECT data,ora,nome,partecipanti,richieste,cod_utente FROM prenotazioni WHERE codice = $codice AND cod_utente = $cod";
+		$result = query($s, $db_conn, "select prenotazione");
+		if (mysqli_num_rows($result) == 1) {
+			$row = fetch_row($result);
+			return $row;
+		} else {
+			torna_indietro();
+		}
+	} else {
+		torna_indietro();
+	}
+	close($db_conn);
+}	
+
+function select_prenotazione_admin($codice) {
+	$db_conn=connessione();
+	if ($db_conn and !empty($codice) and !empty($_SESSION["cod_admin"])) {
+		$s="SELECT data,ora,nome,partecipanti,richieste,cod_utente FROM prenotazioni WHERE codice = $codice";
 		$result = query($s, $db_conn, "select prenotazione");
 		if (mysqli_num_rows($result) == 1) {
 			$row = fetch_row($result);
@@ -948,13 +957,13 @@ function pagina_news() {
 		$result=query($s, $db_conn, "select pagina news");
 		while ($row=fetch_row($result)) {
 			echo "<h2 id='$row[0]'>";
-			if (getLang() == "en") {
+			if ($_SESSION["lang"] == "en") {
 				echo $row[9];
 			} else {
 				echo $row[2];
 			}
 			echo "</h2>";
-			if (getLang() == "en") {
+			if ($_SESSION["lang"] == "en") {
 				echo "<p>$row[8]</p>";
 			} else {
 				echo "<p>$row[3]</p>";
@@ -1074,12 +1083,11 @@ function update_indirizzo_mail($newmail) {
 			echo "<h3 class='avviso'>".Indirizzo_aggiornato."</h3>";
 			echo "<form action='prenotazioni.php' method='get'>
 					<input type='hidden' name='stato' value='accedi'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='OK'>
 				</form>";
 			$to = $newmail;
 			$subject = cambio_mail;
-			$message = conferma_a_questo_link.": <a href='prenotazioni.php?stato=conferma_nuova_mail&lang=".getLang()."&hash=".md5($newmail)."'>".Conferma."</a>".ringraziamenti_email;
+			$message = conferma_a_questo_link.": <a href='prenotazioni.php?stato=conferma_nuova_mail&lang=".$_SESSION["lang"]."&hash=".md5($newmail)."'>".Conferma."</a>".ringraziamenti_email;
 			$headers = "From: lucacoppiardi@altervista.org";
 		
 			$esito_mail = mail($to,$subject,$message,$headers);
@@ -1118,7 +1126,6 @@ function registrazione_confermata($hash) {
 		if (query($s, $db_conn, "conferma hash") and mysqli_affected_rows($db_conn)==1) {
 			echo "<h3 class='avviso'>".Registrazione_riuscita."</h3>";
 			echo "<form action='prenotazioni.php' method='get'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='hidden' name='stato' value='accedi'>
 					<input type='submit' value='OK'>
 				</form>";
@@ -1138,7 +1145,6 @@ function confermata_nuova_mail($hash) {
 		if (query($s, $db_conn, "conferma hash") and mysqli_affected_rows($db_conn)==1) {
 			echo "<h3 class='avviso'>".Indirizzo_aggiornato."</h3>";
 			echo "<form action='prenotazioni.php' method='get'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='hidden' name='stato' value='accedi'>
 					<input type='submit' value='OK'>
 				</form>";

@@ -10,7 +10,7 @@
 	function form_registra() {
 		echo "<form method='get' action='prenotazioni.php' onSubmit='return checkMail()'>";
 		echo "<input type='hidden' name='stato' value='registrato'>";
-		echo "<input type='hidden' name='lang' value='".getLang()."'>";
+		
 		echo Nome.": ";
 		echo "<input type='text' name='nome' maxlength='250' required><br/>";
 		echo Telefono.": ";
@@ -26,14 +26,14 @@
 		echo "</form>";
 		echo "<form method='get' action='prenotazioni.php'>";
 		echo "<input type='submit' value='".Annulla."'>";
-		echo "<input type='hidden' name='lang' value='".getLang()."'>";
+		
 		echo "</form>";
 	}
 		
 	function form_prenotazione() {
 		echo "<form method='get' action='prenotazioni.php'>";
 		echo "<input type='hidden' name='stato' value='inserisci'>";
-		echo "<input type='hidden' name='lang' value='".getLang()."'>";
+		
 		echo Data.": ";
 		echo "<input type='date' name='data' required><br/>";
 		echo Ora.": ";
@@ -53,7 +53,7 @@
 		echo "<h2>".Accedi."</h2>";
 		echo "<form method='get' action='prenotazioni.php'>";
 		echo "<input type='hidden' name='stato' value='login'>";
-		echo "<input type='hidden' name='lang' value='".getLang()."'>";
+		
 		echo "Mail: ";
 		echo "<input type='email' name='mail' required><br/>";
 		echo "Password: ";
@@ -64,12 +64,12 @@
 		echo "<form method='get' action='prenotazioni.php'>";		
 		echo "<input type='submit' value='".Annulla."'>";
 		echo "<input type='hidden' name='stato' value=''>";
-		echo "<input type='hidden' name='lang' value='".getLang()."'>";
+		
 		echo "</form>";
 		echo "<form method='get' action='prenotazioni.php'>";
 		echo "<input type='submit' value='".Recupero_password."'>";
 		echo "<input type='hidden' name='stato' value='recupera_password'>";
-		echo "<input type='hidden' name='lang' value='".getLang()."'>";
+		
 		echo "</form>";
 		echo "<form method='get' action='prenotazioni.php'>";
 	}
@@ -79,12 +79,12 @@
 		echo "<form method='get' action='prenotazioni.php'>";
 		echo "<input type='submit' value='".Registrati."'>";
 		echo "<input type='hidden' name='stato' value='registra'>";
-		echo "<input type='hidden' name='lang' value='".getLang()."'>";
+		
 		echo "</form>";
 		echo "<form method='get' action='prenotazioni.php'>";
 		echo "<input type='submit' value='".Accedi."'>";
 		echo "<input type='hidden' name='stato' value='accedi'>";
-		echo "<input type='hidden' name='lang' value='".getLang()."'>";
+		
 		echo "</form>";
 	}
 	
@@ -115,23 +115,19 @@
 			echo "<h3 class='avviso'>".Login_riuscito.": ".$result[1]."</h3>";
 			echo "<h4 class='avviso'>".Ultimo_accesso.": ".$result[2]."</h4>";
 			echo "<form action='prenotazioni.php' method='get' style='display:inline'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='hidden' name='stato' value='logout'>
 					<input type='submit' value='Logout'>
 				</form>";
 			echo "<form action='prenotazioni.php' method='get' style='display:inline'>
 					<input type='hidden' name='stato' value='reset_password'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='Reset password'>
 				</form>";
 			echo "<form action='prenotazioni.php' method='get' style='display:inline'>
 					<input type='hidden' name='stato' value='disiscrizione'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='".Cancella." account'>
 				</form>";
 			echo "<form action='prenotazioni.php' method='get' style='display:inline'>
 					<input type='hidden' name='stato' value='cambia_email'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='".cambio_mail."'>
 				</form>";
 			crea_tab_prenotazioni();
@@ -166,7 +162,6 @@
 			crea_utente($mail,$password,$nome,$telefono);
 			echo "<h3 class='avviso'>".Registrazione_riuscita."</h3>";
 			echo "<form action='prenotazioni.php' method='get'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='hidden' name='stato' value='accedi'>
 					<input type='submit' value='OK'>
 				</form>";
@@ -193,7 +188,6 @@
 			inserisci_prenotazione($data, $ora, $nome, $num_persone, $richieste);
 			mail_riepilogo($data, $ora, $nome, $num_persone, $richieste);
 			echo "<form action='prenotazioni.php' method='get'>
-						<input type='hidden' name='lang' value='".getLang()."'>
 						<input type='hidden' name='stato' value='login'>
 						<input type='submit' value='OK'>
 					</form>";
@@ -205,7 +199,7 @@
 			$dati = select_prenotazione($codice);
 			echo "<form action='prenotazioni.php' method='get'>";
 			echo "<input type='hidden' name='stato' value='update_prenotazione'>";
-			echo "<input type='hidden' name='lang' value='".getLang()."'>";
+			
 			echo "<input type='hidden' name='codice' value='$codice'>";
 			echo Data.": ";
 			echo "<input type='date' name='data' value='$dati[0]' required><br/>";
@@ -220,7 +214,6 @@
 			echo "<input type='submit' value='".Aggiorna."'>";
 			echo "</form>";
 			echo "<form method='get' action='prenotazioni.php'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='hidden' name='stato' value='login'>
 					<input type='submit' value='".Annulla."'>
 				</form>";
@@ -232,7 +225,7 @@
 			$dati = select_prenotazione($codice);
 			echo "<form action='prenotazioni.php' method='get'>";
 			echo "<input type='hidden' name='stato' value='delete_prenotazione'>";
-			echo "<input type='hidden' name='lang' value='".getLang()."'>";
+			
 			echo "<input type='hidden' name='codice' value='$codice'>";
 			echo Data.": ";
 			echo "<input type='date' name='data' value='$dati[0]' required readonly><br/>";
@@ -248,7 +241,6 @@
 			echo "<input type='submit' value='".Cancella."'>";
 			echo "</form>";
 			echo "<form action='prenotazioni.php' method='get'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='hidden' name='stato' value='login'>
 					<input type='submit' value='".Annulla."'>
 				</form>";
@@ -264,10 +256,9 @@
 			delete_prenotazione($codice);
 			mail_riepilogo_cancella($data, $ora, $nome, $num_persone, $richieste);
 			echo "<form action='prenotazioni.php' method='get'>
-						<input type='hidden' name='lang' value='".getLang()."'>
-						<input type='hidden' name='stato' value='login'>
-						<input type='submit' value='OK'>
-					</form>";
+					<input type='hidden' name='stato' value='login'>
+					<input type='submit' value='OK'>
+				</form>";
 			break;
 		
 		case "update_prenotazione":
@@ -280,16 +271,15 @@
 			update_prenotazione($codice_prenotazione, $data, $ora, $nome, $num_persone, $richieste);
 			mail_riepilogo_modifica($data, $ora, $nome, $num_persone, $richieste);
 			echo "<form action='prenotazioni.php' method='get'>
-						<input type='hidden' name='lang' value='".getLang()."'>
-						<input type='hidden' name='stato' value='login'>
-						<input type='submit' value='OK'>
-					</form>";
+					<input type='hidden' name='stato' value='login'>
+					<input type='submit' value='OK'>
+				</form>";
 			break;
 			
 		case "reset_password":
 			echo "<h3>Reset password</h3>";
 			echo "<form action='prenotazioni.php' method='get' onSubmit='return checkPw()'>";
-			echo "<input type='hidden' name='lang' value='".getLang()."'>";
+			
 			echo "<input type='hidden' name='stato' value='reset_password_conferma'>";
 			echo Vecchia_password.": ";
 			echo "<input type='password' name='old_pw' required><br/>";
@@ -303,7 +293,7 @@
 			echo "<form method='get' action='prenotazioni.php'>";		
 			echo "<input type='submit' value='".Annulla."'>";
 			echo "<input type='hidden' name='stato' value='login'>";
-			echo "<input type='hidden' name='lang' value='".getLang()."'>";
+			
 			echo "</form>";
 			break;
 			
@@ -315,7 +305,6 @@
 				echo "<h2 class='errore'>".Ricontrollare_password."</h2>";
 				echo "<form action='prenotazioni.php' method='get'>
 						<input type='hidden' name='stato' value='reset_password'>
-						<input type='hidden' name='lang' value='".getLang()."'>
 						<input type='submit' value='OK'>
 					</form>";
 			} else {
@@ -323,7 +312,6 @@
 				echo "<h3 class='avviso'>".Password_cambiata_correttamente."</h3>";
 				echo "<form action='prenotazioni.php' method='get'>
 						<input type='hidden' name='stato' value='accedi'>
-						<input type='hidden' name='lang' value='".getLang()."'>
 						<input type='submit' value='OK'>
 					</form>";
 				unset($_SESSION["mail"], $_SESSION["password"], $_SESSION["cod_utente"]);
@@ -333,7 +321,6 @@
 		case "recupera_password":
 			echo "<form action='prenotazioni.php' method='get'>
 					<input type='hidden' name='stato' value='recupera_pwd'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					Email: <input type='email' name='email' required>
 					<input type='submit' value='OK'>
 				</form>";
@@ -343,7 +330,6 @@
 			mail_recupero_password($_REQUEST["email"]);
 			echo "<form action='prenotazioni.php' method='get'>
 					<input type='hidden' name='stato' value='accedi'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='OK'>
 				</form>";
 			unset($_SESSION["mail"], $_SESSION["password"], $_SESSION["cod_utente"]);
@@ -353,12 +339,10 @@
 			echo "<h3>".confermare_eliminazione_account."</h3>";
 			echo "<form action='prenotazioni.php' method='get'>
 					<input type='hidden' name='stato' value='delete_account'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='".Conferma."'>
 				</form>";
 			echo "<form action='prenotazioni.php' method='get'>
 					<input type='hidden' name='stato' value='login'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='".Annulla."'>
 				</form>";
 			break;
@@ -367,7 +351,6 @@
 			delete_account();
 			echo "<form action='prenotazioni.php' method='get'>
 					<input type='hidden' name='stato' value=''>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='OK'>
 				</form>";
 			unset($_SESSION["mail"], $_SESSION["password"], $_SESSION["cod_utente"]);
@@ -378,13 +361,11 @@
 			echo "<form action='prenotazioni.php' method='get'>
 					".Nuovo_indirizzo.": 
 					<input type='hidden' name='stato' value='cambio_mail'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='mail' name='newmail' required>
 					<input type='submit' value='OK'>
 				</form>";
 			echo "<form action='prenotazioni.php' method='get'>
 					<input type='hidden' name='stato' value='login'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='".Annulla."'>
 				</form>";
 			break;

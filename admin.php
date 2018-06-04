@@ -18,7 +18,7 @@
 		echo "<input type='email' name='mail' required><br/>";
 		echo "Password: ";
 		echo "<input type='password' name='password' required><br/>";
-		echo "<input type='hidden' name='lang' value='".getLang()."'>";
+		
 		echo "<input type='submit' value='".Accedi."'>";
 		echo "<input type='reset'>";
 		echo "</form>";
@@ -110,22 +110,18 @@
 			echo "</h4>";
 			echo "<form action='admin.php' method='get'>
 					<input type='hidden' name='stato' value='gestione_prenotazioni'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='".Prenotazioni."'>
 				</form>";
 			echo "<form action='admin.php' method='get'>
 					<input type='hidden' name='stato' value='gestione_news'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='News'>
 				</form>";
 			echo "<form action='admin.php' method='get'>
 					<input type='hidden' name='stato' value='gestione_utenti'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='".Utenti."'>
 				</form>";
 			echo "<form method='get' action='admin.php' style='margin-top:20px'>
 					<input type='hidden' name='stato' value='logout'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='Logout'>
 				</form>";
 			echo "<form action='admin.php' method='get' style='margin-top:20px'>
@@ -148,7 +144,6 @@
 			visualizza_prenotazioni();
 			echo "<form method='get' action='admin.php'>
 					<input type='hidden' name='stato' value='login'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='".Torna_indietro."'>
 				</form>";
 			break;
@@ -157,14 +152,12 @@
 			echo "<h2>News</h2>";
 			echo "<form action='admin.php' method='get'>
 					<input type='hidden' name='stato' value='inserisci_news'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='".inserisci_news."'>
 				</form>";
 			crea_tab_news();
 			visualizza_news();
 			echo "<form method='get' action='admin.php'>
 					<input type='hidden' name='stato' value='login'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='".Torna_indietro."'>
 				</form>";
 			break;
@@ -175,22 +168,21 @@
 			visualizza_utenti();
 			echo "<form method='get' action='admin.php'>
 					<input type='hidden' name='stato' value='login'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='".Torna_indietro."'>
 				</form>";
 			break;
 			
 		case "cancella_utente":
 			echo "<form action='admin.php' method='get'>
-					".confermare_eliminazione_account."
+					".confermare_eliminazione_account.":<br/>"
+					.Nome.": <input type='text' readonly value='".$_REQUEST["nome"]."'><br/>
+					Mail: <input type='text' readonly value='".$_REQUEST["mail"]."'><br/>
 					<input type='hidden' name='stato' value='delete_account_admin'>
 					<input type='hidden' name='codice' value='".$_REQUEST["codice"]."'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='OK'>
 				</form>";
 			echo "<form action='admin.php' method='get'>
 					<input type='hidden' name='stato' value='gestione_utenti'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='".Annulla."'>
 				</form>";
 			break;
@@ -199,14 +191,13 @@
 			delete_account_admin($_REQUEST["codice"]);
 			echo "<form method='get' action='admin.php'>
 					<input type='hidden' name='stato' value='gestione_utenti'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='OK'>
 				</form>";
 			break;
 			
 		case "conferma_scelta":
 			$codice_prenotazione = $_REQUEST["codice"];
-			echo confermare;
+			$dati = select_prenotazione_admin($codice_prenotazione);
 			echo "<form action='admin.php' method='get' style='display:inline'>";
 				if (isset($_REQUEST["accetta"])) {
 					echo "<input type='hidden' name='stato' value='accetta_prenotazione'>";
@@ -214,6 +205,21 @@
 					echo "<input type='hidden' name='stato' value='rifiuta_prenotazione'>";
 				};
 				echo "<input type='hidden' name='codice' value='$codice_prenotazione'>";
+				echo Data.": ";
+				echo "<input type='date' name='data' value='$dati[0]' required readonly><br/>";
+				echo Ora.": ";
+				echo "<input type='time' name='ora' value='$dati[1]' required readonly><br/>";
+				echo Nome_tavolo.": ";
+				echo "<input type='text' name='nome' maxlength='250' placeholder='".placeholder."' value='$dati[2]' required readonly><br/>";
+				echo Numero_persone.": ";
+				echo "<input type='number' name='num_persone' min='1' value='$dati[3]' required readonly><br/>";
+				echo Richieste_particolari."? ";
+				echo "<textarea name='richieste' rows='6' cols='40' maxlength='250' readonly>$dati[4]</textarea><br/>";
+				if (isset($_REQUEST["accetta"])) {
+					echo "<h4>".Accetta."?</h4>";
+				} else if (isset($_REQUEST["rifiuta"])) {
+					echo "<h4>".Rifiuta."?</h4>";
+				};
 				echo "<input type='submit' name='conferma' value='OK'>
 				</form>";
 			echo "<form action='admin.php' method='get' style='display:inline'>
@@ -226,20 +232,18 @@
 			$codice_prenotazione = $_REQUEST["codice"];
 			conferma_prenotazione($codice_prenotazione, 1);
 			echo "<form action='admin.php' method='get'>
-						<input type='hidden' name='stato' value='gestione_prenotazioni'>
-						<input type='hidden' name='lang' value='".getLang()."'>
-						<input type='submit' value='OK'>
-					</form>";
+					<input type='hidden' name='stato' value='gestione_prenotazioni'>
+					<input type='submit' value='OK'>
+				</form>";
 			break;
 			
 		case "rifiuta_prenotazione":
 			$codice_prenotazione = $_REQUEST["codice"];
 			conferma_prenotazione($codice_prenotazione, 2);
 			echo "<form action='admin.php' method='get'>
-						<input type='hidden' name='stato' value='gestione_prenotazioni'>
-						<input type='hidden' name='lang' value='".getLang()."'>
-						<input type='submit' value='OK'>
-					</form>";
+					<input type='hidden' name='stato' value='gestione_prenotazioni'>
+					<input type='submit' value='OK'>
+				</form>";
 			break;
 			
 		case "inserisci_news":
@@ -247,7 +251,6 @@
 			$cod_admin = $_SESSION["cod_admin"];
 			echo "<form action='admin.php' method='post' enctype='multipart/form-data'><br/>
 					<input type='hidden' name='stato' value='insert_news'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					".Titolo.": <input type='text' name='titolo' maxlength='250' required><br/>
 					".Titolo." (english): <input type='text' name='titolo_en' maxlength='250' required><br/>
 					".Testo.": <textarea name='contenuto' rows='6' cols='40' maxlength='250' required></textarea><br/>
@@ -258,7 +261,6 @@
 				</form>";
 			echo "<form method='get' action='admin.php'>
 					<input type='hidden' name='stato' value='gestione_news'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='".Annulla."'>
 				</form>";
 			break;
@@ -275,12 +277,10 @@
 					".Testo." (inglese): <textarea name='contenuto_en' rows='6' cols='40' maxlength='250' required>$dati[5]</textarea><br/>
 					".immagine_facoltativa.": <input type='file' name='file'><br/>
 					<input type='submit' value='".Aggiorna."'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='hidden' name='action' value='upload'>
 				</form>";	
 			echo "<form method='get' action='admin.php'>
 					<input type='hidden' name='stato' value='gestione_news'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='".Annulla."'>
 				</form>";
 			break;
@@ -291,19 +291,18 @@
 			$dati = select_news($codice);
 			echo "<form action='admin.php' method='get'>";
 			echo "<input type='hidden' name='stato' value='delete_news'>";
-			echo "<input type='hidden' name='lang' value='".getLang()."'>";
+			
 			echo "<input type='hidden' name='codice' value='$codice'>";
-			echo Titolo.": <input type='text' name='titolo' maxlength='250' value='$dati[0]' required disabled><br/>
-					".Titolo." (english): <input type='text' name='titolo_en' maxlength='250' value='$dati[6]' required disabled><br/>
-					".Testo.": <textarea name='contenuto' rows='6' cols='40' maxlength='250' required disabled>$dati[1]</textarea><br/>
-					".Testo." (inglese): <textarea name='contenuto_en' rows='6' cols='40' maxlength='250' required disabled>$dati[5]</textarea><br/>
-					".immagine_facoltativa.": <input type='file' name='file' disabled><br/>";
+			echo Titolo.": <input type='text' name='titolo' maxlength='250' value='$dati[0]' required readonly><br/>
+					".Titolo." (english): <input type='text' name='titolo_en' maxlength='250' value='$dati[6]' required readonly><br/>
+					".Testo.": <textarea name='contenuto' rows='6' cols='40' maxlength='250' required readonly>$dati[1]</textarea><br/>
+					".Testo." (inglese): <textarea name='contenuto_en' rows='6' cols='40' maxlength='250' required readonly>$dati[5]</textarea><br/>
+					".immagine_facoltativa.": <input type='file' name='file' readonly><br/>";
 			echo "<h4>".confermare."</h4>";
 			echo "<input type='submit' value='".Cancella."'>";
 			echo "</form>";
 			echo "<form method='get' action='admin.php'>
 					<input type='hidden' name='stato' value='gestione_news'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='".Annulla."'>
 				</form>";
 			break;
@@ -312,10 +311,9 @@
 			$codice = $_REQUEST["codice"];
 			delete_news($codice);
 			echo "<form action='admin.php' method='get'>
-						<input type='hidden' name='stato' value='gestione_news'>
-						<input type='hidden' name='lang' value='".getLang()."'>
-						<input type='submit' value='OK'>
-					</form>";
+					<input type='hidden' name='stato' value='gestione_news'>
+					<input type='submit' value='OK'>
+				</form>";
 			break;
 			
 		case "insert_news":
@@ -329,7 +327,6 @@
 			
 			echo "<form action='admin.php' method='get'>
 					<input type='hidden' name='stato' value='gestione_news'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='OK'>
 				</form>";
 			break;
@@ -346,7 +343,6 @@
 			
 			echo "<form action='admin.php' method='get'>
 					<input type='hidden' name='stato' value='gestione_news'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='OK'>
 				</form>";
 			break;
@@ -358,7 +354,6 @@
 				</form>";
 			echo "<form action='admin.php' method='get'>
 					<input type='hidden' name='stato' value='login'>
-					<input type='hidden' name='lang' value='".getLang()."'>
 					<input type='submit' value='".Annulla."'>
 				</form>";
 			break;

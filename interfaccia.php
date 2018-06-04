@@ -21,17 +21,19 @@
 		return $stato;
 	}
 	
-	function getLang() {
-		if (isset($_REQUEST["lang"])) {
-			$lang = $_REQUEST["lang"];
-			$_SESSION["lang"] = $lang;
-			include_once("lang/$lang.php");
-		} else {
-			$lang = "it";
-			$_SESSION["lang"] = $lang;
-			include_once("lang/$lang.php");
+	if (empty($_SESSION["lang"])) {
+		$_SESSION["lang"] = "it"; // ita di default
+	}
+	
+	if (!empty($_REQUEST["lang"])) { // se viene settata un'altra lingua...
+		$lang = $_REQUEST["lang"]; // la salvo...
+		if ($lang == "it" or $lang == "en") { // controllo sia una lingua di cui ho le traduzioni...
+			$_SESSION["lang"] = $lang; // la salvo in SESSION
+			include_once("lang/$lang.php"); // includo la traduzione nel sito
 		}
-		return $lang;
+	} else if(empty($_REQUEST["lang"])) { // in caso di lingua non specificata tengo quella pre-impostata
+		$lang = $_SESSION["lang"];
+		include_once("lang/$lang.php"); 
 	}
 
 	function head() {
@@ -62,7 +64,7 @@
 
 		echo "<footer>";
 		echo "<p class='footer_p'>".realizzato_da."</p>";
-		echo "<p class='footer_p'><a href='admin.php?lang=".getLang()."' class='footer_a'>".Amministrazione."</a></p>";
+		echo "<p class='footer_p'><a href='admin.php' class='footer_a'>".Amministrazione."</a></p>";
 		echo "</footer>";
 		
 		echo "</div>";
@@ -76,7 +78,7 @@
 		echo "<div id='pagina'>";
 		echo "<nav class=\"menu\" id=\"barra\">";
 		echo "<div id=\"logo\">";
-		echo "<a id=\"logo_home\" href=\"index.php?lang=".getLang()."\">";
+		echo "<a id=\"logo_home\" href=\"index.php\">";
 		echo "<p id=\"logo_txt\">AgriTour</p>";
 		echo "</a>";
 		echo "</div>";
@@ -93,7 +95,7 @@
 		if ($pagina_attiva == "news") {
 			echo " class='active_link' ";
 		}
-		echo "href=\"news.php?lang=".getLang()."\">News</a>";
+		echo "href=\"news.php\">News</a>";
 		
 		echo "<a ";
 		if ($pagina_attiva == "foto") {
@@ -111,7 +113,7 @@
 		if ($pagina_attiva == "prenotazioni") {
 			echo " class='active_link' ";
 		}
-		echo "href=\"prenotazioni.php?lang=".getLang()."\">".Prenota."</a>";
+		echo "href=\"prenotazioni.php\">".Prenota."</a>";
 				
 		echo "<a>";
 		echo "<form action='index.php' method='get' style='display:inline;'>";
