@@ -199,7 +199,7 @@ function crea_utente($mail,$password,$nome,$telefono) {
 		if ($result != false and mysqli_affected_rows($db_conn) == 1) {
 			$to = $mail;
 			$subject = grazie_iscrizione;
-			$message = conferma_a_questo_link.": <a href='prenotazioni.php?stato=conferma_registrazione&lang=".$_SESSION["lang"]."&hash=".md5($mail)."'>".Conferma."</a>".ringraziamenti_email;
+			$message = conferma_a_questo_link.": ".link_al_sito."prenotazioni.php?stato=conferma_registrazione&lang=".$_SESSION["lang"]."&hash=".md5($mail)."\n".ringraziamenti_email;
 			$headers = "From: lucacoppiardi@altervista.org";
 
 			$esito_mail = mail($to,$subject,$message,$headers);
@@ -243,7 +243,7 @@ function login($mail, $pass) {
 				
 				$to = $mail;
 				$subject = grazie_iscrizione;
-				$message = conferma_a_questo_link.": <a href='prenotazioni.php?stato=conferma_registrazione&lang=".$_SESSION["lang"]."&hash=".md5($mail)."'>".Conferma."</a>".ringraziamenti_email;
+				$message = conferma_a_questo_link.": ".link_al_sito."prenotazioni.php?stato=conferma_registrazione&lang=".$_SESSION["lang"]."&hash=".md5($mail)."\n".ringraziamenti_email;
 				$headers = "From: lucacoppiardi@altervista.org";
 				
 				$esito_mail = mail($to,$subject,$message,$headers);
@@ -1096,7 +1096,7 @@ function update_indirizzo_mail($newmail) {
 				</form>";
 			$to = $newmail;
 			$subject = cambio_mail;
-			$message = conferma_a_questo_link.": <a href='prenotazioni.php?stato=conferma_nuova_mail&lang=".$_SESSION["lang"]."&hash=".md5($newmail)."'>".Conferma."</a>".ringraziamenti_email;
+			$message = conferma_a_questo_link.": ".link_al_sito."prenotazioni.php?stato=conferma_nuova_mail&lang=".$_SESSION["lang"]."&hash=".md5($newmail)."\n".ringraziamenti_email;
 			$headers = "From: lucacoppiardi@altervista.org";
 		
 			$esito_mail = mail($to,$subject,$message,$headers);
