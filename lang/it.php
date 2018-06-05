@@ -34,7 +34,7 @@
 	define("Nome_prenotazione", "Nome prenotazione");
 	define("subject_email","La tua prenotazione");
 	define("riepilogo_email", "Ecco un riepilogo della tua prenotazione:");
-	define("link_al_sito", "https://lucacoppiardi.altervista.org/maturita2018");
+	define("link_al_sito", "https://lucacoppiardi.altervista.org/maturita2018/");
 	define("ringraziamenti_email", "\nGrazie per la preferenza accordataci\n".link_al_sito);
 	define("Accetta","Accetta");
 	define("Accettata", "Accettata");
