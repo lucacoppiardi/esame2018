@@ -64,7 +64,7 @@ function crea_tab_utenti() {
 		telefono VARCHAR(15) NOT NULL,
 		data_iscrizione DATE NOT NULL,
 		hash VARCHAR(255) UNIQUE NOT NULL,
-		confermato BIT,
+		confermato INT(1),
 		ultimo_accesso DATETIME,
 		PRIMARY KEY (codice)
 		);";
@@ -993,39 +993,48 @@ function mail_recupero_password($mail) {
 		for ($i=0; $i<10; $i++) {
 			$new_pw .= $alfabeto[rand(0,$len-1)];
 		}
-	
-		$s = "UPDATE utenti SET password='".md5($new_pw)."' WHERE mail='$mail'";
-		if (query($s, $db_conn, "update password temp recupero") and mysqli_affected_rows($db_conn)==1) {
-			echo "<h3 class='avviso'>".Password_inviata_mail."</h3>";
+		
+		$s = "SELECT confermato FROM utenti WHERE mail='$mail'";
+		$result = query($s, $db_conn, "select confermato per recupero password");
+		$row = null;
+		if (mysqli_num_rows($result) == 1) {
+			$row = fetch_row($result);
+		}
+		
+		if ($row[0] == 1) {
+			$s = "UPDATE utenti SET confermato=0, password='".md5($new_pw)."' WHERE mail='$mail'";
+			if (query($s, $db_conn, "update password temp recupero") and mysqli_affected_rows($db_conn)==1) {
+				echo "<h3 class='avviso'>".Password_inviata_mail."</h3>";
+			} else {
+				torna_indietro();
+			}
+			$to = $mail;
+			$subject = Recupero_password;
+			$message = la_tua_nuova_password.": $new_pw".ringraziamenti_email;
+			$headers = "From: lucacoppiardi@altervista.org";
+			
+			$esito_mail = mail($to,$subject,$message,$headers);
+			
+			if (isDebug()) {
+				echo $esito_mail;
+				if (!$esito_mail) {
+					echo "EMAIL ERROR"."<br/>";
+				}			
+				else {
+					echo "EMAIL OK"."<br/>";
+				}
+				echo $to."<br/>";
+				echo $subject."<br/>";
+				echo $message."<br/>";
+				echo $headers."<br/>";
+			}
+			
+			if (!isDebug()) {
+				echo $message."<br/>";
+			}
 		} else {
 			torna_indietro();
-		}
-								
-		$to = $mail;
-		$subject = Recupero_password;
-		$message = la_tua_nuova_password.": $new_pw".ringraziamenti_email;
-		$headers = "From: lucacoppiardi@altervista.org";
-		
-		$esito_mail = mail($to,$subject,$message,$headers);
-		
-		if (isDebug()) {
-			echo $esito_mail;
-			if (!$esito_mail) {
-				echo "EMAIL ERROR"."<br/>";
-			}			
-			else {
-				echo "EMAIL OK"."<br/>";
-			}
-			echo $to."<br/>";
-			echo $subject."<br/>";
-			echo $message."<br/>";
-			echo $headers."<br/>";
-		}
-		
-		if (!isDebug()) {
-			echo $message."<br/>";
-		}
-		
+		}						
 	} else {
 		torna_indietro();
 	}
