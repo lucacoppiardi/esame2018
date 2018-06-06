@@ -193,11 +193,11 @@ function drop() {
 function crea_utente($mail,$password,$nome,$telefono) {
 	$db_conn=connessione();
 	if ($db_conn and !empty($mail) and !empty($password) and !empty($nome) and !empty($telefono)) {
-		$s="INSERT INTO utenti (mail,password,nome,telefono,data_iscrizione,hash) VALUES ('$mail','$password','$nome','$telefono',NOW(),'".md5($mail)."') ";
+		$s="INSERT INTO utenti (mail,password,nome,telefono,data_iscrizione,hash) VALUES ('".addslashes($mail)."','$password','$nome','$telefono',NOW(),'".md5($mail)."') ";
 		$result = query($s, $db_conn, "insert utenti");
 		
 		if ($result != false and mysqli_affected_rows($db_conn) == 1) {
-			$to = $mail;
+			$to = addslashes($mail);
 			$subject = grazie_iscrizione;
 			$message = conferma_a_questo_link.": ".link_al_sito."prenotazioni.php?stato=conferma_registrazione&lang=".$_SESSION["lang"]."&hash=".md5($mail)."\n".ringraziamenti_email;
 			$headers = "From: lucacoppiardi@altervista.org";
@@ -234,14 +234,14 @@ function crea_utente($mail,$password,$nome,$telefono) {
 function login($mail, $pass) {
 	$db_conn=connessione();
 	if ($db_conn and !empty($mail) and !empty($pass)) {
-		$s="SELECT confermato FROM utenti WHERE mail='$mail' AND password='$pass'";
+		$s="SELECT confermato FROM utenti WHERE mail='".addslashes($mail)."' AND password='$pass'";
 		$result=query($s, $db_conn, "select confermato login");
 		if (mysqli_num_rows($result) == 1) {
 			$row = fetch_row($result);
 			if ($row[0] != 1) {
 				echo "<h3 class='avviso'>".Conferma_iscrizione_cliccando_link."</h3>";
 				
-				$to = $mail;
+				$to = addslashes($mail);
 				$subject = grazie_iscrizione;
 				$message = conferma_a_questo_link.": ".link_al_sito."prenotazioni.php?stato=conferma_registrazione&lang=".$_SESSION["lang"]."&hash=".md5($mail)."\n".ringraziamenti_email;
 				$headers = "From: lucacoppiardi@altervista.org";
@@ -274,11 +274,11 @@ function login($mail, $pass) {
 				die();
 				
 			} else {
-				$s="SELECT codice,mail,ultimo_accesso,password FROM utenti WHERE mail='$mail' AND password='$pass'";
+				$s="SELECT codice,mail,ultimo_accesso,password FROM utenti WHERE mail='".addslashes($mail)."' AND password='$pass'";
 				$result=query($s, $db_conn, "select login");
 				if (mysqli_num_rows($result) == 1) {
 					$row = fetch_row($result);
-					$sql = "UPDATE utenti SET ultimo_accesso = NOW() WHERE mail='$mail' AND password='$pass'";
+					$sql = "UPDATE utenti SET ultimo_accesso = NOW() WHERE mail='".addslashes($mail)."' AND password='$pass'";
 					query($sql, $db_conn, "update ultimo accesso");
 					return $row;
 				} else {
@@ -295,15 +295,13 @@ function login($mail, $pass) {
 function admin_login($mail, $pass) {
 	$db_conn=connessione();
 	if ($db_conn and !empty($mail) and !empty($pass)) {
-		$s="SELECT codice,mail,ultimo_accesso,password FROM amministratori WHERE mail='$mail' AND password='$pass'";
+		$s="SELECT codice,mail,ultimo_accesso,password FROM amministratori WHERE mail='".addslashes($mail)."' AND password='$pass'";
 		$result=query($s, $db_conn, "select admin login");
 		if (mysqli_num_rows($result) == 1) {
 			$row = fetch_row($result);
-			$sql = "UPDATE amministratori SET ultimo_accesso = NOW() WHERE mail='$mail' AND password='$pass'";
+			$sql = "UPDATE amministratori SET ultimo_accesso = NOW() WHERE mail='".addslashes($mail)."' AND password='$pass'";
 			query($sql, $db_conn, "update ultimo accesso");
 			return $row;
-		} else {
-			torna_indietro();
 		}
 	} else {
 		torna_indietro();
@@ -994,7 +992,7 @@ function mail_recupero_password($mail) {
 			$new_pw .= $alfabeto[rand(0,$len-1)];
 		}
 		
-		$s = "SELECT confermato FROM utenti WHERE mail='$mail'";
+		$s = "SELECT confermato FROM utenti WHERE mail='".addslashes($mail)."'";
 		$result = query($s, $db_conn, "select confermato per recupero password");
 		$row = null;
 		if (mysqli_num_rows($result) == 1) {
@@ -1002,13 +1000,13 @@ function mail_recupero_password($mail) {
 		}
 		
 		if ($row[0] == 1) {
-			$s = "UPDATE utenti SET confermato=0, password='".md5($new_pw)."' WHERE mail='$mail'";
+			$s = "UPDATE utenti SET confermato=0, password='".md5($new_pw)."' WHERE mail='".addslashes($mail)."'";
 			if (query($s, $db_conn, "update password temp recupero") and mysqli_affected_rows($db_conn)==1) {
 				echo "<h3 class='avviso'>".Password_inviata_mail."</h3>";
 			} else {
 				torna_indietro();
 			}
-			$to = $mail;
+			$to = addslashes($mail);
 			$subject = Recupero_password;
 			$message = la_tua_nuova_password.": $new_pw".ringraziamenti_email;
 			$headers = "From: lucacoppiardi@altervista.org";
@@ -1087,14 +1085,14 @@ function update_indirizzo_mail($newmail) {
 	$db_conn=connessione();
 	$mail = $_SESSION["mail"];
 	if ($db_conn and !empty($mail) and !empty($newmail)) {
-		$s = "UPDATE utenti SET mail='$newmail', hash='".md5($newmail)."', confermato=0 WHERE mail='$mail'";
+		$s = "UPDATE utenti SET mail='".addslashes($newmail)."', hash='".md5($newmail)."', confermato=0 WHERE mail='".addslashes($mail)."'";
 		if (query($s, $db_conn, "cambio mail") and mysqli_affected_rows($db_conn)==1) {
 			echo "<h3 class='avviso'>".Indirizzo_aggiornato."</h3>";
 			echo "<form action='prenotazioni.php' method='get'>
 					<input type='hidden' name='stato' value='accedi'>
 					<input type='submit' value='OK'>
 				</form>";
-			$to = $newmail;
+			$to = addslashes($newmail);
 			$subject = cambio_mail;
 			$message = conferma_a_questo_link.": ".link_al_sito."prenotazioni.php?stato=conferma_nuova_mail&lang=".$_SESSION["lang"]."&hash=".md5($newmail)."\n".ringraziamenti_email;
 			$headers = "From: lucacoppiardi@altervista.org";

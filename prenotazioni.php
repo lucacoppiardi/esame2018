@@ -106,8 +106,8 @@
 		}
 		$result = login($mail, $pass);
 		if (!$result) {
-			form_accedi();
 			echo "<h2 class='errore'>".Login_errato."</h2>";
+			form_accedi();
 		} else {
 			$_SESSION["mail"] = $result[1];
 			$_SESSION["password"] = $result[3];
@@ -371,7 +371,7 @@
 			break;
 		
 		case "cambio_mail":
-			update_indirizzo_mail($_REQUEST["newmail"]);
+			update_indirizzo_mail(addslashes($_REQUEST["newmail"]));
 			unset($_SESSION["mail"], $_SESSION["password"], $_SESSION["cod_utente"]);
 			break;
 			
