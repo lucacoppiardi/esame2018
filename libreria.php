@@ -319,8 +319,12 @@ function visualizza_utenti() {
 		echo "<tr><td>".Codice."</td></td><td>".Nome."</td><td>Mail</td><td>".Telefono."</td><td>".Data_iscrizione."</td></tr>";
 		while ($row=fetch_row($result)) {
 			echo "<tr>";
-			foreach ($row as $campo) {
-				echo "<td>$campo</td>";
+			for ($i=0; $i<5; $i++) {
+				if ($i != 2) {
+					echo "<td>".$row[$i]."</td>";
+				} else {
+					echo "<td><a href='mailto:".$row[2]."'>".$row[2]."</a></td>";
+				}
 			}
 			echo "<td>
 				<form action='admin.php' method='get' style='display:inline'>
@@ -368,8 +372,8 @@ function visualizza_prenotazioni() {
 		while ($row=fetch_row($prenotazioni)) {	
 			echo "<tr>\n";
 			echo "<td style='width:10px'>$row[0]</td>";
-			echo "<td>$row[1]</td>\n";
-			echo "<td>$row[2]<br/>$row[3]</td>\n";
+			echo "<td>$row[1]</td>";
+			echo "<td>$row[3]<br/><a href='mailto:'".$row[2]."'>".$row[2]."</a></td>";
 			for ($i=4; $i<=8; $i++) {
 				echo "<td>$row[$i]</td>\n";
 			}
