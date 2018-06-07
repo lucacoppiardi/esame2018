@@ -128,7 +128,7 @@ footer {
 .footer_p {
 	color: white;
 	margin: 0;
-	padding: 5px;
+	padding: 5px 5px 0 5px; /*top-right-bottom-left*/
 	text-align: center;
 }
 
