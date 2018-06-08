@@ -955,7 +955,7 @@ function insert_news($cod_admin, $titolo, $contenuto, $contenuto_en, $titolo_en,
 function pagina_news() {
 	$db_conn=connessione();
 	if ($db_conn) {
-		$s="SELECT news.codice, news.data, news.titolo, news.testo, news.immagine, news.cod_admin, amministratori.nome, news.ora, news.testo_en, news.titolo_en FROM news,amministratori WHERE amministratori.codice = news.cod_admin ORDER BY data";
+		$s="SELECT news.codice, news.data, news.titolo, news.testo, news.immagine, news.cod_admin, amministratori.nome, news.ora, news.testo_en, news.titolo_en FROM news,amministratori WHERE amministratori.codice = news.cod_admin ORDER BY news.data, news.ora DESC";
 		$result=query($s, $db_conn, "select pagina news");
 		while ($row=fetch_row($result)) {
 			echo "<h2 id='$row[0]'>";

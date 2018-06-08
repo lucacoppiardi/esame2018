@@ -96,5 +96,6 @@
 	define("News_cancellata", "News deleted");
 	define("Account_cancellato", "Deleted account");
 	define("Modifica", "Update");
+	define("Conferma_mail", "Confirm mail");
 	
 ?>

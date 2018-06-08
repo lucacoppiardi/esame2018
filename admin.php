@@ -20,7 +20,6 @@
 		echo "<input type='password' name='password' required><br/>";
 		
 		echo "<input type='submit' value='".Accedi."'>";
-		echo "<input type='reset'>";
 		echo "</form>";
 	}
 	

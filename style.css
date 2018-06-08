@@ -171,7 +171,34 @@ footer {
 	
 }
 
+form {
+	clear: both;
+	width: 100%;
+	float: left;
+}
 
+input, textarea {
+	margin-bottom: 10px;
+	clear: both;
+	float: left;
+}
+
+input[type=text], input[type=email], input[type=password], input[type=tel] {
+	width:25%;
+}
+
+.buttonLingua, .buttonLingua input[type=submit], .buttonLingua form {
+	display:inline;
+	margin: 0;
+}
+
+label {
+	display: inline-block;
+	float: left;
+	clear: both;
+	width: 150px;
+	text-align: left;
+}
 
 /*
 #logo_img {
