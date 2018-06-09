@@ -7,7 +7,7 @@
 	ini_set('session.cookie_secure', 1);
 
 	include("libreria.php");
-
+	
 	function isDebug() {
 		return true;
 	}
@@ -54,10 +54,10 @@
 	function tail() {
 	
 		if (isDebug()) {
-			echo "<pre>";
+			echo "<p style='font-family: monospace'>";
 			print_r($_SESSION);
 			echo "PHPSESSID: ".session_id();
-			echo "</pre>";
+			echo "</p>";
 		}
 		
 		echo "</div>";
@@ -118,14 +118,14 @@
 		echo "<a>";
 		echo "<form action='index.php' method='get' class='buttonLingua'>";
 		echo "<input type='hidden' name='lang' value='it'/>";
-		echo "<input type='submit' value='' style=\"background:url('media/it.png'); background-size:cover; width:30px;  border:none;\">";
+		echo "<input type='submit' value='' style=\"background:url('media/it.png'); background-size:cover; width:30px; height:18px; border:none;\">";
 		echo "</form>";
 		echo "</a>";
 		
 		echo "<a>";
 		echo "<form action='index.php' method='get' class='buttonLingua'>";
 		echo "<input type='hidden' name='lang' value='en'/>";
-		echo "<input type='submit' value='' style=\"background:url('media/en.png'); background-size:cover; width:40px; border:none;\">";
+		echo "<input type='submit' value='' style=\"background:url('media/en.png'); background-size:cover; width:40px; height:18px; border:none;\">";
 		echo "</form>";
 		echo "</a>";
 		

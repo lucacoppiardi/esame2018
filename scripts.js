@@ -42,3 +42,11 @@ function checkMail() {
 	return true;
 }
 
+function spoilerNuovaPrenotazione() {
+	if (document.getElementById('nuova_prenotazione').style.display=='none') {
+		document.getElementById('nuova_prenotazione').style.display='';
+		document.getElementById('btn_nuova_prenotazione').style.display='none';
+	} else {
+		document.getElementById('nuova_prenotazione').style.display='none';
+	}
+}
