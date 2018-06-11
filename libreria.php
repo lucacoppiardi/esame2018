@@ -42,7 +42,7 @@ function query($s, $conn, $tab) {
 function torna_indietro() {
 	echo "<h2 class='errore'>".Errore_query.". </h2>";
 	echo "<form action='".basename($_SERVER['PHP_SELF'])."' method='get'>
-			<input type='submit' value='".Torna_indietro."'>
+			<input type='submit' class='bottone'  value='".Torna_indietro."'>
 		</form>";
 	tail();
 	die();
@@ -182,7 +182,7 @@ function drop() {
 		$s="DROP TABLE amministratori";
 		if (query($s, $db_conn, "drop")) echo "amministratori cancellata<br/>";
 		echo "<form action='admin.php' method='get'>
-				<input type='submit' value='".Torna_indietro."'>
+				<input type='submit' class='bottone'  value='".Torna_indietro."'>
 			</form>";
 	} else {
 		torna_indietro();
@@ -267,7 +267,7 @@ function login($mail, $pass) {
 				}
 				
 				echo "<form action='prenotazioni.php' method='get'>
-						<input type='submit' value='OK'>
+						<input type='submit' class='bottone'  value='OK'>
 					</form>";
 					
 				tail();
@@ -329,7 +329,7 @@ function visualizza_utenti() {
 			echo "<td>
 				<form action='admin.php' method='get' style='display:inline'>
 					<input type='hidden' name='stato' value='cancella_utente'>
-					<input type='submit' value='".Cancella."'>
+					<input type='submit' class='bottone'  value='".Cancella."' class='bottone'>
 					<input type='hidden' name='codice' value='$row[0]'>
 					<input type='hidden' name='nome' value='$row[1]'>
 					<input type='hidden' name='mail' value='$row[2]'>
@@ -379,15 +379,14 @@ function visualizza_prenotazioni() {
 			}
 			if ($row[9] == 0) {
 				echo "<td>
-				<form action='admin.php' method='get' style='display:inline'>
+				<form action='admin.php' method='get'>
 					<input type='hidden' name='stato' value='conferma_scelta'>
-					<input type='submit' name='accetta' value='".Accetta."'>
+					<input type='submit' class='bottone'  name='accetta' value='".Accetta."' class='bottone'>
 					<input type='hidden' name='codice' value='$row[0]'>
 				</form>
-				&nbsp;&nbsp;&nbsp;&nbsp;
-				<form action='admin.php' method='get' style='display:inline'>
+				<form action='admin.php' method='get'>
 					<input type='hidden' name='stato' value='conferma_scelta'>
-					<input type='submit' name='rifiuta' value='".Rifiuta."'>
+					<input type='submit' class='bottone'  name='rifiuta' value='".Rifiuta."' class='bottone'>
 					<input type='hidden' name='codice' value='$row[0]'>
 				</form>
 				</td>";
@@ -436,15 +435,14 @@ function visualizza_news() {
 			}
 			echo "</td>";
 			echo "<td>
-				<form action='admin.php' method='get' style='display:inline'>
+				<form action='admin.php' method='get'>
 					<input type='hidden' name='stato' value='modifica_news'>
-					<input type='submit' value='".Modifica."'>
+					<input type='submit' class='bottone'  value='".Modifica."' class='bottone'>
 					<input type='hidden' name='codice' value='$row[0]'>
 				</form>
-				&nbsp;&nbsp;&nbsp;&nbsp;
-				<form action='admin.php' method='get' style='display:inline'>
+				<form action='admin.php' method='get'>
 					<input type='hidden' name='stato' value='cancella_news'>
-					<input type='submit' value='".Cancella."'>
+					<input type='submit' class='bottone'  value='".Cancella."' class='bottone'>
 					<input type='hidden' name='codice' value='$row[0]'>
 				</form>
 				</td>";
@@ -720,12 +718,12 @@ function prenotazioni_utente() {
 			if ($row[6] == 0) {
 				echo "<td>
 					<form action='prenotazioni.php' method='get' style='display:inline'>
-					<input type='submit' value='".Modifica."'>
+					<input type='submit' class='bottone'  value='".Modifica."'>
 					<input type='hidden' name='stato' value='modifica_prenotazione'>
 					<input type='hidden' name='codice' value='$row[0]'>
 					</form>
 					<form action='prenotazioni.php' method='get' style='display:inline'>
-					<input type='submit' value='".Cancella."'>
+					<input type='submit' class='bottone'  value='".Cancella."'>
 					<input type='hidden' name='stato' value='cancella_prenotazione'>
 					<input type='hidden' name='codice' value='$row[0]'>
 					</form>
@@ -957,6 +955,11 @@ function pagina_news() {
 	if ($db_conn) {
 		$s="SELECT news.codice, news.data, news.titolo, news.testo, news.immagine, news.cod_admin, amministratori.nome, news.ora, news.testo_en, news.titolo_en FROM news,amministratori WHERE amministratori.codice = news.cod_admin ORDER BY news.data, news.ora DESC";
 		$result=query($s, $db_conn, "select pagina news");
+		if (mysqli_num_rows($result) == 0) {
+			echo "<h3 class='errore'>".No_notizie."</h3>";
+			tail();
+			die();
+		}
 		while ($row=fetch_row($result)) {
 			echo "<h2 id='$row[0]'>";
 			if ($_SESSION["lang"] == "en") {
@@ -1091,10 +1094,10 @@ function update_indirizzo_mail($newmail) {
 	if ($db_conn and !empty($mail) and !empty($newmail)) {
 		$s = "UPDATE utenti SET mail='".addslashes($newmail)."', hash='".md5($newmail)."', confermato=0 WHERE mail='".addslashes($mail)."'";
 		if (query($s, $db_conn, "cambio mail") and mysqli_affected_rows($db_conn)==1) {
-			echo "<h3 class='avviso'>".Indirizzo_aggiornato."</h3>";
+			echo "<h3 class='avviso'>".Indirizzo_aggiornato."<br/>".Conferma_iscrizione_cliccando_link."</h3>";
 			echo "<form action='prenotazioni.php' method='get'>
 					<input type='hidden' name='stato' value='accedi'>
-					<input type='submit' value='OK'>
+					<input type='submit' class='bottone'  value='OK'>
 				</form>";
 			$to = addslashes($newmail);
 			$subject = cambio_mail;
@@ -1138,7 +1141,7 @@ function registrazione_confermata($hash) {
 			echo "<h3 class='avviso'>".Registrazione_riuscita."</h3>";
 			echo "<form action='prenotazioni.php' method='get'>
 					<input type='hidden' name='stato' value='accedi'>
-					<input type='submit' value='OK'>
+					<input type='submit' class='bottone'  value='OK'>
 				</form>";
 		} else {
 			torna_indietro();
@@ -1157,7 +1160,7 @@ function confermata_nuova_mail($hash) {
 			echo "<h3 class='avviso'>".Indirizzo_aggiornato."</h3>";
 			echo "<form action='prenotazioni.php' method='get'>
 					<input type='hidden' name='stato' value='accedi'>
-					<input type='submit' value='OK'>
+					<input type='submit' class='bottone'  value='OK'>
 				</form>";
 		} else {
 			torna_indietro();

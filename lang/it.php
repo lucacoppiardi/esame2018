@@ -20,7 +20,7 @@
 	define("placeholder", "Ad esempio \"Rossi\", oppure \"Compleanno Giorgio\"");
 	define("Inserisci", "Inserisci");
 	define("Prenotazioni_online","Prenotazioni online");
-	define("intro_prenotazione","Qui puoi prenotare un tavolo. Le prenotazioni dovranno essere confermate...");
+	define("intro_prenotazione","Qui puoi prenotare un tavolo. Le prenotazioni dovranno essere confermate dallo staff.");
 	define("Gia_registrato", "Gi&agrave; registrato?");
 	define("Accedi","Accedi");
 	define("Codice","Codice");
@@ -97,5 +97,6 @@
 	define("Account_cancellato", "Account cancellato");
 	define("Modifica", "Modifica");
 	define("Conferma_mail", "Conferma mail");
+	define("No_notizie", "Nessuna notizia &egrave; stata pubblicata. Controlla pi&ugrave tardi!");
 	
 ?>
