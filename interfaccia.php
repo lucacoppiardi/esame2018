@@ -48,7 +48,7 @@
 		//echo "<link href=\"https://fonts.googleapis.com/css?family=Cookie\" rel=\"stylesheet\"/>";
 		/*echo "<link rel=\"icon\" href=\"media/logo.png\">";*/
 		echo "</head>";
-		echo "<body>";
+		echo "<body onload='resizeFooter();'>";
 	}
 	
 	function tail() {
@@ -62,7 +62,7 @@
 		
 		echo "</div>";
 
-		echo "<footer>";
+		echo "<footer id='footer'>";
 		echo "<p class='footer_p'>".realizzato_da."</p>";
 		echo "<p class='footer_p'><a href='admin.php' class='footer_a'>".Amministrazione."</a></p>";
 		echo "</footer>";
@@ -144,7 +144,7 @@
 		echo "</div>";
 		echo "</nav>";
 		
-		echo "<div class = 'content'>";
+		echo "<div id='content' class='content'>";
 	}
 
 ?>

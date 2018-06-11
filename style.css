@@ -51,12 +51,11 @@ html, body {
 	position:relative;
 }
 
-
 .content {
 	padding-top: 60px;
 	padding-bottom: 100px;
 	word-wrap: break-word;
-	margin: 0 2% 0% 2%;
+	margin: 0 2% 0 2%;
 }
 
 .titolo_big {
@@ -117,29 +116,18 @@ html, body {
 	}
 }
 
-
 footer {
 	width: 100%;
 	background-color: #138117;
 	height: 60px;
-    position: absolute;
+	position: absolute;
 	bottom: 0;
-}
-
-@media screen and (max-width: 900px) {
-	footer {
-		position:fixed;
-	}
-	.content {
-		padding-bottom: 300px;
-		margin: 0 2% 500px 2%;
-	}
 }
 
 .footer_p {
 	color: white;
 	margin: 0;
-	padding: 5px 5px 0 5px; /*top-right-bottom-left*/
+	padding: 5px 5px 2px 5px; /*top-right-bottom-left*/
 	text-align: center;
 }
 
@@ -147,6 +135,14 @@ footer {
 	color: white;
 }
 
+@media screen and (max-width: 900px) {
+	.content {
+		padding-bottom: 0;
+	}
+	footer {
+		position: unset;
+	}
+}
 
 @media screen and (min-width: 900px) {
 	
@@ -164,7 +160,7 @@ footer {
 	.menu a.icon {
 		float: right;
 		display: block;
-		font-size: 15px;
+		font-size: 18px;
 	}
 	
 	/*.menu.responsive {position: relative;}*/
