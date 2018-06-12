@@ -30,6 +30,9 @@
 	function form_prenotazione() {
 		echo "<button onClick='spoilerNuovaPrenotazione()' id='btn_nuova_prenotazione'>".Nuova_prenotazione."</button>";
 		echo "<div id='nuova_prenotazione' style='display:none'>";
+		echo "<p>".Ora_attuale.": <br/>
+			<iframe src=\"https://freesecure.timeanddate.com/clock/i6a4dbbt/n5565/tlit6/fn15/fs20/tct/pct/ahl/tt0/tw1/tm1/tb1\" frameborder=\"0\" width=\"228\" height=\"24\" allowTransparency=\"true\"></iframe>
+			</p>";
 		echo "<form method='get' action='prenotazioni.php'>";
 		echo "<input type='hidden' name='stato' value='inserisci'>";
 		echo "<label for='data'>".Data.": </label>";
@@ -70,7 +73,7 @@
 	function pagina() {
 		echo "<h3 class='avviso'>".intro_prenotazione."</h3>";
 		echo "<form method='get' action='prenotazioni.php'>";
-		echo "<input type='submit' class='bottone'  value='".Registrati."' class='bottone'>";
+		echo "<input type='submit' class='bottone'  value='".Registrati."' >";
 		echo "<input type='hidden' name='stato' value='registra'>";
 		echo "</form>";
 		echo "<form method='get' action='prenotazioni.php'>";
@@ -104,7 +107,13 @@
 			$_SESSION["password"] = $result[3];
 			$_SESSION["cod_utente"] = $result[0];
 			echo "<h3 class='avviso'>".Login_riuscito.": ".$result[1]."</h3>";
-			echo "<h4 class='avviso'>".Ultimo_accesso.": ".$result[2]."</h4>";
+			echo "<h4 class='avviso'>".Ultimo_accesso.": ";
+			if (!empty($login[2])) {
+				echo $login[2];
+			} else {
+				echo Primo_accesso;
+			}
+			echo "</h4>";
 			echo "<form action='prenotazioni.php' method='get'>
 					<input type='hidden' name='stato' value='logout'>
 					<input type='submit' class='bottone'  value='Logout'>
@@ -112,16 +121,15 @@
 			
 			echo "<form action='prenotazioni.php' method='get'>";
 				echo "<select name='stato'>";
-					echo "<option>Altre opzioni:</option>";
+					echo "<option>".Seleziona_altre_impostazioni.": </option>";
+					echo "<option disabled></option>";
 					echo "<option value='reset_password'>Reset password</option>";
 					echo "<option value='disiscrizione'>".Cancella." account</option>";
 					echo "<option value='cambia_email'>".cambio_mail."</option>";
 				echo "</select>";
-				echo "<input class='bottoneAllineato' type='submit' class='bottone'  value='OK'>";
+				echo "<input class='bottoneAllineato' type='submit' value='OK'>";
 			echo "</form>";
 			crea_tab_prenotazioni();
-			echo "<p>".Ora_attuale.": <br/>";
-			echo "<iframe src=\"https://freesecure.timeanddate.com/clock/i69cc1t8/n2177/tlit6/fn15/fs20/ahl/avb/tt0/th1/ta1/tb1\" frameborder=\"0\" width=\"372\" height=\"26\"></iframe></p>";
 			echo "<h3>".Nuova_prenotazione."</h3>";
 			form_prenotazione();
 			echo "<h3>".Prenotazioni_inserite."</h3>";
@@ -300,7 +308,8 @@
 		case "recupera_password":
 			echo "<form action='prenotazioni.php' method='get'>
 					<input type='hidden' name='stato' value='recupera_pwd'>
-					Email: <input type='email' name='email' required>
+					<label for='email'>Email: </label>
+					<input type='email' id='email' name='email' required>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";
 			break;
@@ -336,9 +345,9 @@
 		case "cambia_email":
 			echo "<h2>".cambio_mail."</h2>";
 			echo "<form action='prenotazioni.php' method='get'>
-					".Nuovo_indirizzo.": 
+					<label for='newmail'>".Nuovo_indirizzo.": </label>
 					<input type='hidden' name='stato' value='cambio_mail'>
-					<input type='mail' name='newmail' required>
+					<input type='mail' id='newmail' name='newmail' required>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";
 			echo "<form action='prenotazioni.php' method='get'>

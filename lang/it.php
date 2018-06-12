@@ -98,5 +98,6 @@
 	define("Modifica", "Modifica");
 	define("Conferma_mail", "Conferma mail");
 	define("No_notizie", "Nessuna notizia &egrave; stata pubblicata. Controlla pi&ugrave tardi!");
+	define("Seleziona_altre_impostazioni", "Seleziona altre impostazioni");
 	
 ?>

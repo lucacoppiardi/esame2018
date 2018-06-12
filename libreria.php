@@ -110,8 +110,8 @@ function crea_tab_news() {
 		cod_admin INT(11) NOT NULL,
 		data DATE NOT NULL,
 		ora TIME NOT NULL,
-		titolo VARCHAR(255) NOT NULL,
-		titolo_en VARCHAR(255) NOT NULL,
+		titolo VARCHAR(255) NOT NULL UNIQUE,
+		titolo_en VARCHAR(255) NOT NULL UNIQUE,
 		testo VARCHAR(255) NOT NULL,
 		testo_en VARCHAR(255) NOT NULL,
 		immagine VARCHAR(255),
@@ -143,31 +143,14 @@ function crea_tab_admin() {
 		if (!query($s, $db_conn, "creata amministratori")) {
 			torna_indietro();
 		}
-		file_insert_admin();
+		$s = "INSERT IGNORE INTO amministratori (codice,mail,password,nome,telefono,ultimo_accesso) VALUES (1,'lucacoppiardi@altervista.org', MD5('luca'), 'Luca', '1234121212', NOW());";
+		if (!query($s, $db_conn, "insert admin")) {
+			torna_indietro();
+		}
 	} else {
 		echo Errore_connessione_database."<br/>";
 	}
 	close($db_conn);
-}
-
-function file_insert_admin() {
-	$db_conn = connessione();
-	$file = fopen("insert_amministratori.sql", "r") or die("Unable to open file!");
-	$i = 1;
-	while(!feof($file)) {
-		if ($db_conn) {
-			$s = fgets($file);
-			if ($s!="") {
-				if (!query($s, $db_conn, "import $i")) {
-					torna_indietro();
-				}
-			}
-		} else {
-			torna_indietro();
-		}
-		$i++;
-	}
-	fclose($file);
 }
 
 function drop() {
@@ -316,9 +299,9 @@ function visualizza_utenti() {
 		$result=query($s, $db_conn, "select utenti");
 		echo "<div id='scroll_tabella'>";
 		echo "<table class='dati_stampati'>";
-		echo "<tr><td>".Codice."</td></td><td>".Nome."</td><td>Mail</td><td>".Telefono."</td><td>".Data_iscrizione."</td></tr>";
+		echo "<tr class='prima_riga'><td>Cod.</td></td><td>".Nome."</td><td>Mail</td><td>".Telefono."</td><td>".Data_iscrizione."</td><td></td></tr>";
 		while ($row=fetch_row($result)) {
-			echo "<tr>";
+			echo "<tr class='altre_righe'>";
 			for ($i=0; $i<5; $i++) {
 				if ($i != 2) {
 					echo "<td>".$row[$i]."</td>";
@@ -327,9 +310,9 @@ function visualizza_utenti() {
 				}
 			}
 			echo "<td>
-				<form action='admin.php' method='get' style='display:inline'>
+				<form action='admin.php' method='get'>
 					<input type='hidden' name='stato' value='cancella_utente'>
-					<input type='submit' class='bottone'  value='".Cancella."' class='bottone'>
+					<input type='submit' class='bottonePiccolo'  value='".Cancella."'>
 					<input type='hidden' name='codice' value='$row[0]'>
 					<input type='hidden' name='nome' value='$row[1]'>
 					<input type='hidden' name='mail' value='$row[2]'>
@@ -367,26 +350,27 @@ function visualizza_prenotazioni() {
 		$s="SELECT prenotazioni.codice, utenti.nome, utenti.mail, utenti.telefono, prenotazioni.data, prenotazioni.ora, prenotazioni.nome, prenotazioni.partecipanti, prenotazioni.richieste, prenotazioni.stato FROM prenotazioni,utenti WHERE prenotazioni.cod_utente = utenti.codice ORDER BY prenotazioni.data, prenotazioni.ora, prenotazioni.stato";
 		$prenotazioni=query($s, $db_conn, "select visualizza_prenotazioni");
 		echo "<div id='scroll_tabella'>";
-		echo "<table class='dati_stampati'>\n";
-		echo "<tr><td>".Codice."</td><td>".Nome."</td><td>".Contatti."</td><td>".Data."</td><td>".Ora."</td><td>".Nome_prenotazione."</td><td>".Persone."</td><td>Note</td><td>".Stato."</td></tr>\n";
+		echo "<table class='dati_stampati'>";
+		echo "<tr class='prima_riga'><td>Cod.</td><td>".Nome."</td><td>".Contatti."</td><td>".Data."</td><td>".Ora."</td><td>".Nome_prenotazione."</td><td>".Persone."</td><td>Note</td><td>".Stato."</td></tr>";
 		while ($row=fetch_row($prenotazioni)) {	
-			echo "<tr>\n";
-			echo "<td style='width:10px'>$row[0]</td>";
+			echo "<tr class='altre_righe'>";
+			echo "<td>$row[0]</td>";
 			echo "<td>$row[1]</td>";
 			echo "<td>$row[3]<br/><a href='mailto:'".$row[2]."'>".$row[2]."</a></td>";
-			for ($i=4; $i<=8; $i++) {
-				echo "<td>$row[$i]</td>\n";
+			for ($i=4; $i<=7; $i++) {
+				echo "<td>$row[$i]</td>";
 			}
+			echo "<td><div class='nota'>$row[8]</div></td>";
 			if ($row[9] == 0) {
 				echo "<td>
 				<form action='admin.php' method='get'>
 					<input type='hidden' name='stato' value='conferma_scelta'>
-					<input type='submit' class='bottone'  name='accetta' value='".Accetta."' class='bottone'>
+					<input type='submit' class='bottonePiccolo'  name='accetta' value='".Accetta."'>
 					<input type='hidden' name='codice' value='$row[0]'>
 				</form>
 				<form action='admin.php' method='get'>
 					<input type='hidden' name='stato' value='conferma_scelta'>
-					<input type='submit' class='bottone'  name='rifiuta' value='".Rifiuta."' class='bottone'>
+					<input type='submit' class='bottonePiccolo'  name='rifiuta' value='".Rifiuta."'>
 					<input type='hidden' name='codice' value='$row[0]'>
 				</form>
 				</td>";
@@ -396,9 +380,9 @@ function visualizza_prenotazioni() {
 				echo "<td>".Rifiutata."</td>";
 			}
 				
-			echo "</tr>\n";
+			echo "</tr>";
 		}
-		echo "</table>\n";
+		echo "</table>";
 		echo "</div>";
 	} else {
 		torna_indietro();
@@ -410,13 +394,13 @@ function visualizza_news() {
 	$db_conn=connessione();
 	if ($db_conn and !empty($_SESSION["mail_admin"]) and !empty($_SESSION["password_admin"]) and !empty($_SESSION["cod_admin"])) {
 		$cod_admin = $_SESSION["cod_admin"];
-		$s="SELECT codice, data, ora, titolo, testo, titolo_en, testo_en FROM news WHERE cod_admin = $cod_admin ORDER BY data";
+		$s="SELECT codice, data, ora, titolo, testo, titolo_en, testo_en FROM news WHERE cod_admin = $cod_admin ORDER BY data DESC, ora DESC";
 		$result=query($s, $db_conn, "select visualizza_news");
 		echo "<div id='scroll_tabella'>";
 		echo "<table class='dati_stampati'>";
-		echo "<tr><td>".Data."/".Ora."</td><td>".Titolo."</td><td>".Testo."</td></tr>";
+		echo "<tr class='prima_riga'><td>".Data."/".Ora."</td><td>".Titolo."</td><td>".Testo."</td><td></td></tr>";
 		while ($row=fetch_row($result)) {	
-			echo "<tr>";
+			echo "<tr class='altre_righe'>";
 			echo "<td>$row[1]<br/>$row[2]</td>";
 			echo "<td><a href='news.php#$row[0]'>";
 			if ($_SESSION["lang"] == "en") {
@@ -425,24 +409,26 @@ function visualizza_news() {
 				echo $row[3];
 			}
 			echo "</a></td>";
-			echo "<td>";
+			echo "<td><div class='nota'>";
 			if ($_SESSION["lang"] == "en") {
-				echo substr($row[6],0,50);
-				if (strlen($row[6])>=50) echo "...";
+				/*echo substr($row[6],0,50);
+				if (strlen($row[6])>=50) echo "...";*/
+				echo $row[6];
 			} else {
-				echo substr($row[4],0,50);
-				if (strlen($row[4])>=50) echo "...";
+				/*echo substr($row[4],0,50);
+				if (strlen($row[4])>=50) echo "...";*/
+				echo $row[4];
 			}
-			echo "</td>";
+			echo "</div></td>";
 			echo "<td>
 				<form action='admin.php' method='get'>
 					<input type='hidden' name='stato' value='modifica_news'>
-					<input type='submit' class='bottone'  value='".Modifica."' class='bottone'>
+					<input type='submit' class='bottonePiccolo'  value='".Modifica."'>
 					<input type='hidden' name='codice' value='$row[0]'>
 				</form>
 				<form action='admin.php' method='get'>
 					<input type='hidden' name='stato' value='cancella_news'>
-					<input type='submit' class='bottone'  value='".Cancella."' class='bottone'>
+					<input type='submit' class='bottonePiccolo'  value='".Cancella."'>
 					<input type='hidden' name='codice' value='$row[0]'>
 				</form>
 				</td>";
@@ -709,21 +695,22 @@ function prenotazioni_utente() {
 		$pr = query($s, $db_conn, "select visualizza_prenotazioni");
 		echo "<div id='scroll_tabella'>";
 		echo "<table class='dati_stampati'>";
-		echo "<tr><td>".Data."</td><td>".Ora."</td><td>".Nome_prenotazione."</td><td>".Persone."</td><td>Note</td><td>".Stato."</td></tr>";
+		echo "<tr class='prima_riga'><td>".Data."</td><td>".Ora."</td><td>".Nome_prenotazione."</td><td>".Persone."</td><td>Note</td><td>".Stato."</td></tr>";
 		while ($row = fetch_row($pr)) {
-			echo "<tr>";
-			for ($i=1; $i<=5; $i++) {
+			echo "<tr class='altre_righe'>";
+			for ($i=1; $i<=4; $i++) {
 				echo "<td>$row[$i]</td>";
 			}
+			echo "<td><div class='nota'>$row[5]</div></td>";
 			if ($row[6] == 0) {
 				echo "<td>
-					<form action='prenotazioni.php' method='get' style='display:inline'>
-					<input type='submit' class='bottone'  value='".Modifica."'>
+					<form action='prenotazioni.php' method='get'>
+					<input type='submit' class='bottonePiccolo'  value='".Modifica."'>
 					<input type='hidden' name='stato' value='modifica_prenotazione'>
 					<input type='hidden' name='codice' value='$row[0]'>
 					</form>
-					<form action='prenotazioni.php' method='get' style='display:inline'>
-					<input type='submit' class='bottone'  value='".Cancella."'>
+					<form action='prenotazioni.php' method='get'>
+					<input type='submit' class='bottonePiccolo'  value='".Cancella."'>
 					<input type='hidden' name='stato' value='cancella_prenotazione'>
 					<input type='hidden' name='codice' value='$row[0]'>
 					</form>
@@ -838,9 +825,9 @@ function update_news($codice, $titolo, $contenuto, $contenuto_en, $titolo_en, $f
 		}
 		if ($cod_admin == $row[0]) {
 			if ($filename == "") {
-				$s="UPDATE news SET titolo='$titolo', testo='$contenuto', testo_en='$contenuto_en', titolo_en='$titolo_en', immagine=null WHERE codice = $codice AND cod_admin = $cod_admin";
+				$s="UPDATE news SET titolo='$titolo', testo='$contenuto', testo_en='$contenuto_en', titolo_en='$titolo_en', immagine=null, data=NOW(), ora=NOW() WHERE codice = $codice AND cod_admin = $cod_admin";
 			} else {
-				$s="UPDATE news SET titolo='$titolo', testo='$contenuto', testo_en='$contenuto_en', titolo_en='$titolo_en', immagine='$filename' WHERE codice = $codice AND cod_admin = $cod_admin";
+				$s="UPDATE news SET titolo='$titolo', testo='$contenuto', testo_en='$contenuto_en', titolo_en='$titolo_en', immagine='$filename', data=NOW(), ora=NOW() WHERE codice = $codice AND cod_admin = $cod_admin";
 			}
 			if (query($s, $db_conn, "update news") and mysqli_affected_rows($db_conn)==1) {
 				echo "<h3 class='avviso'>".News_aggiornata."</h3>";
@@ -953,7 +940,7 @@ function insert_news($cod_admin, $titolo, $contenuto, $contenuto_en, $titolo_en,
 function pagina_news() {
 	$db_conn=connessione();
 	if ($db_conn) {
-		$s="SELECT news.codice, news.data, news.titolo, news.testo, news.immagine, news.cod_admin, amministratori.nome, news.ora, news.testo_en, news.titolo_en FROM news,amministratori WHERE amministratori.codice = news.cod_admin ORDER BY news.data, news.ora DESC";
+		$s="SELECT news.codice, news.data, news.titolo, news.testo, news.immagine, news.cod_admin, amministratori.nome, news.ora, news.testo_en, news.titolo_en FROM news,amministratori WHERE amministratori.codice = news.cod_admin ORDER BY news.data DESC, news.ora DESC";
 		$result=query($s, $db_conn, "select pagina news");
 		if (mysqli_num_rows($result) == 0) {
 			echo "<h3 class='errore'>".No_notizie."</h3>";

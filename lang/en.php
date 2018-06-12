@@ -98,4 +98,5 @@
 	define("Modifica", "Update");
 	define("Conferma_mail", "Confirm mail");
 	define("No_notizie", "No news have been published yet. Please check back later!");
+	define("Seleziona_altre_impostazioni", "Choose other settings");
 ?>
