@@ -12,7 +12,7 @@
 	getStato();
 	
 	function pagina() {
-		echo "<form method='get' action='admin.php'>";		
+		echo "<form method='POST' action='admin.php'>";		
 		echo "<input type='hidden' name='stato' value='login'>";
 		echo "<label for='mail'>Mail: </label>";
 		echo "<input type='email' id='mail' name='mail' placeholder='Mail' required>";
@@ -106,24 +106,24 @@
 				echo Primo_accesso;
 			}
 			echo "</h4>";
-			echo "<form action='admin.php' method='get'>
+			echo "<form action='admin.php' method='POST'>
 					<input type='hidden' name='stato' value='gestione_prenotazioni'>
 					<input type='submit' class='bottone'  value='".Prenotazioni."' >
 				</form>";
-			echo "<form action='admin.php' method='get'>
+			echo "<form action='admin.php' method='POST'>
 					<input type='hidden' name='stato' value='gestione_news'>
 					<input type='submit' class='bottone'  value='News' >
 				</form>";
-			echo "<form action='admin.php' method='get'>
+			echo "<form action='admin.php' method='POST'>
 					<input type='hidden' name='stato' value='gestione_utenti'>
 					<input type='submit' class='bottone'  value='".Utenti."' >
 				</form>";
-			echo "<form method='get' action='admin.php' style='margin-top:40px'>
+			echo "<form method='POST' action='admin.php' style='margin-top:40px'>
 					<input type='hidden' name='stato' value='logout' >
 					<input type='submit' class='bottone'  value='Logout' >
 				</form>";
 			if (isDebug()) {
-				echo "<form action='admin.php' method='get' style='margin-top:20px'>
+				echo "<form action='admin.php' method='POST' style='margin-top:20px'>
 					<input type='hidden' name='stato' value='killer'>
 					<input type='submit' class='bottone'  value='DISTRUGGI TUTTO'>
 				</form>";
@@ -142,7 +142,7 @@
 			crea_tab_utenti();
 			crea_tab_prenotazioni();
 			visualizza_prenotazioni();
-			echo "<form method='get' action='admin.php'>
+			echo "<form method='POST' action='admin.php'>
 					<input type='hidden' name='stato' value='login'>
 					<input type='submit' class='bottone'  value='".Torna_indietro."'>
 				</form>";
@@ -150,13 +150,13 @@
 			
 		case "gestione_news":
 			echo "<h2>News</h2>";
-			echo "<form action='admin.php' method='get'>
+			echo "<form action='admin.php' method='POST'>
 					<input type='hidden' name='stato' value='inserisci_news'>
 					<input type='submit' class='bottone'  value='".inserisci_news."'>
 				</form>";
 			crea_tab_news();
 			visualizza_news();
-			echo "<form method='get' action='admin.php'>
+			echo "<form method='POST' action='admin.php'>
 					<input type='hidden' name='stato' value='login'>
 					<input type='submit' class='bottone'  value='".Torna_indietro."'>
 				</form>";
@@ -166,14 +166,14 @@
 			echo "<h2>".Utenti."</h2>";
 			crea_tab_utenti();
 			visualizza_utenti();
-			echo "<form method='get' action='admin.php'>
+			echo "<form method='POST' action='admin.php'>
 					<input type='hidden' name='stato' value='login'>
 					<input type='submit' class='bottone'  value='".Torna_indietro."'>
 				</form>";
 			break;
 			
 		case "cancella_utente":
-			echo "<form action='admin.php' method='get'>
+			echo "<form action='admin.php' method='POST'>
 					<h4 class='attenzione'>".confermare_eliminazione_account.":</h4>"
 					."<label for='nome'>".Nome.":</label> <input type='text' id='nome' readonly value='".$_REQUEST["nome"]."'>
 					<label for='mail'>Mail: </label><input type='text' id='mail' readonly value='".$_REQUEST["mail"]."'>
@@ -181,7 +181,7 @@
 					<input type='hidden' name='codice' value='".$_REQUEST["codice"]."'>
 					<input type='submit' class='bottone'  value='OK' >
 				</form>";
-			echo "<form action='admin.php' method='get'>
+			echo "<form action='admin.php' method='POST'>
 					<input type='hidden' name='stato' value='gestione_utenti'>
 					<input type='submit' class='bottone'  value='".Annulla."' >
 				</form>";
@@ -189,7 +189,7 @@
 			
 		case "delete_account_admin":
 			delete_account_admin($_REQUEST["codice"]);
-			echo "<form method='get' action='admin.php'>
+			echo "<form method='POST' action='admin.php'>
 					<input type='hidden' name='stato' value='gestione_utenti'>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";
@@ -198,7 +198,7 @@
 		case "conferma_scelta":
 			$codice_prenotazione = $_REQUEST["codice"];
 			$dati = select_prenotazione_admin($codice_prenotazione);
-			echo "<form action='admin.php' method='get'>";
+			echo "<form action='admin.php' method='POST'>";
 				if (isset($_REQUEST["accetta"]) and $_REQUEST["accetta"]=="Accetta") {
 					echo "<input type='hidden' name='stato' value='accetta_prenotazione'>";
 				} else if (isset($_REQUEST["rifiuta"]) and $_REQUEST["rifiuta"]=="Rifiuta") {
@@ -222,7 +222,7 @@
 				echo "<textarea id='richieste' name='richieste' rows='6' cols='40' maxlength='250' readonly>$dati[4]</textarea>";
 				echo "<input type='submit' class='bottone'  name='conferma' value='OK'>
 				</form>";
-			echo "<form action='admin.php' method='get'>
+			echo "<form action='admin.php' method='POST'>
 					<input type='hidden' name='stato' value='gestione_prenotazioni'>
 					<input type='submit' class='bottone'  name='conferma' value='NO'>
 				</form>";
@@ -231,7 +231,7 @@
 		case "accetta_prenotazione":
 			$codice_prenotazione = $_REQUEST["codice"];
 			conferma_prenotazione($codice_prenotazione, 1);
-			echo "<form action='admin.php' method='get'>
+			echo "<form action='admin.php' method='POST'>
 					<input type='hidden' name='stato' value='gestione_prenotazioni'>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";
@@ -240,7 +240,7 @@
 		case "rifiuta_prenotazione":
 			$codice_prenotazione = $_REQUEST["codice"];
 			conferma_prenotazione($codice_prenotazione, 2);
-			echo "<form action='admin.php' method='get'>
+			echo "<form action='admin.php' method='POST'>
 					<input type='hidden' name='stato' value='gestione_prenotazioni'>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";
@@ -252,19 +252,19 @@
 			echo "<form action='admin.php' method='post' enctype='multipart/form-data'>
 					<input type='hidden' name='stato' value='insert_news'>
 					<label for='titolo'>".Titolo.": </label>
-					<input type='text' id='titolo' name='titolo' maxlength='250' required>
+					<input type='text' id='titolo' name='titolo' placeholder='".Titolo."' maxlength='250' required>
 					<label for='titolo_en'>".Titolo." (english): </label>
-					<input type='text' id='titolo_en' name='titolo_en' maxlength='250' required>
+					<input type='text' id='titolo_en' name='titolo_en' placeholder='".Titolo." (english)' maxlength='250' required>
 					<label for='contenuto'>".Testo.": </label>
-					<textarea id='contenuto' name='contenuto' rows='6' cols='40' maxlength='250' required></textarea>
+					<textarea id='contenuto' name='contenuto' rows='6' cols='40' placeholder='".Testo."' maxlength='250' required></textarea>
 					<label for='contenuto_en'>".Testo." (english): </label>
-					<textarea id='contenuto_en' name='contenuto_en' rows='6' cols='40' maxlength='250' required></textarea>
+					<textarea id='contenuto_en' name='contenuto_en' rows='6' cols='40' placeholder='".Testo." (english)' maxlength='250' required></textarea>
 					<label for='file'>".immagine_facoltativa.": </label>
 					<input type='file' id='file' name='file'>
 					<input type='submit' class='bottone'  value='".Inserisci."'>
 					<input type='hidden' name='action' value='upload'>
 				</form>";
-			echo "<form method='get' action='admin.php'>
+			echo "<form method='POST' action='admin.php'>
 					<input type='hidden' name='stato' value='gestione_news'>
 					<input type='submit' class='bottone'  value='".Annulla."'>
 				</form>";
@@ -290,7 +290,7 @@
 					<input type='submit' class='bottone'  value='".Aggiorna."'>
 					<input type='hidden' name='action' value='upload'>
 				</form>";	
-			echo "<form method='get' action='admin.php'>
+			echo "<form method='POST' action='admin.php'>
 					<input type='hidden' name='stato' value='gestione_news'>
 					<input type='submit' class='bottone'  value='".Annulla."'>
 				</form>";
@@ -300,7 +300,7 @@
 			$codice = $_REQUEST["codice"];
 			$dati = select_news($codice);
 			echo "<h3>".Cancella." news</h3>";
-			echo "<form action='admin.php' method='get'>";
+			echo "<form action='admin.php' method='POST'>";
 				echo "<input type='hidden' name='stato' value='delete_news'>";
 				echo "<input type='hidden' name='codice' value='$codice'>";
 				echo "<label for='titolo'>".Titolo.": </label>
@@ -315,7 +315,7 @@
 					<input type='file' id='file' name='file' disabled>";
 				echo "<input type='submit' class='bottone'  value='".Cancella."'>";
 			echo "</form>";
-			echo "<form method='get' action='admin.php'>
+			echo "<form method='POST' action='admin.php'>
 					<input type='hidden' name='stato' value='gestione_news'>
 					<input type='submit' class='bottone'  value='".Annulla."'>
 				</form>";
@@ -324,7 +324,7 @@
 		case "delete_news":
 			$codice = $_REQUEST["codice"];
 			delete_news($codice);
-			echo "<form action='admin.php' method='get'>
+			echo "<form action='admin.php' method='POST'>
 					<input type='hidden' name='stato' value='gestione_news'>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";
@@ -339,7 +339,7 @@
 					
 			insert_news($cod_admin, $titolo, $contenuto, $contenuto_en, $titolo_en, $newFileName);
 			
-			echo "<form action='admin.php' method='get'>
+			echo "<form action='admin.php' method='POST'>
 					<input type='hidden' name='stato' value='gestione_news'>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";
@@ -355,18 +355,18 @@
 					
 			update_news($codice, $titolo, $contenuto, $contenuto_en, $titolo_en, $newFileName);
 			
-			echo "<form action='admin.php' method='get'>
+			echo "<form action='admin.php' method='POST'>
 					<input type='hidden' name='stato' value='gestione_news'>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";
 			break;
 			
 		case "killer":
-			echo "<form action='admin.php' method='get'>
+			echo "<form action='admin.php' method='POST'>
 					<input type='hidden' name='stato' value='drop'>
 					<input type='submit' class='bottone'  name='conferma' value='DISTRUGGI TUTTE LE TABELLE'>
 				</form>";
-			echo "<form action='admin.php' method='get'>
+			echo "<form action='admin.php' method='POST'>
 					<input type='hidden' name='stato' value='login'>
 					<input type='submit' class='bottone'  value='".Annulla."'>
 				</form>";

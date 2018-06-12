@@ -41,7 +41,7 @@ function query($s, $conn, $tab) {
 
 function torna_indietro() {
 	echo "<h2 class='errore'>".Errore_query.". </h2>";
-	echo "<form action='".basename($_SERVER['PHP_SELF'])."' method='get'>
+	echo "<form action='".basename($_SERVER['PHP_SELF'])."' method='POST'>
 			<input type='submit' class='bottone'  value='".Torna_indietro."'>
 		</form>";
 	tail();
@@ -164,7 +164,7 @@ function drop() {
 		if (query($s, $db_conn, "drop")) echo "utenti cancellata<br/>";
 		$s="DROP TABLE amministratori";
 		if (query($s, $db_conn, "drop")) echo "amministratori cancellata<br/>";
-		echo "<form action='admin.php' method='get'>
+		echo "<form action='admin.php' method='POST'>
 				<input type='submit' class='bottone'  value='".Torna_indietro."'>
 			</form>";
 	} else {
@@ -249,7 +249,7 @@ function login($mail, $pass) {
 					echo $message;
 				}
 				
-				echo "<form action='prenotazioni.php' method='get'>
+				echo "<form action='prenotazioni.php' method='POST'>
 						<input type='submit' class='bottone'  value='OK'>
 					</form>";
 					
@@ -310,7 +310,7 @@ function visualizza_utenti() {
 				}
 			}
 			echo "<td>
-				<form action='admin.php' method='get'>
+				<form action='admin.php' method='POST'>
 					<input type='hidden' name='stato' value='cancella_utente'>
 					<input type='submit' class='bottonePiccolo'  value='".Cancella."'>
 					<input type='hidden' name='codice' value='$row[0]'>
@@ -363,12 +363,12 @@ function visualizza_prenotazioni() {
 			echo "<td><div class='nota'>$row[8]</div></td>";
 			if ($row[9] == 0) {
 				echo "<td>
-				<form action='admin.php' method='get'>
+				<form action='admin.php' method='POST'>
 					<input type='hidden' name='stato' value='conferma_scelta'>
 					<input type='submit' class='bottonePiccolo'  name='accetta' value='".Accetta."'>
 					<input type='hidden' name='codice' value='$row[0]'>
 				</form>
-				<form action='admin.php' method='get'>
+				<form action='admin.php' method='POST'>
 					<input type='hidden' name='stato' value='conferma_scelta'>
 					<input type='submit' class='bottonePiccolo'  name='rifiuta' value='".Rifiuta."'>
 					<input type='hidden' name='codice' value='$row[0]'>
@@ -421,12 +421,12 @@ function visualizza_news() {
 			}
 			echo "</div></td>";
 			echo "<td>
-				<form action='admin.php' method='get'>
+				<form action='admin.php' method='POST'>
 					<input type='hidden' name='stato' value='modifica_news'>
 					<input type='submit' class='bottonePiccolo'  value='".Modifica."'>
 					<input type='hidden' name='codice' value='$row[0]'>
 				</form>
-				<form action='admin.php' method='get'>
+				<form action='admin.php' method='POST'>
 					<input type='hidden' name='stato' value='cancella_news'>
 					<input type='submit' class='bottonePiccolo'  value='".Cancella."'>
 					<input type='hidden' name='codice' value='$row[0]'>
@@ -704,12 +704,12 @@ function prenotazioni_utente() {
 			echo "<td><div class='nota'>$row[5]</div></td>";
 			if ($row[6] == 0) {
 				echo "<td>
-					<form action='prenotazioni.php' method='get'>
+					<form action='prenotazioni.php' method='POST'>
 					<input type='submit' class='bottonePiccolo'  value='".Modifica."'>
 					<input type='hidden' name='stato' value='modifica_prenotazione'>
 					<input type='hidden' name='codice' value='$row[0]'>
 					</form>
-					<form action='prenotazioni.php' method='get'>
+					<form action='prenotazioni.php' method='POST'>
 					<input type='submit' class='bottonePiccolo'  value='".Cancella."'>
 					<input type='hidden' name='stato' value='cancella_prenotazione'>
 					<input type='hidden' name='codice' value='$row[0]'>
@@ -947,29 +947,7 @@ function pagina_news() {
 			tail();
 			die();
 		}
-		while ($row=fetch_row($result)) {
-			echo "<h2 id='$row[0]'>";
-			if ($_SESSION["lang"] == "en") {
-				echo $row[9];
-			} else {
-				echo $row[2];
-			}
-			echo "</h2>";
-			if ($_SESSION["lang"] == "en") {
-				echo "<p>$row[8]</p>";
-			} else {
-				echo "<p>$row[3]</p>";
-			}
-			if ($row[4] != null) {
-				echo "<img src='uploads/$row[4]' width='200px' heigth='200px' alt='$row[4]'>";
-			}
-			echo "<p style='font-style: italic;'>";
-			echo Pubblicata_il;
-			echo " $row[1] $row[7] ";
-			echo da;
-			echo " $row[6]</p>";
-			echo "<hr width='90%'>";
-		}
+		return $result;
 	} else {
 		torna_indietro();
 	}
@@ -1082,7 +1060,7 @@ function update_indirizzo_mail($newmail) {
 		$s = "UPDATE utenti SET mail='".addslashes($newmail)."', hash='".md5($newmail)."', confermato=0 WHERE mail='".addslashes($mail)."'";
 		if (query($s, $db_conn, "cambio mail") and mysqli_affected_rows($db_conn)==1) {
 			echo "<h3 class='avviso'>".Indirizzo_aggiornato."<br/>".Conferma_iscrizione_cliccando_link."</h3>";
-			echo "<form action='prenotazioni.php' method='get'>
+			echo "<form action='prenotazioni.php' method='POST'>
 					<input type='hidden' name='stato' value='accedi'>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";
@@ -1126,7 +1104,7 @@ function registrazione_confermata($hash) {
 		$s = "UPDATE utenti SET confermato=1 WHERE hash='$hash'";
 		if (query($s, $db_conn, "conferma hash") and mysqli_affected_rows($db_conn)==1) {
 			echo "<h3 class='avviso'>".Registrazione_riuscita."</h3>";
-			echo "<form action='prenotazioni.php' method='get'>
+			echo "<form action='prenotazioni.php' method='POST'>
 					<input type='hidden' name='stato' value='accedi'>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";
@@ -1145,7 +1123,7 @@ function confermata_nuova_mail($hash) {
 		$s = "UPDATE utenti SET confermato=1 WHERE hash='$hash'";
 		if (query($s, $db_conn, "conferma hash") and mysqli_affected_rows($db_conn)==1) {
 			echo "<h3 class='avviso'>".Indirizzo_aggiornato."</h3>";
-			echo "<form action='prenotazioni.php' method='get'>
+			echo "<form action='prenotazioni.php' method='POST'>
 					<input type='hidden' name='stato' value='accedi'>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";

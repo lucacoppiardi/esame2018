@@ -116,14 +116,14 @@
 		echo "href=\"prenotazioni.php\">".Prenota."</a>";
 				
 		echo "<a>";
-		echo "<form action='index.php' method='get' class='buttonLingua'>";
+		echo "<form action='index.php' method='POST' class='buttonLingua'>";
 		echo "<input type='hidden' name='lang' value='it'/>";
 		echo "<input type='submit' value='' style=\"background:url('media/it.png'); background-size:cover; width:30px; height:18px; border:none;\">";
 		echo "</form>";
 		echo "</a>";
 		
 		echo "<a>";
-		echo "<form action='index.php' method='get' class='buttonLingua'>";
+		echo "<form action='index.php' method='POST' class='buttonLingua'>";
 		echo "<input type='hidden' name='lang' value='en'/>";
 		echo "<input type='submit' value='' style=\"background:url('media/en.png'); background-size:cover; width:40px; height:18px; border:none;\">";
 		echo "</form>";

@@ -319,6 +319,43 @@ h1 {
 	color: navy;
 }
 
+.contenuto_notizia {
+	display: table;
+}
+
+.align_news_img {
+	margin-right: 10px;
+	margin-bottom: 10px;
+	width: 200px;
+	heigth: 200px;
+}
+
+@media screen and (max-width: 900px) {
+	.contenuto_notizia {
+		display: block;
+	}
+}
+
+.align_news {
+	display: table-cell;
+	vertical-align: middle;
+}
+
+.notizia {
+	transition: 0.5s;
+}
+
+.notizia:hover {
+	background-color: #E5E5E5;
+	padding: 20px;
+}
+
+.separatore {
+	width: 100%;
+	margin-bottom: 50px;
+	margin-top: 50px;
+}
+
 /*
 #logo_img {
 	width: 128px;
