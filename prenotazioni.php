@@ -31,7 +31,7 @@
 		echo "<button onClick='spoilerNuovaPrenotazione()' id='btn_nuova_prenotazione'>".Nuova_prenotazione."</button>";
 		echo "<div id='nuova_prenotazione' style='display:none'>";
 		echo "<p>".Ora_attuale.": <br/>
-			<iframe src=\"https://freesecure.timeanddate.com/clock/i6a4dbbt/n5565/tlit6/fn15/fs20/tct/pct/ahl/tt0/tw1/tm1/tb1\" frameborder=\"0\" width=\"228\" height=\"24\" allowTransparency=\"true\"></iframe>
+			<iframe src=\"http://free.timeanddate.com/clock/i6a63iop/n215/tlit6/fn15/fs20/tct/pct/ahl/tt0/tw1/tm1/tb1\" frameborder=\"0\" width=\"300\" height=\"30\" allowTransparency=\"true\"></iframe>
 			</p>";
 		echo "<form method='POST' action='prenotazioni.php'>";
 		echo "<input type='hidden' name='stato' value='inserisci'>";
@@ -231,7 +231,6 @@
 			echo "<input type='number' id='num_persone' name='num_persone' min='1' value='$dati[3]' required readonly>";
 			echo "<label for='richieste'>".Richieste_particolari."? </label>";
 			echo "<textarea id='richieste' name='richieste' rows='6' cols='40' maxlength='250' readonly>$dati[4]</textarea>";
-			echo "<h4>".confermare."</h4>";
 			echo "<input type='submit' class='bottone'  value='".Cancella."'>";
 			echo "</form>";
 			echo "<form action='prenotazioni.php' method='POST'>

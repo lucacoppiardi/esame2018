@@ -149,6 +149,7 @@ html, body {
 @media screen and (max-width: 900px) {
 	#scroll_tabella {
 		overflow-x: scroll;
+		margin-bottom: 80px;
 	}
 }
 
@@ -212,7 +213,6 @@ footer {
 	}
 	
 }
-
 
 label {
 	display: inline-block;
