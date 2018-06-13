@@ -402,13 +402,13 @@ function visualizza_news() {
 		while ($row=fetch_row($result)) {	
 			echo "<tr class='altre_righe'>";
 			echo "<td>$row[1]<br/>$row[2]</td>";
-			echo "<td><a href='news.php#$row[0]'>";
+			echo "<td><div class='nota'><a href='news.php#$row[0]'>";
 			if ($_SESSION["lang"] == "en") {
 				echo $row[5];
 			} else {
 				echo $row[3];
 			}
-			echo "</a></td>";
+			echo "</a></div></td>";
 			echo "<td><div class='nota'>";
 			if ($_SESSION["lang"] == "en") {
 				/*echo substr($row[6],0,50);

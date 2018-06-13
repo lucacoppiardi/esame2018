@@ -58,7 +58,7 @@ function resizeFooter() {
 		html = document.documentElement;
 		var height = Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight );
 		document.getElementById('pagina').style.height = height+"px";
-		document.getElementById('content').style.height = (height-120)+"px";
+		//document.getElementById('content').style.height = (height-120)+"px";
 		//document.getElementById('footer').style.marginTop = ((document.getElementById('content').style.height)-120)+"px";
 	}
 }

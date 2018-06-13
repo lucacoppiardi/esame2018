@@ -130,7 +130,6 @@
 				echo "<input class='bottoneAllineato' type='submit' value='OK'>";
 			echo "</form>";
 			crea_tab_prenotazioni();
-			echo "<h3>".Nuova_prenotazione."</h3>";
 			form_prenotazione();
 			echo "<h3>".Prenotazioni_inserite."</h3>";
 			prenotazioni_utente();

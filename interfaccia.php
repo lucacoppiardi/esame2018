@@ -9,7 +9,7 @@
 	include("libreria.php");
 	
 	function isDebug() {
-		return true;
+		return false;
 	}
 
 	function getStato() {
