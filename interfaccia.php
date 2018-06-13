@@ -96,13 +96,7 @@
 			echo " class='active_link' ";
 		}
 		echo "href=\"news.php\">News</a>";
-		
-		echo "<a ";
-		if ($pagina_attiva == "foto") {
-			echo " class='active_link' ";
-		}
-		echo "href=\"foto.php\">".Foto."</a>";
-		
+
 		echo "<a ";
 		if ($pagina_attiva == "contatti") {
 			echo " class='active_link' ";

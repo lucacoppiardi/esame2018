@@ -53,7 +53,7 @@ function spoilerNuovaPrenotazione() {
 }
 
 function resizeFooter() {
-	if (window.innerWidth < 900) {
+	if (window.innerWidth < 700) {
 		var body = document.body,
 		html = document.documentElement;
 		var height = Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight );
