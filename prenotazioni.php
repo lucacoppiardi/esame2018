@@ -30,6 +30,7 @@
 	function form_prenotazione() {
 		echo "<button onClick='spoilerNuovaPrenotazione()' id='btn_nuova_prenotazione'>".Nuova_prenotazione."</button>";
 		echo "<div id='nuova_prenotazione' style='display:none'>";
+		echo "<h3>".Nuova_prenotazione."</h3>";
 		echo "<p>".Ora_attuale.": <br/>
 			<iframe src=\"http://free.timeanddate.com/clock/i6a63iop/n215/tlit6/fn15/fs20/tct/pct/ahl/tt0/tw1/tm1/tb1\" frameborder=\"0\" width=\"300\" height=\"30\" allowTransparency=\"true\"></iframe>
 			</p>";

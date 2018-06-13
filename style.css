@@ -259,7 +259,7 @@ input[type=submit] {
 	color: white;
 	font-size: 16px;
 	padding: 10px 20px;
-	background-color: #138117;
+	background-color: #005600;
 }
 
 .bottone:hover {
@@ -271,7 +271,7 @@ input[type=submit] {
 	color: white;
 	font-size: 14px;
 	padding: 5px 10px;
-	background-color: #138117;
+	background-color: #005600 /*138117*/;
 	margin-bottom: 10px;
 	vertical-align: center;
 }
@@ -331,12 +331,16 @@ h1 {
 	margin-right: 10px;
 	margin-bottom: 10px;
 	width: 200px;
-	heigth: 200px;
+	height: 200px;
 }
 
 @media screen and (max-width: 900px) {
-	.contenuto_notizia {
-		display: block;
+	.contenuto_notizia, .align_news {
+		display: block !important;
+	}
+	.align_news_img {
+		width: 100px;
+		height: 100px;
 	}
 }
 
@@ -351,7 +355,7 @@ h1 {
 
 .notizia:hover {
 	background-color: #E5E5E5;
-	padding: 20px;
+	padding: 0 20px;
 }
 
 .separatore {
