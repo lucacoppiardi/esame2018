@@ -99,5 +99,9 @@
 	define("Conferma_mail", "Conferma mail");
 	define("No_notizie", "Nessuna notizia &egrave; stata pubblicata. Controlla pi&ugrave tardi!");
 	define("Seleziona_altre_impostazioni", "Seleziona altre impostazioni");
+	define("testo_benvenuto", "vi d&agrave; il benvenuto sul proprio sito");
+	define("testo_home", "Da oltre 50 anni Corte Ada propone ai propri clienti prodotti di qualit&agrave; stimati ed apprezzati. <br/>
+						Situato nelle campagne di Cimbriolo, &egrave un posto accogliente dove &egrave; possibile rilassarsi dai ritmi serrati della citt&agrave;
+						ed apprezzare piatti tipici - rigorosamente fatti in casa - della cucina mantovana.");
 	
 ?>

@@ -3,51 +3,23 @@
 	head();
 	topbar("home");
 	
-	echo "
-	<style>
-		.slideshow_container {
-			align-items: center;
-			justify-content: center;
-		}
-		.slideshow_container img {
-			width: 700px;
-			height: 400px;
-		}
-		.slideshow_container * {
-			vertical-align: middle;
-		}
-		button {
-			margin: 0 10px;
-		}
-		@media screen and (min-width: 800px) {
-			.slideshow_container {
-				display: flex;
-			}
-			.slideshow_container_mobile {
-				display: none;
-			}
-		}
-		@media screen and (max-width: 800px) {
-			.slideshow_container {
-				display: none;
-			}
-			.slideshow_container_mobile {
-				display: block;
-			}
-			.slideshow_container_mobile img {
-				width: 100%;
-				height: 240px;
-			}
-		}
-	</style>";
+	echo "<div id='titolo_home'>";
+	echo "<h1 class='titolo_big'>Corte Ada</h1>";
+	echo "<h2 class='testo_titolo'>".testo_benvenuto."</h2>";
+	echo "<p class='paragrafo_home'>".testo_home."</p>";
+	echo "</div>";
 	
 	$files = glob("media/foto/*.*");
 	$nomi = array();
 	for ($i=0; $i<count($files); $i++) {
 		$nomi[$i] = $files[$i];
 	}
-	$arr = json_encode(print_r($nomi, true));
-	echo "<script>console.log('$arr');</script>";
+	shuffle($nomi);
+	
+	if (isDebug()) {
+		$arr = json_encode(print_r($nomi, true));
+		echo "<script>console.log('$arr');</script>";
+	}
 	
 	echo "<script>";
 	$js_array = json_encode($nomi);
@@ -56,7 +28,9 @@
 	var i = 0;
 	var len = ".(count($nomi)-1).";
 	function gira(verso) {
-		console.log('in '+i);
+		clearInterval(timer);
+		document.getElementById('img_'+(i)).style.backgroundColor = '';
+		document.getElementById('img_'+(i)).style.padding = '';
 		if (verso == 'sx') {
 			if (i>0) {
 				i--;
@@ -64,6 +38,11 @@
 				i = len;
 			}
 			document.getElementById('immagine').src = javascript_array[i];
+			document.getElementById('immagine_mobile').src = javascript_array[i];
+			document.getElementById('img_'+i).style.backgroundColor = 'green';
+			document.getElementById('img_'+i).style.padding = '10px';
+			document.getElementById('img_'+(i+1)).style.backgroundColor = '';
+			document.getElementById('img_'+(i+1)).style.padding = '';
 		}
 		if (verso == 'dx') {
 			if (i<len) {
@@ -72,17 +51,21 @@
 				i=0;
 			}
 			document.getElementById('immagine').src = javascript_array[i];
+			document.getElementById('immagine').src = javascript_array[i];
+			document.getElementById('immagine_mobile').src = javascript_array[i];
+			document.getElementById('img_'+i).style.backgroundColor = 'green';
+			document.getElementById('img_'+i).style.padding = '10px';
+			document.getElementById('img_'+(i-1)).style.backgroundColor = '';
+			document.getElementById('img_'+(i-1)).style.padding = '';
 		}
-		console.log('out '+i);
-	}
-	function gira_mobile(verso) {
+	}";
+	/*function gira_mobile(verso) {
 		if (verso == 'sx') {
 			if (i>0) {
 				i--;
 			} else {
 				i = len;
 			}
-			document.getElementById('immagine_mobile').src = javascript_array[i];
 		}
 		if (verso == 'dx') {
 			if (i<len) {
@@ -91,24 +74,65 @@
 				i=0;
 			}
 			document.getElementById('immagine_mobile').src = javascript_array[i];
+			document.getElementById('img_'+i).style.backgroundColor = 'green';
+			document.getElementById('img_'+i).style.padding = '10px';
+			if (i!=0) {
+				document.getElementById('img_'+(i-1)).style.backgroundColor = '';
+				document.getElementById('img_'+(i-1)).style.padding = '';
+			}
 		}
+	}*/
+	echo "
+	function cambia_immagine(num) {
+		i = num;
+		clearInterval(timer);
+		for (j=0; j<len; j++) {
+			if (j!=i) {
+				document.getElementById('img_'+j).style.backgroundColor = '';
+				document.getElementById('img_'+j).style.padding = '';
+			}
+		}
+		document.getElementById('img_'+i).style.backgroundColor = 'green';
+		document.getElementById('img_'+i).style.padding = '10px';
+		document.getElementById('immagine_mobile').src = javascript_array[i];
+		document.getElementById('immagine').src = javascript_array[i];
 	}
+	function gira_automatico() {
+		if (i==len) i=0;
+		document.getElementById('immagine_mobile').src = javascript_array[i];
+		document.getElementById('immagine').src = javascript_array[i];
+		document.getElementById('link_immagine').href = javascript_array[i];
+		document.getElementById('img_'+i).style.backgroundColor = 'green';
+		document.getElementById('img_'+i).style.padding = '10px';
+		if (i!=0) {
+			document.getElementById('img_'+(i-1)).style.backgroundColor = '';
+			document.getElementById('img_'+(i-1)).style.padding = '';
+		}
+		i++;
+	}
+	var timer = setInterval(gira_automatico, 5000);
 	</script>";
 	
 	echo "
 	<div class='slideshow_container'>
 		<button class='bottone' onClick=\"gira('sx');\">&lt;</button>
-		<img id='immagine' src='$nomi[0]'>
+		<a id='link_immagine' href='$nomi[0]'><img id='immagine' src='$nomi[0]'></a>
 		<button class='bottone' onClick=\"gira('dx');\">&gt;</button>
 	</div>
 	
 	<div class='slideshow_container_mobile'>
-		<img id='immagine_mobile' src='$nomi[0]'>
+		<a href='$nomi[0]'><img id='immagine_mobile' src='$nomi[0]'></a>
 		<br>
 		<button class='bottoneAllineatoColorato' onClick=\"gira_mobile('sx');\">&lt;</button>
 		<button class='bottoneAllineatoColorato' onClick=\"gira_mobile('dx');\">&gt;</button>
 	</div>
+	
+	<div class='mini_immagini'>
 	";
+	for ($i=0; $i<count($nomi); $i++) {
+		echo "<img src='$nomi[$i]' id='img_$i' width='50px' height='50px' style='margin-right: 10px' onClick='cambia_immagine($i)'>";
+	}
+	echo "</div>";
 	
 	tail();
 

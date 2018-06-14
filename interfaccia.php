@@ -40,13 +40,13 @@
 		echo "<!DOCTYPE HTML>";
 		echo "<html lang=\"it\">";
 		echo "<head>";
-		echo "<title>AgriTour</title>";
+		echo "<title>Corte Ada</title>";
 		echo "<meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\"/>"; /*iso-8859-1*/
 		echo "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">";
 		echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\">";
 		echo "<script language=\"JavaScript\" type=\"text/javascript\" src=\"scripts.js\"></script>";
 		//echo "<link href=\"https://fonts.googleapis.com/css?family=Cookie\" rel=\"stylesheet\"/>";
-		/*echo "<link rel=\"icon\" href=\"media/logo.png\">";*/
+		echo "<link rel=\"icon\" href=\"media/logo.png\">";
 		echo "</head>";
 		echo "<body onload='resizeFooter();'>";
 	}
@@ -79,7 +79,7 @@
 		echo "<nav class=\"menu\" id=\"barra\">";
 		echo "<div id=\"logo\">";
 		echo "<a id=\"logo_home\" href=\"index.php\">";
-		echo "<p id=\"logo_txt\">AgriTour</p>";
+		echo "<p id=\"logo_txt\">Corte Ada</p>";
 		echo "</a>";
 		echo "</div>";
 		echo "<div class=\"links\">";

@@ -99,4 +99,9 @@
 	define("Conferma_mail", "Confirm mail");
 	define("No_notizie", "No news have been published yet. Please check back later!");
 	define("Seleziona_altre_impostazioni", "Choose other settings");
+	define("testo_benvenuto", "welcomes you on their website");
+	define("testo_home", "For over 50 years Corte Ada has been offering their customers appreciated products of valued quality.
+						Located in the countryside of Cimbriolo (Mantua), it is a welcoming place where you can relax from the city,
+						and appreciate typical dishes - rigorously homemade - of Mantuan cuisine.");
+	
 ?>

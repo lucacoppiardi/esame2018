@@ -43,7 +43,7 @@ html, body {
     background-attachment: fixed;
 	background-position: center;
 	background-size: cover;/*1400px 700px;*/
-	font-family: sans-serif;
+	font-family: serif;
 }
 
 #pagina {
@@ -58,11 +58,6 @@ html, body {
 	margin: 0 2% 0 2%;
 }
 
-.titolo_big {
-	font-family: 'Cookie-local';
-	font-size:60px;
-}
-
 #logo_home {
 	margin:0;
 	padding:1px 0 0 0;
@@ -71,6 +66,11 @@ html, body {
 @font-face {
 	font-family: "Cookie-local";
 	src:url("./media/Cookie-Regular.ttf");
+}
+
+@font-face {
+	font-family: "Century";
+	src: url("./media/Century.ttf");
 }
 
 #logo_txt {
@@ -374,6 +374,88 @@ input[type=submit] {
 	width: 100%;
 	margin-bottom: 50px;
 	margin-top: 50px;
+}
+
+
+/*INDEX*/
+
+.slideshow_container {
+	align-items: center;
+	justify-content: center;
+}
+
+.slideshow_container img {
+	width: 700px;
+	height: 400px;
+}
+
+.slideshow_container * {
+	vertical-align: middle;
+}
+
+.mini_immagini {
+	margin-top: 20px;
+}
+
+button {
+	margin: 0 10px;
+}
+
+@media screen and (min-width: 800px) {
+	.slideshow_container {
+		display: flex;
+	}
+	.slideshow_container_mobile {
+		display: none;
+	}
+}
+
+@media screen and (max-width: 800px) {
+	.slideshow_container {
+		display: none;
+	}
+	.slideshow_container_mobile {
+		display: block;
+	}
+	.slideshow_container_mobile img {
+		width: 100%;
+		height: 240px;
+	}
+}
+
+.titolo_big {
+	font-family: 'Cookie-local';
+	font-size: 60px;
+	color: #138117;
+	margin: 0 15px 0 0;
+	display: inline;
+	font-weight: initial;
+}
+
+.testo_titolo {
+	margin-top: 0;
+	display: inline;
+	font-family: Cookie-local;
+	font-size: 40px;
+	font-weight: initial;
+}
+
+#titolo_home {
+	text-align: center;
+}
+
+.paragrafo_home {
+	margin-right: 20%;
+	margin-left: 20%;
+	font-family: Century;
+	font-size: 20px;
+}
+
+@media screen and (max-width: 700px) {
+	.paragrafo_home {
+		margin-right: 20px;
+		margin-left: 20px;
+	}
 }
 
 /*
