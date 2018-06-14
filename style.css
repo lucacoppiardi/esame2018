@@ -241,6 +241,18 @@ input, textarea {
 	vertical-align: top;
 }
 
+.bottoneAllineatoColorato {
+	float: none !important;
+	margin-left: 0;
+	margin-right: 10px;
+	vertical-align: top;
+	border: none;
+	color: white;
+	font-size: 16px;
+	padding: 10px 20px;
+	background-color: #005600;
+}
+
 @media screen and (min-width: 700px) {
 
 	input[type=text], input[type=email], input[type=password], input[type=tel], textarea {
