@@ -29,6 +29,7 @@
 	var len = ".(count($nomi)-1).";
 	function gira(verso) {
 		clearInterval(timer);
+		console.log(i);
 		document.getElementById('img_'+(i)).style.backgroundColor = '';
 		document.getElementById('img_'+(i)).style.padding = '';
 		if (verso == 'sx') {
@@ -98,7 +99,11 @@
 		document.getElementById('immagine').src = javascript_array[i];
 	}
 	function gira_automatico() {
-		if (i==len) i=0;
+		if (i==len) {
+			i=0;
+			document.getElementById('img_'+(len-1)).style.backgroundColor = '';
+			document.getElementById('img_'+(len-1)).style.padding = '';
+		}
 		document.getElementById('immagine_mobile').src = javascript_array[i];
 		document.getElementById('immagine').src = javascript_array[i];
 		document.getElementById('link_immagine').href = javascript_array[i];
@@ -109,8 +114,9 @@
 			document.getElementById('img_'+(i-1)).style.padding = '';
 		}
 		i++;
+		console.log(i);
 	}
-	var timer = setInterval(gira_automatico, 5000);
+	var timer = setInterval(gira_automatico, 250);
 	</script>";
 	
 	echo "
