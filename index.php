@@ -26,27 +26,32 @@
 	echo "var javascript_array = ". $js_array . ";\n";
 	echo "
 	var i = 0;
-	var len = ".(count($nomi)-1).";
+	var girando = true;
+	var len = ".count($nomi).";
 	function gira(verso) {
+		if (girando == true) {
+			i--;
+			girando = false;
+		}
 		clearInterval(timer);
-		console.log(i);
-		document.getElementById('img_'+(i)).style.backgroundColor = '';
-		document.getElementById('img_'+(i)).style.padding = '';
+		var j = 0;
+		for (j=0; j<len; j++) {
+			document.getElementById('img_'+j).style.backgroundColor = '';
+			document.getElementById('img_'+j).style.padding = '';
+		}
 		if (verso == 'sx') {
 			if (i>0) {
 				i--;
 			} else {
-				i = len;
+				i = len-1;
 			}
 			document.getElementById('immagine').src = javascript_array[i];
 			document.getElementById('immagine_mobile').src = javascript_array[i];
 			document.getElementById('img_'+i).style.backgroundColor = 'green';
 			document.getElementById('img_'+i).style.padding = '10px';
-			document.getElementById('img_'+(i+1)).style.backgroundColor = '';
-			document.getElementById('img_'+(i+1)).style.padding = '';
 		}
 		if (verso == 'dx') {
-			if (i<len) {
+			if (i<(len-1)) {
 				i++;
 			} else {
 				i=0;
@@ -56,33 +61,8 @@
 			document.getElementById('immagine_mobile').src = javascript_array[i];
 			document.getElementById('img_'+i).style.backgroundColor = 'green';
 			document.getElementById('img_'+i).style.padding = '10px';
-			document.getElementById('img_'+(i-1)).style.backgroundColor = '';
-			document.getElementById('img_'+(i-1)).style.padding = '';
 		}
 	}";
-	/*function gira_mobile(verso) {
-		if (verso == 'sx') {
-			if (i>0) {
-				i--;
-			} else {
-				i = len;
-			}
-		}
-		if (verso == 'dx') {
-			if (i<len) {
-				i++;
-			} else {
-				i=0;
-			}
-			document.getElementById('immagine_mobile').src = javascript_array[i];
-			document.getElementById('img_'+i).style.backgroundColor = 'green';
-			document.getElementById('img_'+i).style.padding = '10px';
-			if (i!=0) {
-				document.getElementById('img_'+(i-1)).style.backgroundColor = '';
-				document.getElementById('img_'+(i-1)).style.padding = '';
-			}
-		}
-	}*/
 	echo "
 	function cambia_immagine(num) {
 		i = num;
@@ -99,6 +79,7 @@
 		document.getElementById('immagine').src = javascript_array[i];
 	}
 	function gira_automatico() {
+		var girando = true;
 		if (i==len) {
 			i=0;
 			document.getElementById('img_'+(len-1)).style.backgroundColor = '';
@@ -114,9 +95,8 @@
 			document.getElementById('img_'+(i-1)).style.padding = '';
 		}
 		i++;
-		console.log(i);
 	}
-	var timer = setInterval(gira_automatico, 250);
+	var timer = setInterval(gira_automatico, 5000);
 	</script>";
 	
 	echo "
@@ -129,8 +109,8 @@
 	<div class='slideshow_container_mobile'>
 		<a href='$nomi[0]'><img id='immagine_mobile' src='$nomi[0]'></a>
 		<br>
-		<button class='bottoneAllineatoColorato' onClick=\"gira_mobile('sx');\">&lt;</button>
-		<button class='bottoneAllineatoColorato' onClick=\"gira_mobile('dx');\">&gt;</button>
+		<button class='bottoneAllineatoColorato' onClick=\"gira('sx');\">&lt;</button>
+		<button class='bottoneAllineatoColorato' onClick=\"gira('dx');\">&gt;</button>
 	</div>
 	
 	<div class='mini_immagini'>
