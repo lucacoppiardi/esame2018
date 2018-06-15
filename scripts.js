@@ -42,3 +42,23 @@ function checkMail() {
 	return true;
 }
 
+function spoilerNuovaPrenotazione() {
+	if (document.getElementById('nuova_prenotazione').style.display=='none') {
+		document.getElementById('nuova_prenotazione').style.display='';
+		document.getElementById('btn_nuova_prenotazione').style.display='none';
+	} else {
+		document.getElementById('nuova_prenotazione').style.display='none';
+	}
+	resizeFooter();
+}
+
+function resizeFooter() {
+	if (window.innerWidth < 700) {
+		var body = document.body,
+		html = document.documentElement;
+		var height = Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight );
+		document.getElementById('pagina').style.height = height+"px";
+		document.getElementById('content').style.height = (height-120)+"px";
+		//document.getElementById('footer').style.marginTop = ((document.getElementById('content').style.height)-120)+"px";
+	}
+}

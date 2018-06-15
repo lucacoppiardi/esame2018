@@ -38,12 +38,12 @@ html, body {
 	padding:0;
 	height: 100%;
 	/*min-height: 100%; calc(100% - 52px);*/
-	/*background-image: url("campagna_campo_cielo.jpg");*/
+	background-image: url("media/campagna_campo_cielo.jpg");
     background-repeat: no-repeat;
     background-attachment: fixed;
 	background-position: center;
 	background-size: cover;/*1400px 700px;*/
-	font-family: sans-serif;
+	font-family: serif;
 }
 
 #pagina {
@@ -51,17 +51,11 @@ html, body {
 	position:relative;
 }
 
-
 .content {
 	padding-top: 60px;
 	padding-bottom: 100px;
 	word-wrap: break-word;
-	margin: 0 2% 0% 2%;
-}
-
-.titolo_big {
-	font-family: 'Cookie-local';
-	font-size:60px;
+	margin: 0 2% 0 2%;
 }
 
 #logo_home {
@@ -72,6 +66,11 @@ html, body {
 @font-face {
 	font-family: "Cookie-local";
 	src:url("./media/Cookie-Regular.ttf");
+}
+
+@font-face {
+	font-family: "Century";
+	src: url("./media/Century.ttf");
 }
 
 #logo_txt {
@@ -86,7 +85,11 @@ html, body {
 }
 
 .errore {
-	color: red;
+	color: #b30000;
+}
+
+.attenzione {
+	color: #b30000;
 }
 
 .dati_stampati, .dati_stampati tr, .dati_stampati td {
@@ -105,31 +108,64 @@ html, body {
 	position: relative;
 }
 
-@media screen and (min-width: 900px) {
+.dati_stampati form {
+	margin: 0;
+	padding: 0;
+	display: grid;
+}
+
+.prima_riga {
+	color: white;
+	font-weight: bold;
+	background-color: #5c5ccf;
+	text-align: center;
+}
+
+.altre_righe {
+	background: rgba(255, 255, 255, 0.5);
+	text-align: center;
+}
+
+.altre_righe:hover {
+	background-color: #E5E5E5;
+}
+
+.nota {
+	overflow: auto;
+	margin: auto;
+	width: 400px;
+}
+
+#scroll_tabella {
+	margin-bottom: 20px;
+	clear: both;
+}
+
+@media screen and (min-width: 700px) {
 	#scroll_tabella {
 		overflow-x: auto;
 	}
 }
 
-@media screen and (max-width: 900px) {
+@media screen and (max-width: 700px) {
 	#scroll_tabella {
 		overflow-x: scroll;
+		margin-bottom: 80px;
 	}
 }
-
 
 footer {
 	width: 100%;
 	background-color: #138117;
 	height: 60px;
-    position: absolute;
+	position: absolute;
 	bottom: 0;
 }
 
 .footer_p {
 	color: white;
 	margin: 0;
-	padding: 5px 5px 0 5px; /*top-right-bottom-left*/
+	padding: 5px 5px 2px 5px; /*top-right-bottom-left*/
 	text-align: center;
 }
 
@@ -137,8 +173,16 @@ footer {
 	color: white;
 }
 
+@media screen and (max-width: 700px) {
+	.content {
+		padding-bottom: 0;
+	}
+	footer {
+		position: unset;
+	}
+}
 
-@media screen and (min-width: 900px) {
+@media screen and (min-width: 700px) {
 	
 	.links {
 		float: right;
@@ -146,7 +190,7 @@ footer {
 	
 }
 
-@media screen and (max-width: 900px) {
+@media screen and (max-width: 700px) {
 
 	.menu a:not(:first-child) {
 		display: none;
@@ -154,7 +198,7 @@ footer {
 	.menu a.icon {
 		float: right;
 		display: block;
-		font-size: 15px;
+		font-size: 18px;
 	}
 	
 	/*.menu.responsive {position: relative;}*/
@@ -171,7 +215,245 @@ footer {
 	
 }
 
+label {
+	display: inline-block;
+	float: left;
+	clear: left;
+	width: 150px;
+	text-align: left;
+}
 
+form {
+	clear: both;
+	width: 100%;
+	float: left;
+}
+
+input, textarea {
+	margin-bottom: 20px;
+	float: left;
+	font-size: 16px;
+}
+
+.bottoneAllineato {
+	float: none !important;
+	margin-left: 5px;
+	vertical-align: top;
+}
+
+.bottoneAllineatoColorato {
+	float: none !important;
+	margin-left: 0;
+	margin-right: 10px;
+	vertical-align: top;
+	border: none;
+	color: white;
+	font-size: 16px;
+	padding: 10px 20px;
+	background-color: #005600;
+}
+
+@media screen and (min-width: 700px) {
+
+	input[type=text], input[type=email], input[type=password], input[type=tel], textarea {
+		width:25%;
+		float:left;
+	}
+	
+}
+
+input[type=submit] {
+	clear: both;
+}
+
+.bottone, #btn_nuova_prenotazione {
+	border: none;
+	color: white;
+	font-size: 16px;
+	padding: 10px 20px;
+	background-color: #005600;
+}
+
+.bottone:hover {
+	box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}
+
+.bottonePiccolo {
+	border: none;
+	color: white;
+	font-size: 14px;
+	padding: 5px 10px;
+	background-color: #005600 /*138117*/;
+	margin-bottom: 10px;
+	vertical-align: center;
+}
+
+.bottonePiccolo:hover {
+	box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}
+
+@media screen and (max-width: 700px) {
+
+	input[type=text], input[type=email], input[type=password], input[type=tel], input[type=date], input[type=time], input[type=number], textarea, select {
+		clear: both;
+		width: 98%;
+		height: 30px;
+	}
+	
+	textarea {
+		height: 120px;
+	}
+	
+	select {
+		margin-top: 20px;
+		margin-bottom: 10px;
+		height: 50px;
+		font-size: 16px;
+	}
+		
+	.bottone, #btn_nuova_prenotazione {
+		width: 100%;
+		height: 50px;
+	}
+	
+	.bottoneAllineato {
+		height: 40px;
+		width: 60px;
+		margin-bottom: 50px;
+		margin-left: 0;
+	}
+	
+}
+
+.buttonLingua, .buttonLingua input[type=submit], .buttonLingua form {
+	display: inline;
+	margin: 0;
+	float: none;
+}
+
+.titolo_pagina {
+	color: navy;
+}
+
+.contenuto_notizia {
+	display: table;
+}
+
+.align_news_img {
+	margin-right: 10px;
+	margin-bottom: 10px;
+	width: 200px;
+	height: 200px;
+}
+
+@media screen and (max-width: 700px) {
+	.contenuto_notizia, .align_news {
+		display: block !important;
+	}
+	.align_news_img {
+		width: 100px;
+		height: 100px;
+	}
+}
+
+.align_news {
+	display: table-cell;
+	vertical-align: middle;
+}
+
+.notizia {
+	transition: 0.5s;
+}
+
+.notizia:hover {
+	background-color: #E5E5E5;
+	padding: 0 20px;
+}
+
+.separatore {
+	width: 100%;
+	margin-bottom: 50px;
+	margin-top: 50px;
+}
+
+
+/*INDEX*/
+
+.slideshow_container {
+	align-items: center;
+	justify-content: center;
+}
+
+.slideshow_container img {
+	width: 700px;
+	height: 400px;
+}
+
+.slideshow_container * {
+	vertical-align: middle;
+}
+
+.mini_immagini {
+	margin-top: 20px;
+	margin-bottom: 30px;
+}
+
+@media screen and (min-width: 800px) {
+	.slideshow_container {
+		display: flex;
+	}
+	.slideshow_container_mobile {
+		display: none;
+	}
+}
+
+@media screen and (max-width: 800px) {
+	.slideshow_container {
+		display: none;
+	}
+	.slideshow_container_mobile {
+		display: block;
+	}
+	.slideshow_container_mobile img {
+		width: 100%;
+		height: 240px;
+	}
+}
+
+.titolo_big {
+	font-family: 'Cookie-local';
+	font-size: 60px;
+	color: #138117;
+	margin: 0 15px 0 0;
+	display: inline;
+	font-weight: initial;
+}
+
+.testo_titolo {
+	margin-top: 0;
+	display: inline;
+	font-family: Cookie-local;
+	font-size: 40px;
+	font-weight: initial;
+}
+
+#titolo_home {
+	text-align: center;
+}
+
+.paragrafo_home {
+	margin-right: 20%;
+	margin-left: 20%;
+	font-family: Century;
+	font-size: 20px;
+}
+
+@media screen and (max-width: 700px) {
+	.paragrafo_home {
+		margin-right: 20px;
+		margin-left: 20px;
+	}
+}
 
 /*
 #logo_img {

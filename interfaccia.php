@@ -7,7 +7,7 @@
 	ini_set('session.cookie_secure', 1);
 
 	include("libreria.php");
-
+	
 	function isDebug() {
 		return true;
 	}
@@ -40,29 +40,29 @@
 		echo "<!DOCTYPE HTML>";
 		echo "<html lang=\"it\">";
 		echo "<head>";
-		echo "<title>AgriTour</title>";
+		echo "<title>Corte Ada</title>";
 		echo "<meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\"/>"; /*iso-8859-1*/
 		echo "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">";
 		echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\">";
 		echo "<script language=\"JavaScript\" type=\"text/javascript\" src=\"scripts.js\"></script>";
 		//echo "<link href=\"https://fonts.googleapis.com/css?family=Cookie\" rel=\"stylesheet\"/>";
-		/*echo "<link rel=\"icon\" href=\"media/logo.png\">";*/
+		echo "<link rel=\"icon\" href=\"media/logo.png\">";
 		echo "</head>";
-		echo "<body>";
+		echo "<body onload='resizeFooter();'>";
 	}
 	
 	function tail() {
 	
 		if (isDebug()) {
-			echo "<pre>";
+			echo "<p style='font-family: monospace'>";
 			print_r($_SESSION);
 			echo "PHPSESSID: ".session_id();
-			echo "</pre>";
+			echo "</p>";
 		}
 		
 		echo "</div>";
 
-		echo "<footer>";
+		echo "<footer id='footer'>";
 		echo "<p class='footer_p'>".realizzato_da."</p>";
 		echo "<p class='footer_p'><a href='admin.php' class='footer_a'>".Amministrazione."</a></p>";
 		echo "</footer>";
@@ -79,7 +79,7 @@
 		echo "<nav class=\"menu\" id=\"barra\">";
 		echo "<div id=\"logo\">";
 		echo "<a id=\"logo_home\" href=\"index.php\">";
-		echo "<p id=\"logo_txt\">AgriTour</p>";
+		echo "<p id=\"logo_txt\">Corte Ada</p>";
 		echo "</a>";
 		echo "</div>";
 		echo "<div class=\"links\">";
@@ -96,13 +96,7 @@
 			echo " class='active_link' ";
 		}
 		echo "href=\"news.php\">News</a>";
-		
-		echo "<a ";
-		if ($pagina_attiva == "foto") {
-			echo " class='active_link' ";
-		}
-		echo "href=\"foto.php\">".Foto."</a>";
-		
+
 		echo "<a ";
 		if ($pagina_attiva == "contatti") {
 			echo " class='active_link' ";
@@ -116,16 +110,16 @@
 		echo "href=\"prenotazioni.php\">".Prenota."</a>";
 				
 		echo "<a>";
-		echo "<form action='index.php' method='get' style='display:inline;'>";
+		echo "<form action='index.php' method='POST' class='buttonLingua'>";
 		echo "<input type='hidden' name='lang' value='it'/>";
-		echo "<input type='submit' value='' style=\"background:url('media/it.png'); background-size:cover; width:30px;  border:none;\">";
+		echo "<input type='submit' value='' style=\"background:url('media/it.png'); background-size:cover; width:30px; height:18px; border:none;\">";
 		echo "</form>";
 		echo "</a>";
 		
 		echo "<a>";
-		echo "<form action='index.php' method='get' style='display:inline;'>";
+		echo "<form action='index.php' method='POST' class='buttonLingua'>";
 		echo "<input type='hidden' name='lang' value='en'/>";
-		echo "<input type='submit' value='' style=\"background:url('media/en.png'); background-size:cover; width:40px; border:none;\">";
+		echo "<input type='submit' value='' style=\"background:url('media/en.png'); background-size:cover; width:40px; height:18px; border:none;\">";
 		echo "</form>";
 		echo "</a>";
 		
@@ -144,7 +138,7 @@
 		echo "</div>";
 		echo "</nav>";
 		
-		echo "<div class = 'content'>";
+		echo "<div id='content' class='content'>";
 	}
 
 ?>

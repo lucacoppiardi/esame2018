@@ -8,83 +8,78 @@
 	echo "<h1 class='titolo_pagina'>".Prenotazioni."</h1>";
 
 	function form_registra() {
-		echo "<form method='get' action='prenotazioni.php' onSubmit='return checkMail()'>";
+		echo "<form method='POST' action='prenotazioni.php' onSubmit='return checkMail()'>";
 		echo "<input type='hidden' name='stato' value='registrato'>";
-		
-		echo Nome.": ";
-		echo "<input type='text' name='nome' maxlength='250' required><br/>";
-		echo Telefono.": ";
-		echo "<input type='tel' name='telefono' required><br/>"; /*pattern='[0-9]{10}'*/
-		echo "Mail: ";
-		echo "<input type='email' id='mail' name='mail' maxlength='250' required><br/>";
-		echo "Conferma mail: ";
-		echo "<input type='email' id='conferma_mail' name='conferma_mail' maxlength='250' onpaste='return false;' ondrop='return false;' required><br/>";
-		echo "Password: ";
-		echo "<input type='password' name='pass' required><br/>";
-		echo "<input type='submit' value='".Registrati."'>";
-		echo "<input type='reset'>";
+		echo "<label for='nome'>".Nome.": </label>";
+		echo "<input type='text' id='nome' name='nome' maxlength='250' placeholder='".Nome."' required>";
+		echo "<label for='telefono'>".Telefono.": </label>";
+		echo "<input type='tel' id='telefono' name='telefono' placeholder='".Telefono."' required>"; /*pattern='[0-9]{10}'*/
+		echo "<label for='mail'>Mail: </label>";
+		echo "<input type='email' id='mail' name='mail' placeholder='Mail' maxlength='250' required>";
+		echo "<label for='conferma_mail'>".Conferma_mail.": </label>";
+		echo "<input type='email' id='conferma_mail' name='conferma_mail' maxlength='250' onpaste='return false;' ondrop='return false;' placeholder='".Conferma_mail."' required>";
+		echo "<label for='pass'>Password: </label>";
+		echo "<input type='password' id='pass' name='pass' placeholder='Password' required>";
+		echo "<input type='submit' class='bottone'  value='".Registrati."'>";
 		echo "</form>";
-		echo "<form method='get' action='prenotazioni.php'>";
-		echo "<input type='submit' value='".Annulla."'>";
-		
+		echo "<form method='POST' action='prenotazioni.php'>";
+		echo "<input type='submit' class='bottone'  value='".Annulla."'>";
 		echo "</form>";
 	}
 		
 	function form_prenotazione() {
-		echo "<form method='get' action='prenotazioni.php'>";
+		echo "<button onClick='spoilerNuovaPrenotazione()' id='btn_nuova_prenotazione'>".Nuova_prenotazione."</button>";
+		echo "<div id='nuova_prenotazione' style='display:none'>";
+		echo "<h3>".Nuova_prenotazione."</h3>";
+		echo "<p>".Ora_attuale.": <br/>
+			<iframe src=\"http://free.timeanddate.com/clock/i6a63iop/n215/tlit6/fn15/fs20/tct/pct/ahl/tt0/tw1/tm1/tb1\" frameborder=\"0\" width=\"300\" height=\"30\" allowTransparency=\"true\"></iframe>
+			</p>";
+		echo "<form method='POST' action='prenotazioni.php'>";
 		echo "<input type='hidden' name='stato' value='inserisci'>";
-		
-		echo Data.": ";
-		echo "<input type='date' name='data' required><br/>";
-		echo Ora.": ";
-		echo "<input type='time' name='ora' required><br/>";
-		echo Nome_tavolo.": ";
-		echo "<input type='text' name='nome' maxlength='250' placeholder='".placeholder."' required><br/>";
-		echo Numero_persone.": ";
-		echo "<input type='number' name='num_persone' min='1' required><br/>";
-		echo Richieste_particolari."? ";
-		echo "<textarea name='richieste' rows='6' cols='40' maxlength='250'></textarea><br/>";
-		echo "<input type='submit' value='".Inserisci."'>";
-		echo "<input type='reset'>";
+		echo "<label for='data'>".Data.": </label>";
+		echo "<input type='date' id='data' name='data' placeholder='".Data."' required>";
+		echo "<label for='ora'>".Ora.": </label>";
+		echo "<input type='time' id='ora' name='ora' placeholder='".Ora."' required>";
+		echo "<label for='nome'>".Nome_tavolo.": </label>";
+		echo "<input type='text' id='nome' name='nome' maxlength='250' placeholder='".placeholder."' required>";
+		echo "<label for='num_persone'>".Numero_persone.": </label>";
+		echo "<input type='number' id='num_persone' name='num_persone' min='1' placeholder='".Numero_persone."' required>";
+		echo "<label for='richieste'>".Richieste_particolari."? </label>";
+		echo "<textarea id='richieste' name='richieste' rows='6' cols='40' maxlength='250' placeholder='".Richieste_particolari."'></textarea>";
+		echo "<input type='submit' class='bottone'  value='".Inserisci."'>";
 		echo "</form>";
+		echo "</div>";
 	}
 	
 	function form_accedi() {
 		echo "<h2>".Accedi."</h2>";
-		echo "<form method='get' action='prenotazioni.php'>";
+		echo "<form method='POST' action='prenotazioni.php'>";
 		echo "<input type='hidden' name='stato' value='login'>";
-		
-		echo "Mail: ";
-		echo "<input type='email' name='mail' required><br/>";
-		echo "Password: ";
-		echo "<input type='password' name='password' required><br/>";
-		echo "<input type='submit' value='".Accedi."'>";
-		echo "<input type='reset'>";
+		echo "<label for='mail'>Mail: </label>";
+		echo "<input type='email' id='mail' name='mail' placeholder='Mail' required>";
+		echo "<label for='password'>Password: </label>";
+		echo "<input type='password' id='password' name='password' placeholder='Password' required>";
+		echo "<input type='submit' class='bottone'  value='".Accedi."'>";
 		echo "</form>";
-		echo "<form method='get' action='prenotazioni.php'>";		
-		echo "<input type='submit' value='".Annulla."'>";
+		echo "<form method='POST' action='prenotazioni.php'>";		
+		echo "<input type='submit' class='bottone'  value='".Annulla."'>";
 		echo "<input type='hidden' name='stato' value=''>";
-		
 		echo "</form>";
-		echo "<form method='get' action='prenotazioni.php'>";
-		echo "<input type='submit' value='".Recupero_password."'>";
+		echo "<form method='POST' action='prenotazioni.php'>";
+		echo "<input type='submit' class='bottone'  value='".Recupero_password."'>";
 		echo "<input type='hidden' name='stato' value='recupera_password'>";
-		
 		echo "</form>";
-		echo "<form method='get' action='prenotazioni.php'>";
 	}
 	
 	function pagina() {
-		echo "<h2 class='intro_pagina'>".intro_prenotazione."</h2>";
-		echo "<form method='get' action='prenotazioni.php'>";
-		echo "<input type='submit' value='".Registrati."'>";
+		echo "<h3 class='avviso'>".intro_prenotazione."</h3>";
+		echo "<form method='POST' action='prenotazioni.php'>";
+		echo "<input type='submit' class='bottone'  value='".Registrati."' >";
 		echo "<input type='hidden' name='stato' value='registra'>";
-		
 		echo "</form>";
-		echo "<form method='get' action='prenotazioni.php'>";
-		echo "<input type='submit' value='".Accedi."'>";
+		echo "<form method='POST' action='prenotazioni.php'>";
+		echo "<input type='submit' class='bottone'  value='".Accedi."'>";
 		echo "<input type='hidden' name='stato' value='accedi'>";
-		
 		echo "</form>";
 	}
 	
@@ -113,27 +108,29 @@
 			$_SESSION["password"] = $result[3];
 			$_SESSION["cod_utente"] = $result[0];
 			echo "<h3 class='avviso'>".Login_riuscito.": ".$result[1]."</h3>";
-			echo "<h4 class='avviso'>".Ultimo_accesso.": ".$result[2]."</h4>";
-			echo "<form action='prenotazioni.php' method='get' style='display:inline'>
+			echo "<h4 class='avviso'>".Ultimo_accesso.": ";
+			if (!empty($result[2])) {
+				echo $result[2];
+			} else {
+				echo Primo_accesso;
+			}
+			echo "</h4>";
+			echo "<form action='prenotazioni.php' method='POST'>
 					<input type='hidden' name='stato' value='logout'>
-					<input type='submit' value='Logout'>
+					<input type='submit' class='bottone'  value='Logout'>
 				</form>";
-			echo "<form action='prenotazioni.php' method='get' style='display:inline'>
-					<input type='hidden' name='stato' value='reset_password'>
-					<input type='submit' value='Reset password'>
-				</form>";
-			echo "<form action='prenotazioni.php' method='get' style='display:inline'>
-					<input type='hidden' name='stato' value='disiscrizione'>
-					<input type='submit' value='".Cancella." account'>
-				</form>";
-			echo "<form action='prenotazioni.php' method='get' style='display:inline'>
-					<input type='hidden' name='stato' value='cambia_email'>
-					<input type='submit' value='".cambio_mail."'>
-				</form>";
+			
+			echo "<form action='prenotazioni.php' method='POST'>";
+				echo "<select name='stato'>";
+					echo "<option>".Seleziona_altre_impostazioni.": </option>";
+					echo "<option disabled></option>";
+					echo "<option value='reset_password'>Reset password</option>";
+					echo "<option value='disiscrizione'>".Cancella." account</option>";
+					echo "<option value='cambia_email'>".cambio_mail."</option>";
+				echo "</select>";
+				echo "<input class='bottoneAllineato' type='submit' value='OK'>";
+			echo "</form>";
 			crea_tab_prenotazioni();
-			echo "<p>".Ora_attuale.": <br/>";
-			echo "<iframe src=\"https://freesecure.timeanddate.com/clock/i69cc1t8/n2177/tlit6/fn15/fs20/ahl/avb/tt0/th1/ta1/tb1\" frameborder=\"0\" width=\"372\" height=\"26\"></iframe></p>";
-			echo "<h3>".Nuova_prenotazione."</h3>";
 			form_prenotazione();
 			echo "<h3>".Prenotazioni_inserite."</h3>";
 			prenotazioni_utente();
@@ -144,7 +141,7 @@
 		
 		case "registra":
 			crea_tab_utenti();
-			echo "<p>".registrazione_necessaria."</p><br/>";
+			echo "<h4 class='avviso'>".registrazione_necessaria."</h4>";
 			form_registra();
 			break;
 			
@@ -160,10 +157,10 @@
 				break;
 			}
 			crea_utente($mail,$password,$nome,$telefono);
-			echo "<h3 class='avviso'>".Registrazione_riuscita."</h3>";
-			echo "<form action='prenotazioni.php' method='get'>
+			echo "<h3 class='avviso'>".Conferma_iscrizione_cliccando_link."</h3>";
+			echo "<form action='prenotazioni.php' method='POST'>
 					<input type='hidden' name='stato' value='accedi'>
-					<input type='submit' value='OK'>
+					<input type='submit' class='bottone'  value='OK'>
 				</form>";
 			break;
 			
@@ -187,9 +184,8 @@
 			$richieste = addslashes($_REQUEST["richieste"]);
 			inserisci_prenotazione($data, $ora, $nome, $num_persone, $richieste);
 			mail_riepilogo($data, $ora, $nome, $num_persone, $richieste);
-			echo "<form action='prenotazioni.php' method='get'>
-						<input type='hidden' name='stato' value='login'>
-						<input type='submit' value='OK'>
+			echo "<form action='prenotazioni.php' method='POST'>
+						<input type='submit' class='bottone'  value='OK'>
 					</form>";
 			break;
 			
@@ -197,25 +193,24 @@
 			echo "<h3>".Modifica_prenotazione."</h3>";
 			$codice = $_REQUEST["codice"];
 			$dati = select_prenotazione($codice);
-			echo "<form action='prenotazioni.php' method='get'>";
+			echo "<form action='prenotazioni.php' method='POST'>";
 			echo "<input type='hidden' name='stato' value='update_prenotazione'>";
 			
 			echo "<input type='hidden' name='codice' value='$codice'>";
-			echo Data.": ";
-			echo "<input type='date' name='data' value='$dati[0]' required><br/>";
-			echo Ora.": ";
-			echo "<input type='time' name='ora' value='$dati[1]' required><br/>";
-			echo Nome_tavolo.": ";
-			echo "<input type='text' name='nome' maxlength='250' placeholder='".placeholder."' value='$dati[2]' required><br/>";
-			echo Numero_persone.": ";
-			echo "<input type='number' name='num_persone' min='1' value='$dati[3]' required><br/>";
-			echo Richieste_particolari."? ";
-			echo "<textarea name='richieste' rows='6' cols='40' maxlength='250'>$dati[4]</textarea><br/>";
-			echo "<input type='submit' value='".Aggiorna."'>";
+			echo "<label for='data'>".Data.": </label>";
+			echo "<input type='date' id='data' name='data' value='$dati[0]' required>";
+			echo "<label for='ora'>".Ora.": </label>";
+			echo "<input type='time' id='ora' name='ora' value='$dati[1]' required>";
+			echo "<label for='nome'>".Nome_tavolo.": </label>";
+			echo "<input type='text' id='nome' name='nome' maxlength='250' placeholder='".placeholder."' value='$dati[2]' required>";
+			echo "<label for='num_persone'>".Numero_persone.": </label>";
+			echo "<input type='number' id='num_persone' name='num_persone' min='1' value='$dati[3]' required>";
+			echo "<label for='richieste'>".Richieste_particolari."? </label>";
+			echo "<textarea id='richieste' name='richieste' rows='6' cols='40' maxlength='250'>$dati[4]</textarea>";
+			echo "<input type='submit' class='bottone'  value='".Aggiorna."'>";
 			echo "</form>";
-			echo "<form method='get' action='prenotazioni.php'>
-					<input type='hidden' name='stato' value='login'>
-					<input type='submit' value='".Annulla."'>
+			echo "<form method='POST' action='prenotazioni.php'>
+					<input type='submit' class='bottone'  value='".Annulla."'>
 				</form>";
 			break;
 			
@@ -223,26 +218,23 @@
 			echo "<h3>".Cancella_prenotazione."</h3>";
 			$codice = $_REQUEST["codice"];
 			$dati = select_prenotazione($codice);
-			echo "<form action='prenotazioni.php' method='get'>";
+			echo "<form action='prenotazioni.php' method='POST'>";
 			echo "<input type='hidden' name='stato' value='delete_prenotazione'>";
-			
 			echo "<input type='hidden' name='codice' value='$codice'>";
-			echo Data.": ";
-			echo "<input type='date' name='data' value='$dati[0]' required readonly><br/>";
-			echo Ora.": ";
-			echo "<input type='time' name='ora' value='$dati[1]' required readonly><br/>";
-			echo Nome_tavolo.": ";
-			echo "<input type='text' name='nome' maxlength='250' placeholder='".placeholder."' value='$dati[2]' required readonly><br/>";
-			echo Numero_persone.": ";
-			echo "<input type='number' name='num_persone' min='1' value='$dati[3]' required readonly><br/>";
-			echo Richieste_particolari."? ";
-			echo "<textarea name='richieste' rows='6' cols='40' maxlength='250' readonly>$dati[4]</textarea><br/>";
-			echo "<h4>".confermare."</h4>";
-			echo "<input type='submit' value='".Cancella."'>";
+			echo "<label for='data'>".Data.": </label>";
+			echo "<input type='date' id='data' name='data' value='$dati[0]' required readonly>";
+			echo "<label for='ora'>".Ora.": </label>";
+			echo "<input type='time' id='ora' name='ora' value='$dati[1]' required readonly>";
+			echo "<label for='nome'>".Nome_tavolo.": </label>";
+			echo "<input type='text' id='nome' name='nome' maxlength='250' placeholder='".placeholder."' value='$dati[2]' required readonly>";
+			echo "<label for='num_persone'>".Numero_persone.": </label>";
+			echo "<input type='number' id='num_persone' name='num_persone' min='1' value='$dati[3]' required readonly>";
+			echo "<label for='richieste'>".Richieste_particolari."? </label>";
+			echo "<textarea id='richieste' name='richieste' rows='6' cols='40' maxlength='250' readonly>$dati[4]</textarea>";
+			echo "<input type='submit' class='bottone'  value='".Cancella."'>";
 			echo "</form>";
-			echo "<form action='prenotazioni.php' method='get'>
-					<input type='hidden' name='stato' value='login'>
-					<input type='submit' value='".Annulla."'>
+			echo "<form action='prenotazioni.php' method='POST'>
+					<input type='submit' class='bottone'  value='".Annulla."'>
 				</form>";
 			break;
 			
@@ -255,9 +247,8 @@
 			$richieste = addslashes($_REQUEST["richieste"]);
 			delete_prenotazione($codice);
 			mail_riepilogo_cancella($data, $ora, $nome, $num_persone, $richieste);
-			echo "<form action='prenotazioni.php' method='get'>
-					<input type='hidden' name='stato' value='login'>
-					<input type='submit' value='OK'>
+			echo "<form action='prenotazioni.php' method='POST'>
+					<input type='submit' class='bottone'  value='OK'>
 				</form>";
 			break;
 		
@@ -270,30 +261,25 @@
 			$richieste = addslashes($_REQUEST["richieste"]);
 			update_prenotazione($codice_prenotazione, $data, $ora, $nome, $num_persone, $richieste);
 			mail_riepilogo_modifica($data, $ora, $nome, $num_persone, $richieste);
-			echo "<form action='prenotazioni.php' method='get'>
-					<input type='hidden' name='stato' value='login'>
-					<input type='submit' value='OK'>
+			echo "<form action='prenotazioni.php' method='POST'>
+					<input type='submit' class='bottone'  value='OK'>
 				</form>";
 			break;
 			
 		case "reset_password":
 			echo "<h3>Reset password</h3>";
-			echo "<form action='prenotazioni.php' method='get' onSubmit='return checkPw()'>";
-			
+			echo "<form action='prenotazioni.php' method='POST' onSubmit='return checkPw()'>";
 			echo "<input type='hidden' name='stato' value='reset_password_conferma'>";
-			echo Vecchia_password.": ";
-			echo "<input type='password' name='old_pw' required><br/>";
-			echo Nuova_password.": ";
-			echo "<input type='password' name='new_pw' id='new_pw' required><br/>";
-			echo Nuova_password_conferma.": ";
-			echo "<input type='password' name='new_pw_conferma' id='new_pw_conferma' required><br/>";
-			echo "<input type='submit' value='Reset'>";
-			echo "<input type='reset'>";
+			echo "<label for='old_pw'>".Vecchia_password.": </label>";
+			echo "<input type='password' id='old_pw' name='old_pw' placeholder='".Vecchia_password."' required>";
+			echo "<label for='new_pw'>".Nuova_password.": </label>";
+			echo "<input type='password' name='new_pw' id='new_pw' placeholder='".Nuova_password."' required>";
+			echo "<label for='new_pw_conferma'>".Nuova_password_conferma.": </label>";
+			echo "<input type='password' name='new_pw_conferma' id='new_pw_conferma' placeholder='".Nuova_password_conferma."' required>";
+			echo "<input type='submit' class='bottone'  value='Reset'>";
 			echo "</form>";
-			echo "<form method='get' action='prenotazioni.php'>";		
-			echo "<input type='submit' value='".Annulla."'>";
-			echo "<input type='hidden' name='stato' value='login'>";
-			
+			echo "<form method='POST' action='prenotazioni.php'>";		
+			echo "<input type='submit' class='bottone'  value='".Annulla."'>";
 			echo "</form>";
 			break;
 			
@@ -303,70 +289,73 @@
 			$new_pw_conferma = md5($_REQUEST["new_pw_conferma"]);
 			if (!reset_password($old_pw, $new_pw)) {
 				echo "<h2 class='errore'>".Ricontrollare_password."</h2>";
-				echo "<form action='prenotazioni.php' method='get'>
+				echo "<form action='prenotazioni.php' method='POST'>
 						<input type='hidden' name='stato' value='reset_password'>
-						<input type='submit' value='OK'>
+						<input type='submit' class='bottone'  value='OK'>
 					</form>";
 			} else {
 				$_SESSION["password"] = md5($_REQUEST["new_pw"]);
 				echo "<h3 class='avviso'>".Password_cambiata_correttamente."</h3>";
-				echo "<form action='prenotazioni.php' method='get'>
+				echo "<form action='prenotazioni.php' method='POST'>
 						<input type='hidden' name='stato' value='accedi'>
-						<input type='submit' value='OK'>
+						<input type='submit' class='bottone'  value='OK'>
 					</form>";
 				unset($_SESSION["mail"], $_SESSION["password"], $_SESSION["cod_utente"]);
 			}
 			break;
 			
 		case "recupera_password":
-			echo "<form action='prenotazioni.php' method='get'>
+			echo "<h3>".Recupero_password."</h3>";
+			echo "<form action='prenotazioni.php' method='POST'>
 					<input type='hidden' name='stato' value='recupera_pwd'>
-					Email: <input type='email' name='email' required>
-					<input type='submit' value='OK'>
+					<label for='email'>Email: </label>
+					<input type='email' id='email' name='email' placeholder='Mail' required>
+					<input type='submit' class='bottone'  value='OK'>
 				</form>";
+			echo "<form method='POST' action='prenotazioni.php'>";		
+				echo "<input type='submit' class='bottone'  value='".Annulla."'>";
+				echo "<input type='hidden' name='stato' value=''>";
+			echo "</form>";
 			break;
 
 		case "recupera_pwd":
 			mail_recupero_password($_REQUEST["email"]);
-			echo "<form action='prenotazioni.php' method='get'>
+			echo "<form action='prenotazioni.php' method='POST'>
 					<input type='hidden' name='stato' value='accedi'>
-					<input type='submit' value='OK'>
+					<input type='submit' class='bottone'  value='OK'>
 				</form>";
 			unset($_SESSION["mail"], $_SESSION["password"], $_SESSION["cod_utente"]);
 			break;
 			
 		case "disiscrizione":
-			echo "<h3>".confermare_eliminazione_account."</h3>";
-			echo "<form action='prenotazioni.php' method='get'>
+			echo "<h3 class='attenzione'>".confermare_eliminazione_account."?</h3>";
+			echo "<form action='prenotazioni.php' method='POST'>
 					<input type='hidden' name='stato' value='delete_account'>
-					<input type='submit' value='".Conferma."'>
+					<input type='submit' class='bottone'  value='".Conferma."'>
 				</form>";
-			echo "<form action='prenotazioni.php' method='get'>
-					<input type='hidden' name='stato' value='login'>
-					<input type='submit' value='".Annulla."'>
+			echo "<form action='prenotazioni.php' method='POST'>
+					<input type='submit' class='bottone'  value='".Annulla."'>
 				</form>";
 			break;
 
 		case "delete_account":
 			delete_account();
-			echo "<form action='prenotazioni.php' method='get'>
-					<input type='hidden' name='stato' value=''>
-					<input type='submit' value='OK'>
+			echo "<form action='prenotazioni.php' method='POST'>
+					<input type='submit' class='bottone'  value='OK'>
 				</form>";
 			unset($_SESSION["mail"], $_SESSION["password"], $_SESSION["cod_utente"]);
 			break;
 			
 		case "cambia_email":
-			echo "<h2>".cambio_mail."</h2>";
-			echo "<form action='prenotazioni.php' method='get'>
-					".Nuovo_indirizzo.": 
+			echo "<h3>".cambio_mail."</h3>";
+			echo "<form action='prenotazioni.php' method='POST'>
+					<label for='newmail'>".Nuovo_indirizzo.": </label>
 					<input type='hidden' name='stato' value='cambio_mail'>
-					<input type='mail' name='newmail' required>
-					<input type='submit' value='OK'>
+					<input type='mail' id='newmail' name='newmail' placeholder='".Nuovo_indirizzo."' required>
+					<input type='submit' class='bottone'  value='OK'>
 				</form>";
-			echo "<form action='prenotazioni.php' method='get'>
-					<input type='hidden' name='stato' value='login'>
-					<input type='submit' value='".Annulla."'>
+			echo "<form action='prenotazioni.php' method='POST'>
+					<input type='submit' class='bottone'  value='".Annulla."'>
 				</form>";
 			break;
 		
@@ -385,10 +374,10 @@
 			break;
 		
 		default:
-			crea_tab_utenti();
 			if (!empty($_SESSION["mail"]) and !empty($_SESSION["password"]) and !empty($_SESSION["cod_utente"])) {
 				paginaLogged();
 			} else {
+				crea_tab_utenti();
 				pagina();
 			}
 			break;

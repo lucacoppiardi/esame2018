@@ -5,7 +5,7 @@
 	define("Prenota","Reservations");
 	define("realizzato_da","Made by Luca Coppiardi");
 	define("Amministrazione","Administration");
-	define("registrazione_necessaria","If you register, we can contact you to confirm and modify your reservations.");
+	define("registrazione_necessaria","If you register, we can contact you to confirm your reservation, and you will be able to edit them.");
 	define("Nome","Name");
 	define("Telefono","Phone number");
 	define("Registrati","Register");
@@ -20,7 +20,7 @@
 	define("placeholder", "Like \"Smith\", or \"John birthday party\"");
 	define("Inserisci", "Insert");
 	define("Prenotazioni_online","Online reservations");
-	define("intro_prenotazione","Here you can book a table. Reservation shall be confirmed...");
+	define("intro_prenotazione","Here you can book a table. Reservations shall be confirmed by the staff.");
 	define("Gia_registrato", "Already registered?");
 	define("Accedi","Login");
 	define("Codice","Code");
@@ -34,7 +34,7 @@
 	define("Nome_prenotazione", "Reservation name");
 	define("subject_email","Your booking");
 	define("riepilogo_email", "Details of your reservation:");
-	define("link_al_sito", "https://lucacoppiardi.altervista.org/maturita2018");
+	define("link_al_sito", "https://lucacoppiardi.altervista.org/maturita2018/");
 	define("ringraziamenti_email", "\nThank you for choosing us\n".link_al_sito);
 	define("Accetta","Accept");
 	define("Accettata", "Accepted");
@@ -94,7 +94,14 @@
 	define("News_inserita", "News inserted");
 	define("News_aggiornata", "News updated");
 	define("News_cancellata", "News deleted");
-	define("Account_cancellato", "Deleted account");
+	define("Account_cancellato", "Account deleted");
 	define("Modifica", "Update");
+	define("Conferma_mail", "Confirm mail");
+	define("No_notizie", "No news have been published yet. Please check back later!");
+	define("Seleziona_altre_impostazioni", "Choose other settings");
+	define("testo_benvenuto", "welcomes you on their website");
+	define("testo_home", "For over 50 years Corte Ada has been offering their customers appreciated products of valued quality.
+						Located in the countryside of Cimbriolo (Mantua), it is a welcoming place where you can relax from the city,
+						and appreciate typical dishes - rigorously homemade - of Mantuan cuisine.");
 	
 ?>
