@@ -11,7 +11,7 @@
 	
 	while ($row=fetch_row($result)) {
 		echo "<div class='notizia'>";
-		echo "<a href='#$row[0]'><h3 class='titolo_notizia' id='$row[0]'>";
+		echo "<a href='#$row[0]'><h3 class='titolo_sezione' id='$row[0]'>";
 		if ($_SESSION["lang"] == "en") {
 			echo $row[9];
 		} else {
@@ -20,7 +20,7 @@
 		echo "</h3></a>";
 		echo "<div class='contenuto_notizia'>";
 		if ($row[4] != null) {
-			echo "<a href='uploads/$row[4]'><img src='uploads/$row[4]' alt='$row[4]' class='align_news_img'></a>";
+			echo "<a href='$row[4]'><img src='$row[4]' alt='$row[4]' class='align_news_img'></a>";
 		}
 		if ($_SESSION["lang"] == "en") {
 			echo "<p class='align_news'>$row[8]</p>";

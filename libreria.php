@@ -128,6 +128,32 @@ function crea_tab_news() {
 	close($db_conn);
 }
 
+function crea_tab_piatti() {
+	$db_conn=connessione();
+	if ($db_conn) {
+		$s="CREATE TABLE IF NOT EXISTS piatti (
+		codice INT(11) NOT NULL AUTO_INCREMENT,
+		cod_admin INT(11) NOT NULL,
+		titolo VARCHAR(255) NOT NULL UNIQUE,
+		titolo_en VARCHAR(255) NOT NULL UNIQUE,
+		testo VARCHAR(255) NOT NULL,
+		testo_en VARCHAR(255) NOT NULL,
+		tipo INT(11) NOT NULL,
+		immagine VARCHAR(255),
+		prezzo FLOAT(8,2),
+		PRIMARY KEY (codice),
+		FOREIGN KEY (cod_admin) REFERENCES amministratori(codice)
+		ON DELETE CASCADE
+		);";
+		if (!query($s, $db_conn, "creata piatti")) {
+			torna_indietro();
+		}
+	} else {
+		echo Errore_connessione_database."<br/>";
+	}
+	close($db_conn);
+}
+
 function crea_tab_admin() {
 	$db_conn=connessione();
 	if ($db_conn) {
@@ -428,6 +454,64 @@ function visualizza_news() {
 				</form>
 				<form action='admin.php' method='POST'>
 					<input type='hidden' name='stato' value='cancella_news'>
+					<input type='submit' class='bottonePiccolo'  value='".Cancella."'>
+					<input type='hidden' name='codice' value='$row[0]'>
+				</form>
+				</td>";
+			echo "</tr>";
+		}
+		echo "</table>";
+		echo "</div>";
+	} else {
+		torna_indietro();
+	}
+	close($db_conn);
+}
+
+function visualizza_piatti() {
+	$db_conn=connessione();
+	if ($db_conn and !empty($_SESSION["mail_admin"]) and !empty($_SESSION["password_admin"]) and !empty($_SESSION["cod_admin"])) {
+		$cod_admin = $_SESSION["cod_admin"];
+		$s="SELECT codice, titolo, testo, titolo_en, testo_en, prezzo, tipo FROM piatti WHERE cod_admin = $cod_admin ORDER BY tipo ASC";
+		$result=query($s, $db_conn, "select visualizza_piatti");
+		echo "<div id='scroll_tabella'>";
+		echo "<table class='dati_stampati'>";
+		echo "<tr class='prima_riga'><td>".Titolo."</td><td>".Testo."</td><td>".Prezzo."</td><td>".Tipo."</td></tr>";
+		while ($row=fetch_row($result)) {	
+			echo "<tr class='altre_righe'>";
+			echo "<td><a href='piatti.php#$row[0]'>";
+			if ($_SESSION["lang"] == "en") {
+				echo $row[3];
+			} else {
+				echo $row[1];
+			}
+			echo "</a></td>";
+			echo "<td><div class='nota'>";
+			if ($_SESSION["lang"] == "en") {
+				echo $row[4];
+			} else {
+				echo $row[2];
+			}
+			echo "</div></td>";
+			echo "<td>";
+			if ($_SESSION["lang"] == "en") {
+				/*echo substr($row[6],0,50);
+				if (strlen($row[6])>=50) echo "...";*/
+				echo $row[6];
+			} else {
+				/*echo substr($row[4],0,50);
+				if (strlen($row[4])>=50) echo "...";*/
+				echo $row[4];
+			}
+			echo "</div></td>";
+			echo "<td>
+				<form action='admin.php' method='POST'>
+					<input type='hidden' name='stato' value='modifica_piatto'>
+					<input type='submit' class='bottonePiccolo'  value='".Modifica."'>
+					<input type='hidden' name='codice' value='$row[0]'>
+				</form>
+				<form action='admin.php' method='POST'>
+					<input type='hidden' name='stato' value='cancella_piatto'>
 					<input type='submit' class='bottonePiccolo'  value='".Cancella."'>
 					<input type='hidden' name='codice' value='$row[0]'>
 				</form>
@@ -783,6 +867,24 @@ function select_news($codice) {
 	close($db_conn);
 }
 
+function select_piatto($codice) {
+	$db_conn=connessione();
+	$cod_admin = $_SESSION["cod_admin"];
+	if ($db_conn and !empty($codice) and !empty($cod_admin)) {
+		$s="SELECT titolo,testo,prezzo,immagine,cod_admin,testo_en,titolo_en,tipo FROM piatti WHERE codice = $codice AND cod_admin = $cod_admin";
+		$result = query($s, $db_conn, "select piatto");
+		if (mysqli_num_rows($result) == 1) {
+			$row = fetch_row($result);
+			return $row;
+		} else {
+			torna_indietro();
+		}
+	} else {
+		torna_indietro();
+	}
+	close($db_conn);
+}
+
 function update_prenotazione($codice, $data, $ora, $nome, $num_persone, $richieste) {
 	$db_conn=connessione();
 	if ($db_conn and !empty($codice) and !empty($data) and !empty($ora) and !empty($nome) and !empty($num_persone) and $num_persone>0) {
@@ -831,6 +933,38 @@ function update_news($codice, $titolo, $contenuto, $contenuto_en, $titolo_en, $f
 			}
 			if (query($s, $db_conn, "update news") and mysqli_affected_rows($db_conn)==1) {
 				echo "<h3 class='avviso'>".News_aggiornata."</h3>";
+			} else {
+				torna_indietro();
+			}
+		} else {
+			torna_indietro();
+		}
+	} else {
+		torna_indietro();
+	}
+	close($db_conn);
+}
+
+function update_piatto($codice, $titolo, $contenuto, $contenuto_en, $titolo_en, $filename, $prezzo, $tipo) {
+	$db_conn=connessione();
+	if ($db_conn and !empty($codice) and !empty($titolo) and !empty($contenuto) and !empty($contenuto_en) and !empty($titolo_en) and !empty($prezzo) and !empty($tipo)) {
+		$cod_admin = $_SESSION["cod_admin"];
+		$s = "SELECT cod_admin FROM piatti WHERE codice=$codice";
+		$result=query($s, $db_conn, "select per controllo update piatti");
+		$row = null;
+		if (mysqli_num_rows($result) == 1) {
+			$row = fetch_row($result);
+		} else {
+			torna_indietro();
+		}
+		if ($cod_admin == $row[0]) {
+			if ($filename == "") {
+				$s="UPDATE piatti SET titolo='$titolo', testo='$contenuto', testo_en='$contenuto_en', titolo_en='$titolo_en', immagine=null, prezzo=$prezzo, tipo=$tipo WHERE codice = $codice AND cod_admin = $cod_admin";
+			} else {
+				$s="UPDATE piatti SET titolo='$titolo', testo='$contenuto', testo_en='$contenuto_en', titolo_en='$titolo_en', immagine='$filename', prezzo=$prezzo, tipo=$tipo WHERE codice = $codice AND cod_admin = $cod_admin";
+			}
+			if (query($s, $db_conn, "update piatto") and mysqli_affected_rows($db_conn)==1) {
+				echo "<h3 class='avviso'>".piatto_modificato."</h3>";
 			} else {
 				torna_indietro();
 			}
@@ -897,6 +1031,34 @@ function delete_news($codice) {
 	close($db_conn);
 }
 
+function delete_piatto($codice) {
+	$db_conn=connessione();
+	if ($db_conn and !empty($codice)) {
+		$cod_admin = $_SESSION["cod_admin"];
+		$s = "SELECT cod_admin FROM piatti WHERE codice=$codice";
+		$result=query($s, $db_conn, "select per controllo delete piatto");
+		$row = null;
+		if (mysqli_num_rows($result) == 1) {
+			$row = fetch_row($result);
+		} else {
+			torna_indietro();
+		}
+		if ($cod_admin == $row[0]) {
+			$s="DELETE FROM piatti WHERE codice = $codice AND cod_admin = $cod_admin";
+			if (query($s, $db_conn, "delete piatti") and mysqli_affected_rows($db_conn)==1) {
+				echo "<h3 class='avviso'>".piatto_cancellato."</h3>";
+			} else {
+				torna_indietro();
+			}
+		} else {
+			torna_indietro();
+		}
+	} else {
+		torna_indietro();
+	}
+	close($db_conn);
+}
+
 function reset_password($old_pw, $new_pw) {
 	$db_conn=connessione();
 	if ($db_conn and !empty($old_pw) and !empty($new_pw)) {
@@ -920,8 +1082,9 @@ function reset_password($old_pw, $new_pw) {
 	close($db_conn);
 }
 
-function insert_news($cod_admin, $titolo, $contenuto, $contenuto_en, $titolo_en, $filename) {
+function insert_news($titolo, $contenuto, $contenuto_en, $titolo_en, $filename) {
 	$db_conn=connessione();
+	$cod_admin = $_SESSION["cod_admin"];
 	if ($db_conn and !empty($cod_admin) and !empty($titolo) and !empty($contenuto) and !empty($contenuto_en) and !empty($titolo_en)) {
 		if ($filename == "") {
 			$s="INSERT INTO news (cod_admin, titolo, testo, testo_en, titolo_en, immagine, data, ora) VALUES ($cod_admin, '$titolo', '$contenuto', '$contenuto_en', '$titolo_en', null, NOW(), NOW())";
@@ -937,6 +1100,24 @@ function insert_news($cod_admin, $titolo, $contenuto, $contenuto_en, $titolo_en,
 	close($db_conn);
 }
 
+function insert_piatto($titolo, $contenuto, $contenuto_en, $titolo_en, $filename, $prezzo, $tipo) {
+	$db_conn=connessione();
+	$cod_admin = $_SESSION["cod_admin"];
+	if ($db_conn and !empty($cod_admin) and !empty($titolo) and !empty($contenuto) and !empty($contenuto_en) and !empty($titolo_en) and !empty($prezzo) and !empty($tipo)) {
+		if ($filename == "") {
+			$s="INSERT INTO piatti (cod_admin, titolo, testo, testo_en, titolo_en, immagine, prezzo, tipo) VALUES ($cod_admin, '$titolo', '$contenuto', '$contenuto_en', '$titolo_en', null, $prezzo, $tipo)";
+		} else {
+			$s="INSERT INTO piatti (cod_admin, titolo, testo, testo_en, titolo_en, immagine, prezzo, tipo) VALUES ($cod_admin, '$titolo', '$contenuto', '$contenuto_en', '$titolo_en', '$filename', $prezzo, $tipo)";
+		}
+		if (query($s, $db_conn, "insert piatto") and mysqli_affected_rows($db_conn)==1) {
+			echo "<h3 class='avviso'>".piatto_inserito."</h3>";
+		}
+	} else {
+		torna_indietro();
+	}
+	close($db_conn);
+}
+
 function pagina_news() {
 	$db_conn=connessione();
 	if ($db_conn) {
@@ -944,6 +1125,23 @@ function pagina_news() {
 		$result=query($s, $db_conn, "select pagina news");
 		if (mysqli_num_rows($result) == 0) {
 			echo "<h3 class='errore'>".No_notizie."</h3>";
+			tail();
+			die();
+		}
+		return $result;
+	} else {
+		torna_indietro();
+	}
+	close($db_conn);
+}
+
+function pagina_piatti() {
+	$db_conn=connessione();
+	if ($db_conn) {
+		$s="SELECT codice, titolo, titolo_en, testo, testo_en, prezzo, tipo, immagine FROM piatti ORDER BY tipo ASC";
+		$result=query($s, $db_conn, "select pagina piatti");
+		if (mysqli_num_rows($result) == 0) {
+			echo "<h3 class='errore'>".No_piatti."</h3>";
 			tail();
 			die();
 		}

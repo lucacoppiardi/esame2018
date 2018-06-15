@@ -103,5 +103,21 @@
 	define("testo_home", "Da oltre 50 anni Corte Ada propone ai propri clienti prodotti di qualit&agrave; stimati ed apprezzati. <br/>
 						Situato nelle campagne di Cimbriolo, &egrave un posto accogliente dove &egrave; possibile rilassarsi dai ritmi serrati della citt&agrave;
 						ed apprezzare piatti tipici - rigorosamente fatti in casa - della cucina mantovana.");
-	
+	define("testo_piatti", "In questa pagina proponiamo alcuni dei nostri piatti migliori.
+							Sono tutti fatti in casa, a mano, e scegliamo con cura gli ingredienti migliori.");
+	define("inserisci_piatto", "Inserisci piatto");
+	define("modifica_piatto", "Modifica piatto");
+	define("cancella_piatto", "Cancella piatto");
+	define("piatto_inserito", "Piatto inserito");
+	define("piatto_modificato", "Piatto modificato");
+	define("piatto_cancellato", "Piatto cancellato");
+	define("Prezzo", "Prezzo");
+	define("Tipo", "Tipo");
+	define("Antipasti", "Antipasti");
+	define("PrimoPiatto", "Primi piatti");
+	define("SecondoPiatto", "Secondi piatti");
+	define("Contorno", "Contorni");
+	define("Dolce", "Dolci");
+	define("Altro", "Altro");
+	define("No_piatti", "Nessun piatto &egrave; stato pubblicato. Controlla pi&ugrave tardi!");
 ?>

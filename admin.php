@@ -38,7 +38,7 @@
 			if ($file["name"] != "") {
 				$checkImg = getimagesize($file["tmp_name"]);
 				$temp = explode(".",$file["name"]);
-				$newFileName = md5($file["name"]).".".end($temp);
+				$newFileName = UPLOAD_DIR.md5($file["name"]).".".end($temp);
 			}
 			if($file['error'] == UPLOAD_ERR_OK and is_uploaded_file($file['tmp_name']))	{
 				if($checkImg == true) {
@@ -56,7 +56,7 @@
 					$checkUpload = true;
 				}
 				if ($checkUpload==false) {
-					if (move_uploaded_file($file['tmp_name'], UPLOAD_DIR.$newFileName)) {
+					if (move_uploaded_file($file['tmp_name'], $newFileName)) {
 						echo "File ".caricato."<br/>";
 					} else {
 						echo "File ".non_caricato."<br/>";
@@ -118,6 +118,10 @@
 					<input type='hidden' name='stato' value='gestione_utenti'>
 					<input type='submit' class='bottone'  value='".Utenti."' >
 				</form>";
+			echo "<form action='admin.php' method='POST'>
+				<input type='hidden' name='stato' value='gestione_piatti'>
+				<input type='submit' class='bottone'  value='".Piatti."' >
+			</form>";
 			echo "<form method='POST' action='admin.php' style='margin-top:40px'>
 					<input type='hidden' name='stato' value='logout' >
 					<input type='submit' class='bottone'  value='Logout' >
@@ -156,6 +160,20 @@
 				</form>";
 			crea_tab_news();
 			visualizza_news();
+			echo "<form method='POST' action='admin.php'>
+					<input type='hidden' name='stato' value='login'>
+					<input type='submit' class='bottone'  value='".Torna_indietro."'>
+				</form>";
+			break;
+			
+		case "gestione_piatti":
+			echo "<h2>".Piatti."</h2>";
+			echo "<form action='admin.php' method='POST'>
+					<input type='hidden' name='stato' value='inserisci_piatto'>
+					<input type='submit' class='bottone'  value='".inserisci_piatto."'>
+				</form>";
+			crea_tab_piatti();
+			visualizza_piatti();
 			echo "<form method='POST' action='admin.php'>
 					<input type='hidden' name='stato' value='login'>
 					<input type='submit' class='bottone'  value='".Torna_indietro."'>
@@ -248,7 +266,6 @@
 			
 		case "inserisci_news":
 			echo "<h3>".inserisci_news."</h3>";
-			$cod_admin = $_SESSION["cod_admin"];
 			echo "<form action='admin.php' method='post' enctype='multipart/form-data'>
 					<input type='hidden' name='stato' value='insert_news'>
 					<label for='titolo'>".Titolo.": </label>
@@ -335,9 +352,8 @@
 			$titolo_en = addslashes($_REQUEST["titolo_en"]);
 			$contenuto = addslashes($_REQUEST["contenuto"]);
 			$contenuto_en = addslashes($_REQUEST["contenuto_en"]);
-			$cod_admin = $_SESSION["cod_admin"];
 					
-			insert_news($cod_admin, $titolo, $contenuto, $contenuto_en, $titolo_en, $newFileName);
+			insert_news($titolo, $contenuto, $contenuto_en, $titolo_en, $newFileName);
 			
 			echo "<form action='admin.php' method='POST'>
 					<input type='hidden' name='stato' value='gestione_news'>
@@ -357,6 +373,167 @@
 			
 			echo "<form action='admin.php' method='POST'>
 					<input type='hidden' name='stato' value='gestione_news'>
+					<input type='submit' class='bottone'  value='OK'>
+				</form>";
+			break;
+			
+		case "inserisci_piatto":
+			echo "<h3>".inserisci_piatto."</h3>";
+			echo "<form action='admin.php' method='post' enctype='multipart/form-data'>
+					<input type='hidden' name='stato' value='insert_piatto'>
+					<label for='titolo'>".Titolo.": </label>
+					<input type='text' id='titolo' name='titolo' placeholder='".Titolo."' maxlength='250' required>
+					<label for='titolo_en'>".Titolo." (english): </label>
+					<input type='text' id='titolo_en' name='titolo_en' placeholder='".Titolo." (english)' maxlength='250' required>
+					<label for='contenuto'>".Testo.": </label>
+					<textarea id='contenuto' name='contenuto' rows='6' cols='40' placeholder='".Testo."' maxlength='250' required></textarea>
+					<label for='contenuto_en'>".Testo." (english): </label>
+					<textarea id='contenuto_en' name='contenuto_en' rows='6' cols='40' placeholder='".Testo." (english)' maxlength='250' required></textarea>
+					<label for='file'>".immagine_facoltativa.": </label>
+					<input type='file' id='file' name='file'>
+					<label for='titolo'>".Titolo.": </label>
+					<input type='number' id='prezzo' name='prezzo' placeholder='".Prezzo."' step='0.01' required>
+					<label for='tipo'>".Tipo."</label>
+					<select id='tipo' name='tipo'>
+						<option value='1'>".Antipasti."</option>
+						<option value='2'>".PrimoPiatto."</option>
+						<option value='3'>".SecondoPiatto."</option>
+						<option value='4'>".Contorno."</option>
+						<option value='5'>".Dolce."</option>
+						<option value='6'>".Altro."</option>
+					</select>
+					<input type='submit' class='bottone'  value='".Inserisci."'>
+					<input type='hidden' name='action' value='upload'>
+				</form>";
+			echo "<form method='POST' action='admin.php'>
+					<input type='hidden' name='stato' value='gestione_piatti'>
+					<input type='submit' class='bottone'  value='".Annulla."'>
+				</form>";
+			break;
+		
+		case "modifica_piatto":
+			$codice = $_REQUEST["codice"];
+			$dati = select_piatto($codice);
+			echo "<h3>".modifica_piatto."</h3>";
+			echo "<form action='admin.php' method='post' enctype='multipart/form-data'>
+					<input type='hidden' name='stato' value='update_piatto'>
+					<input type='hidden' name='codice' value='$codice'>
+					<label for='titolo'>".Titolo.": </label>
+					<input type='text' id='titolo' name='titolo' maxlength='250' value='$dati[0]' required>
+					<label for='titolo_en'>".Titolo." (english): </label>
+					<input type='text' id='titolo_en' name='titolo_en' maxlength='250' value='$dati[6]' required>
+					<label for='contenuto'>".Testo.": </label>
+					<textarea id='contenuto' name='contenuto' rows='6' cols='40' maxlength='250' required>$dati[1]</textarea>
+					<label for='contenuto_en'>".Testo." (english): </label>
+					<textarea id='contenuto_en' name='contenuto_en' rows='6' cols='40' maxlength='250' required>$dati[5]</textarea>
+					<label for='file'>".immagine_facoltativa.": </label>
+					<input type='file' id='file' name='file'>
+					<label for='prezzo'>".Prezzo."</label>
+					<input type='number' id='prezzo' name='prezzo' placeholder='".Prezzo."' step='0.01' value='$dati[2]' required>
+					<label for='tipo'>".Tipo."</label>
+					<select id='tipo' name='tipo'>
+						<option value='$dati[7]'>";
+						if ($dati[7]==1) echo Antipasti;
+						if ($dati[7]==2) echo PrimoPiatto;
+						if ($dati[7]==3) echo SecondoPiatto;
+						if ($dati[7]==4) echo Contorno;
+						if ($dati[7]==5) echo Dolce;
+						if ($dati[7]==6) echo Altro;
+						echo "</option>
+						<option disabled></option>
+						<option value='1'>".PrimoPiatto."</option>
+						<option value='2'>".SecondoPiatto."</option>
+						<option value='3'>".Contorno."</option>
+						<option value='4'>".Dolce."</option>
+						<option value='5'>".Altro."</option>
+					</select>
+					<input type='submit' class='bottone'  value='".Aggiorna."'>
+					<input type='hidden' name='action' value='upload'>
+				</form>";	
+			echo "<form method='POST' action='admin.php'>
+					<input type='hidden' name='stato' value='gestione_piatti'>
+					<input type='submit' class='bottone'  value='".Annulla."'>
+				</form>";
+			break;
+			
+		case "cancella_piatto":
+			$codice = $_REQUEST["codice"];
+			$dati = select_piatto($codice);
+			echo "<h3>".cancella_piatto."</h3>";
+			echo "<form action='admin.php' method='POST'>";
+				echo "<input type='hidden' name='stato' value='delete_piatto'>";
+				echo "<input type='hidden' name='codice' value='$codice'>";
+				echo "<label for='titolo'>".Titolo.": </label>
+					<input type='text' id='titolo' name='titolo' maxlength='250' value='$dati[0]' required readonly>
+					<label for='titolo_en'>".Titolo." (english): </label>
+					<input type='text' id='titolo_en' name='titolo_en' maxlength='250' value='$dati[6]' required readonly>
+					<label for='contenuto'>".Testo.": </label>
+					<textarea id='contenuto' name='contenuto' rows='6' cols='40' maxlength='250' required readonly>$dati[1]</textarea>
+					<label for='contenuto_en'>".Testo." (english): </label>
+					<textarea id='contenuto_en' name='contenuto_en' rows='6' cols='40' maxlength='250' required readonly>$dati[5]</textarea>
+					<label for='file'>".immagine_facoltativa.": </label>
+					<input type='file' id='file' name='file' disabled>
+					<label for='prezzo'>".Prezzo."</label>
+					<input type='number' id='prezzo' name='prezzo' placeholder='".Prezzo."' step='0.01' value='$dati[2]' required readonly>
+					<label for='tipo'>".Tipo."</label>
+					<select id='tipo' name='tipo' readonly>
+						<option value='$dati[7]'>";
+						if ($dati[7]==1) echo Antipasti;
+						if ($dati[7]==2) echo PrimoPiatto;
+						if ($dati[7]==3) echo SecondoPiatto;
+						if ($dati[7]==4) echo Contorno;
+						if ($dati[7]==5) echo Dolce;
+						if ($dati[7]==6) echo Altro;
+						echo "</option>
+					</select>
+					";
+				echo "<input type='submit' class='bottone'  value='".Cancella."'>";
+			echo "</form>";
+			echo "<form method='POST' action='admin.php'>
+					<input type='hidden' name='stato' value='gestione_piatti'>
+					<input type='submit' class='bottone'  value='".Annulla."'>
+				</form>";
+			break;
+			
+		case "delete_piatto":
+			$codice = $_REQUEST["codice"];
+			delete_piatto($codice);
+			echo "<form action='admin.php' method='POST'>
+					<input type='hidden' name='stato' value='gestione_piatti'>
+					<input type='submit' class='bottone'  value='OK'>
+				</form>";
+			break;
+			
+		case "insert_piatto":
+			$titolo = addslashes($_REQUEST["titolo"]);
+			$titolo_en = addslashes($_REQUEST["titolo_en"]);
+			$contenuto = addslashes($_REQUEST["contenuto"]);
+			$contenuto_en = addslashes($_REQUEST["contenuto_en"]);
+			$prezzo = addslashes($_REQUEST["prezzo"]);
+			$tipo = addslashes($_REQUEST["tipo"]);
+					
+			insert_piatto($titolo, $contenuto, $contenuto_en, $titolo_en, $newFileName, $prezzo, $tipo);
+			
+			echo "<form action='admin.php' method='POST'>
+					<input type='hidden' name='stato' value='gestione_piatto'>
+					<input type='submit' class='bottone'  value='OK'>
+				</form>";
+			break;
+		
+		case "update_piatto":
+			$codice = $_REQUEST["codice"];
+			$titolo = addslashes($_REQUEST["titolo"]);
+			$titolo_en = addslashes($_REQUEST["titolo_en"]);
+			$contenuto = addslashes($_REQUEST["contenuto"]);
+			$contenuto_en = addslashes($_REQUEST["contenuto_en"]);
+			$filename = addslashes($file["name"]);
+			$prezzo = addslashes($_REQUEST["prezzo"]);
+			$tipo = addslashes($_REQUEST["tipo"]);
+					
+			update_piatto($codice, $titolo, $contenuto, $contenuto_en, $titolo_en, $newFileName, $prezzo, $tipo);
+			
+			echo "<form action='admin.php' method='POST'>
+					<input type='hidden' name='stato' value='gestione_piatto'>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";
 			break;
