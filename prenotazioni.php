@@ -146,11 +146,11 @@
 			break;
 			
 		case "registrato":
-			$nome = addslashes($_REQUEST["nome"]);
-			$mail = $_REQUEST["mail"];
-			$conferma_mail = $_REQUEST["conferma_mail"];
+			$nome = addslashes(htmlentities($_REQUEST["nome"]));
+			$mail = addslashes(htmlentities($_REQUEST["mail"]));
+			$conferma_mail = addslashes(htmlentities($_REQUEST["conferma_mail"]));
 			$password = md5($_REQUEST["pass"]);
-			$telefono = $_REQUEST["telefono"];
+			$telefono = addslashes(htmlentities($_REQUEST["telefono"]));
 			if ($mail != $conferma_mail) {
 				echo "<h2 class='errore'>".Mail_non_valida."</h2>";
 				form_registra();
@@ -177,11 +177,11 @@
 			break;
 			
 		case "inserisci":
-			$data = $_REQUEST["data"];
-			$ora = $_REQUEST["ora"];
-			$nome = addslashes($_REQUEST["nome"]);
-			$num_persone = $_REQUEST["num_persone"];
-			$richieste = addslashes($_REQUEST["richieste"]);
+			$data = addslashes(htmlentities($_REQUEST["data"]));
+			$ora = addslashes(htmlentities($_REQUEST["ora"]));
+			$nome = addslashes(htmlentities($_REQUEST["nome"]));
+			$num_persone = addslashes(htmlentities($_REQUEST["num_persone"]));
+			$richieste = addslashes(htmlentities($_REQUEST["richieste"]));
 			inserisci_prenotazione($data, $ora, $nome, $num_persone, $richieste);
 			mail_riepilogo($data, $ora, $nome, $num_persone, $richieste);
 			echo "<form action='prenotazioni.php' method='POST'>
@@ -240,11 +240,11 @@
 			
 		case "delete_prenotazione":
 			$codice = $_REQUEST["codice"];
-			$data = $_REQUEST["data"];
-			$ora = $_REQUEST["ora"];
-			$nome = addslashes($_REQUEST["nome"]);
-			$num_persone = $_REQUEST["num_persone"];
-			$richieste = addslashes($_REQUEST["richieste"]);
+			$data = addslashes(htmlentities($_REQUEST["data"]));
+			$ora = addslashes(htmlentities($_REQUEST["ora"]));
+			$nome = addslashes(htmlentities($_REQUEST["nome"]));
+			$num_persone = addslashes(htmlentities($_REQUEST["num_persone"]));
+			$richieste = addslashes(htmlentities($_REQUEST["richieste"]));
 			delete_prenotazione($codice);
 			mail_riepilogo_cancella($data, $ora, $nome, $num_persone, $richieste);
 			echo "<form action='prenotazioni.php' method='POST'>
@@ -254,11 +254,11 @@
 		
 		case "update_prenotazione":
 			$codice_prenotazione = $_REQUEST["codice"];
-			$data = $_REQUEST["data"];
-			$ora = $_REQUEST["ora"];
-			$nome = addslashes($_REQUEST["nome"]);
-			$num_persone = $_REQUEST["num_persone"];
-			$richieste = addslashes($_REQUEST["richieste"]);
+			$data = addslashes(htmlentities($_REQUEST["data"]));
+			$ora = addslashes(htmlentities($_REQUEST["ora"]));
+			$nome = addslashes(htmlentities($_REQUEST["nome"]));
+			$num_persone = addslashes(htmlentities($_REQUEST["num_persone"]));
+			$richieste = addslashes(htmlentities($_REQUEST["richieste"]));
 			update_prenotazione($codice_prenotazione, $data, $ora, $nome, $num_persone, $richieste);
 			mail_riepilogo_modifica($data, $ora, $nome, $num_persone, $richieste);
 			echo "<form action='prenotazioni.php' method='POST'>
@@ -360,7 +360,7 @@
 			break;
 		
 		case "cambio_mail":
-			update_indirizzo_mail(addslashes($_REQUEST["newmail"]));
+			update_indirizzo_mail($_REQUEST["newmail"]);
 			unset($_SESSION["mail"], $_SESSION["password"], $_SESSION["cod_utente"]);
 			break;
 			

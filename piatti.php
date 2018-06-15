@@ -31,34 +31,34 @@
 		if ($i==0) {
 			echo "<tr>";
 			echo "<td colspan='4'>";
-			echo "<h4 class='titolo_sezione'>";
+			echo "<h3 class='titolo_sezione'>";
 			if ($piatti[$i][6]==1) echo Antipasti;
 			if ($piatti[$i][6]==2) echo PrimoPiatto;
 			if ($piatti[$i][6]==3) echo SecondoPiatto;
 			if ($piatti[$i][6]==4) echo Contorno;
 			if ($piatti[$i][6]==5) echo Dolce;
 			if ($piatti[$i][6]==6) echo Altro;
-			echo "</h4>";
+			echo "</h3>";
 			echo "</td>";
 			echo "</tr>";
 		} else if (array_key_exists($i+1, $piatti)) {
 			if ($piatti[$i][6] != $piatti[$i-1][6]) {
 				echo "<tr>";
 				echo "<td colspan='4'>";
-				echo "<h4 class='titolo_sezione'>";
+				echo "<h3 class='titolo_sezione'>";
 				if ($piatti[$i][6]==1) echo Antipasti;
 				if ($piatti[$i][6]==2) echo PrimoPiatto;
 				if ($piatti[$i][6]==3) echo SecondoPiatto;
 				if ($piatti[$i][6]==4) echo Contorno;
 				if ($piatti[$i][6]==5) echo Dolce;
 				if ($piatti[$i][6]==6) echo Altro;
-				echo "</h4>";
+				echo "</h3>";
 				echo "</td>";
 				echo "</tr>";
 			}
 		}
 		
-		echo "<tr>";
+		echo "<tr class='riga_piatto'>";
 		
 		echo "<td width='200px'>";
 		if (!empty($piatti[$i][7])) {

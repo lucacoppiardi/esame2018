@@ -371,29 +371,16 @@ input[type=submit] {
 	padding: 5px;
 }
 
-a:link {
-	text-decoration: none;
-}
-
-a:visited {
-	text-decoration: none;
-}
-
-a:hover {
-	text-decoration: none;
-}
-
-a:active {
+.notizia a:link, a:visited, a:hover, a:active {
 	text-decoration: none;
 }
 
 .notizia {
-	transition: 0.5s;
+	transition: 0.25s;
 }
 
 .notizia:hover {
 	background-color: #E5E5E5;
-	padding: 0 20px;
 }
 
 .separatore {
@@ -481,6 +468,8 @@ a:active {
 	}
 }
 
+/* PIATTI */
+
 .foto_piatto_tab {
 	width: 300px;
 	height: 200px;
@@ -492,6 +481,16 @@ a:active {
 		height: 100px;
 	}
 }
+
+.riga_piatto {
+	transition: 0.25s;
+}
+
+.riga_piatto:hover {
+	background-color: #E5E5E5;
+}
+
+
 
 /*
 #logo_img {

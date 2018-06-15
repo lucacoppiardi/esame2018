@@ -348,10 +348,10 @@
 			break;
 			
 		case "insert_news":
-			$titolo = addslashes($_REQUEST["titolo"]);
-			$titolo_en = addslashes($_REQUEST["titolo_en"]);
-			$contenuto = addslashes($_REQUEST["contenuto"]);
-			$contenuto_en = addslashes($_REQUEST["contenuto_en"]);
+			$titolo = addslashes(htmlentities($_REQUEST["titolo"]));
+			$titolo_en = addslashes(htmlentities($_REQUEST["titolo_en"]));
+			$contenuto = addslashes(htmlentities($_REQUEST["contenuto"]));
+			$contenuto_en = addslashes(htmlentities($_REQUEST["contenuto_en"]));
 					
 			insert_news($titolo, $contenuto, $contenuto_en, $titolo_en, $newFileName);
 			
@@ -363,11 +363,10 @@
 		
 		case "update_news":
 			$codice = $_REQUEST["codice"];
-			$titolo = addslashes($_REQUEST["titolo"]);
-			$titolo_en = addslashes($_REQUEST["titolo_en"]);
-			$contenuto = addslashes($_REQUEST["contenuto"]);
-			$contenuto_en = addslashes($_REQUEST["contenuto_en"]);
-			$filename = addslashes($file["name"]);
+			$titolo = addslashes(htmlentities($_REQUEST["titolo"]));
+			$titolo_en = addslashes(htmlentities($_REQUEST["titolo_en"]));
+			$contenuto = addslashes(htmlentities($_REQUEST["contenuto"]));
+			$contenuto_en = addslashes(htmlentities($_REQUEST["contenuto_en"]));
 					
 			update_news($codice, $titolo, $contenuto, $contenuto_en, $titolo_en, $newFileName);
 			
@@ -505,12 +504,12 @@
 			break;
 			
 		case "insert_piatto":
-			$titolo = addslashes($_REQUEST["titolo"]);
-			$titolo_en = addslashes($_REQUEST["titolo_en"]);
-			$contenuto = addslashes($_REQUEST["contenuto"]);
-			$contenuto_en = addslashes($_REQUEST["contenuto_en"]);
-			$prezzo = addslashes($_REQUEST["prezzo"]);
-			$tipo = addslashes($_REQUEST["tipo"]);
+			$titolo = addslashes(htmlentities($_REQUEST["titolo"]));
+			$titolo_en = addslashes(htmlentities($_REQUEST["titolo_en"]));
+			$contenuto = addslashes(htmlentities($_REQUEST["contenuto"]));
+			$contenuto_en = addslashes(htmlentities($_REQUEST["contenuto_en"]));
+			$prezzo = addslashes(htmlentities($_REQUEST["prezzo"]));
+			$tipo = addslashes(htmlentities($_REQUEST["tipo"]));
 					
 			insert_piatto($titolo, $contenuto, $contenuto_en, $titolo_en, $newFileName, $prezzo, $tipo);
 			
@@ -522,13 +521,12 @@
 		
 		case "update_piatto":
 			$codice = $_REQUEST["codice"];
-			$titolo = addslashes($_REQUEST["titolo"]);
-			$titolo_en = addslashes($_REQUEST["titolo_en"]);
-			$contenuto = addslashes($_REQUEST["contenuto"]);
-			$contenuto_en = addslashes($_REQUEST["contenuto_en"]);
-			$filename = addslashes($file["name"]);
-			$prezzo = addslashes($_REQUEST["prezzo"]);
-			$tipo = addslashes($_REQUEST["tipo"]);
+			$titolo = addslashes(htmlentities($_REQUEST["titolo"]));
+			$titolo_en = addslashes(htmlentities($_REQUEST["titolo_en"]));
+			$contenuto = addslashes(htmlentities($_REQUEST["contenuto"]));
+			$contenuto_en = addslashes(htmlentities($_REQUEST["contenuto_en"]));
+			$prezzo = addslashes(htmlentities($_REQUEST["prezzo"]));
+			$tipo = addslashes(htmlentities($_REQUEST["tipo"]));
 					
 			update_piatto($codice, $titolo, $contenuto, $contenuto_en, $titolo_en, $newFileName, $prezzo, $tipo);
 			
