@@ -101,9 +101,9 @@
 	
 	echo "
 	<div class='slideshow_container'>
-		<button class='bottone' onClick=\"gira('sx');\">&lt;</button>
+		<button class='bottone' style='margin: 0 10px;' onClick=\"gira('sx');\">&lt;</button>
 		<a id='link_immagine' href='$nomi[0]'><img id='immagine' src='$nomi[0]'></a>
-		<button class='bottone' onClick=\"gira('dx');\">&gt;</button>
+		<button class='bottone' style='margin: 0 10px;' onClick=\"gira('dx');\">&gt;</button>
 	</div>
 	
 	<div class='slideshow_container_mobile'>

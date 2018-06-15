@@ -398,10 +398,6 @@ input[type=submit] {
 	margin-bottom: 30px;
 }
 
-button {
-	margin: 0 10px;
-}
-
 @media screen and (min-width: 800px) {
 	.slideshow_container {
 		display: flex;
