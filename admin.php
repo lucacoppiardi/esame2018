@@ -124,12 +124,6 @@
 					<input type='hidden' name='stato' value='logout' >
 					<input type='submit' class='bottone'  value='Logout' >
 				</form>";
-			if (isDebug()) {
-				echo "<form action='admin.php' method='post' style='margin-top:20px'>
-					<input type='hidden' name='stato' value='killer'>
-					<input type='submit' class='bottone'  value='DISTRUGGI TUTTO'>
-				</form>";
-			}
 		}
 	}
 
@@ -537,23 +531,6 @@
 					<input type='hidden' name='stato' value='gestione_piatto'>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";
-			break;
-			
-		case "killer":
-			echo "<form action='admin.php' method='post'>
-					<input type='hidden' name='stato' value='drop'>
-					<input type='submit' class='bottone'  name='conferma' value='DISTRUGGI TUTTE LE TABELLE'>
-				</form>";
-			echo "<form action='admin.php' method='post'>
-					<input type='hidden' name='stato' value='login'>
-					<input type='submit' class='bottone'  value='".Annulla."'>
-				</form>";
-			break;
-			
-		case "drop":
-			if (isDebug() and isset($_REQUEST["conferma"]) and ($_REQUEST["conferma"] === "DISTRUGGI TUTTE LE TABELLE")) 
-				drop();
-			session_unset();
 			break;
 			
 		case "logout":
