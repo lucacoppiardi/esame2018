@@ -2,9 +2,7 @@
 	include("interfaccia.php");
 	head();
 	topbar("news");
-	
-	getStato();
-		
+
 	echo "<h1 class='titolo_pagina'>News</h1>";
 	
 	$result = pagina_news();
@@ -28,11 +26,11 @@
 			echo "<p class='align_news'>$row[3]</p>";
 		}
 		echo "</div>";
-		echo "<p style='font-style: italic;'>";
+		echo "<address>";
 		echo Pubblicata_il;
 		echo " $row[1] $row[7] ";
 		echo da;
-		echo " $row[6]</p>";
+		echo " <a href='mailto:$row[10]?subject=".subject_news." ".$row[0]."'>$row[6]</a></address>";
 		echo "</div>";
 		echo "<hr class='separatore'>";
 	}

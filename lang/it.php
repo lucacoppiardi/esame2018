@@ -1,7 +1,7 @@
 <?php
 	define("Piatti","Piatti");
 	define("Foto","Foto");
-	define("Contatti","Contatti");
+	define("Contatti","Info");
 	define("Prenota","Prenota");
 	define("realizzato_da","Realizzato da Luca Coppiardi");
 	define("Amministrazione","Amministrazione");
@@ -120,4 +120,16 @@
 	define("Dolce", "Dolci");
 	define("Altro", "Altro");
 	define("No_piatti", "Nessun piatto &egrave; stato pubblicato. Controlla pi&ugrave tardi!");
+	define("subject_news", "Richiesta di informazioni sulla notizia numero");
+	define("msg_per_cliente", "Messaggio per il cliente");
+	define("Prenotazione", "Prenotazione");
+	define("Indirizzo", "Indirizzo");
+	define("Indicazioni", "Indicazioni");
+	define("clicca_mappa", "Clicca la mappa per aprire Google Maps oppure vai direttamente alle ");
+	define("Contattaci", "Contattaci");
+	define("Oggetto", "Oggetto");
+	define("Messaggio", "Messaggio");
+	define("inviata", "inviata");
+	define("Invia", "Invia");
+	
 ?>

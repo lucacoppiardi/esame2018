@@ -9,10 +9,8 @@
 
 	topbar("admin");
 	
-	getStato();
-	
 	function pagina() {
-		echo "<form method='POST' action='admin.php'>";		
+		echo "<form method='post' action='admin.php'>";		
 		echo "<input type='hidden' name='stato' value='login'>";
 		echo "<label for='mail'>Mail: </label>";
 		echo "<input type='email' id='mail' name='mail' placeholder='Mail' required>";
@@ -35,7 +33,7 @@
 		
 		if(isset($_FILES['file'])) {
 			$file = $_FILES['file'];
-			if ($file["name"] != "") {
+			if (!empty($file["name"])) {
 				$checkImg = getimagesize($file["tmp_name"]);
 				$temp = explode(".",$file["name"]);
 				$newFileName = UPLOAD_DIR.md5($file["name"]).".".end($temp);
@@ -47,7 +45,7 @@
 					echo non_immagine."<br/>";
 					$checkUpload = true;
 				}
-				if (file_exists(UPLOAD_DIR.$newFileName)) {
+				if (file_exists($newFileName)) {
 					echo file_gia_esistente."<br/>";
 					$checkUpload = true;
 				}
@@ -78,7 +76,7 @@
 		$mail = null;
 		$pass = null;
 		if(!empty($_REQUEST["mail"]) and !empty($_REQUEST["password"])) {
-			$mail = $_REQUEST["mail"];
+			$mail = htmlentities($_REQUEST["mail"], ENT_QUOTES);
 			$pass = md5($_REQUEST["password"]);
 		}
 		if(empty($_REQUEST["mail"]) and empty($_REQUEST["password"]) and !empty($_SESSION["mail_admin"]) and !empty($_SESSION["password_admin"])) {
@@ -106,28 +104,28 @@
 				echo Primo_accesso;
 			}
 			echo "</h4>";
-			echo "<form action='admin.php' method='POST'>
+			echo "<form action='admin.php' method='post'>
 					<input type='hidden' name='stato' value='gestione_prenotazioni'>
 					<input type='submit' class='bottone'  value='".Prenotazioni."' >
 				</form>";
-			echo "<form action='admin.php' method='POST'>
+			echo "<form action='admin.php' method='post'>
 					<input type='hidden' name='stato' value='gestione_news'>
 					<input type='submit' class='bottone'  value='News' >
 				</form>";
-			echo "<form action='admin.php' method='POST'>
+			echo "<form action='admin.php' method='post'>
 					<input type='hidden' name='stato' value='gestione_utenti'>
 					<input type='submit' class='bottone'  value='".Utenti."' >
 				</form>";
-			echo "<form action='admin.php' method='POST'>
+			echo "<form action='admin.php' method='post'>
 				<input type='hidden' name='stato' value='gestione_piatti'>
 				<input type='submit' class='bottone'  value='".Piatti."' >
 			</form>";
-			echo "<form method='POST' action='admin.php' style='margin-top:40px'>
+			echo "<form method='post' action='admin.php' style='margin-top:40px'>
 					<input type='hidden' name='stato' value='logout' >
 					<input type='submit' class='bottone'  value='Logout' >
 				</form>";
 			if (isDebug()) {
-				echo "<form action='admin.php' method='POST' style='margin-top:20px'>
+				echo "<form action='admin.php' method='post' style='margin-top:20px'>
 					<input type='hidden' name='stato' value='killer'>
 					<input type='submit' class='bottone'  value='DISTRUGGI TUTTO'>
 				</form>";
@@ -146,7 +144,7 @@
 			crea_tab_utenti();
 			crea_tab_prenotazioni();
 			visualizza_prenotazioni();
-			echo "<form method='POST' action='admin.php'>
+			echo "<form method='post' action='admin.php'>
 					<input type='hidden' name='stato' value='login'>
 					<input type='submit' class='bottone'  value='".Torna_indietro."'>
 				</form>";
@@ -154,13 +152,13 @@
 			
 		case "gestione_news":
 			echo "<h2>News</h2>";
-			echo "<form action='admin.php' method='POST'>
+			echo "<form action='admin.php' method='post'>
 					<input type='hidden' name='stato' value='inserisci_news'>
 					<input type='submit' class='bottone'  value='".inserisci_news."'>
 				</form>";
 			crea_tab_news();
 			visualizza_news();
-			echo "<form method='POST' action='admin.php'>
+			echo "<form method='post' action='admin.php'>
 					<input type='hidden' name='stato' value='login'>
 					<input type='submit' class='bottone'  value='".Torna_indietro."'>
 				</form>";
@@ -168,13 +166,13 @@
 			
 		case "gestione_piatti":
 			echo "<h2>".Piatti."</h2>";
-			echo "<form action='admin.php' method='POST'>
+			echo "<form action='admin.php' method='post'>
 					<input type='hidden' name='stato' value='inserisci_piatto'>
 					<input type='submit' class='bottone'  value='".inserisci_piatto."'>
 				</form>";
 			crea_tab_piatti();
 			visualizza_piatti();
-			echo "<form method='POST' action='admin.php'>
+			echo "<form method='post' action='admin.php'>
 					<input type='hidden' name='stato' value='login'>
 					<input type='submit' class='bottone'  value='".Torna_indietro."'>
 				</form>";
@@ -184,39 +182,39 @@
 			echo "<h2>".Utenti."</h2>";
 			crea_tab_utenti();
 			visualizza_utenti();
-			echo "<form method='POST' action='admin.php'>
+			echo "<form method='post' action='admin.php'>
 					<input type='hidden' name='stato' value='login'>
 					<input type='submit' class='bottone'  value='".Torna_indietro."'>
 				</form>";
 			break;
 			
 		case "cancella_utente":
-			echo "<form action='admin.php' method='POST'>
+			echo "<form action='admin.php' method='post'>
 					<h4 class='attenzione'>".confermare_eliminazione_account.":</h4>"
 					."<label for='nome'>".Nome.":</label> <input type='text' id='nome' readonly value='".$_REQUEST["nome"]."'>
 					<label for='mail'>Mail: </label><input type='text' id='mail' readonly value='".$_REQUEST["mail"]."'>
 					<input type='hidden' name='stato' value='delete_account_admin'>
-					<input type='hidden' name='codice' value='".$_REQUEST["codice"]."'>
+					<input type='hidden' name='codice' value='".htmlentities($_REQUEST["codice"], ENT_QUOTES)."'>
 					<input type='submit' class='bottone'  value='OK' >
 				</form>";
-			echo "<form action='admin.php' method='POST'>
+			echo "<form action='admin.php' method='post'>
 					<input type='hidden' name='stato' value='gestione_utenti'>
 					<input type='submit' class='bottone'  value='".Annulla."' >
 				</form>";
 			break;
 			
 		case "delete_account_admin":
-			delete_account_admin($_REQUEST["codice"]);
-			echo "<form method='POST' action='admin.php'>
+			delete_account_admin(htmlentities(htmlentities($_REQUEST["codice"], ENT_QUOTES), ENT_QUOTES));
+			echo "<form method='post' action='admin.php'>
 					<input type='hidden' name='stato' value='gestione_utenti'>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";
 			break;
 			
 		case "conferma_scelta":
-			$codice_prenotazione = $_REQUEST["codice"];
+			$codice_prenotazione = htmlentities(htmlentities($_REQUEST["codice"], ENT_QUOTES), ENT_QUOTES);
 			$dati = select_prenotazione_admin($codice_prenotazione);
-			echo "<form action='admin.php' method='POST'>";
+			echo "<form action='admin.php' method='post'>";
 				if (isset($_REQUEST["accetta"]) and $_REQUEST["accetta"]=="Accetta") {
 					echo "<input type='hidden' name='stato' value='accetta_prenotazione'>";
 				} else if (isset($_REQUEST["rifiuta"]) and $_REQUEST["rifiuta"]=="Rifiuta") {
@@ -227,6 +225,9 @@
 				} else if (isset($_REQUEST["rifiuta"]) and $_REQUEST["rifiuta"]=="Rifiuta") {
 					echo "<h4 class='attenzione'>".Conferma." \"".Rifiuta."\"?</h4>";
 				};
+				echo "<label for='msg'>".msg_per_cliente.": </label>";
+				echo "<textarea id='msg' name='msg' rows='6' cols='40' maxlength='250'></textarea>";
+				echo "<h4 style='clear: both'>".Prenotazione.":</h4>";
 				echo "<input type='hidden' name='codice' value='$codice_prenotazione'>";
 				echo "<label for='data'>".Data.": </label>";
 				echo "<input type='date' id='data' name='data' value='$dati[0]' required readonly>";
@@ -240,25 +241,27 @@
 				echo "<textarea id='richieste' name='richieste' rows='6' cols='40' maxlength='250' readonly>$dati[4]</textarea>";
 				echo "<input type='submit' class='bottone'  name='conferma' value='OK'>
 				</form>";
-			echo "<form action='admin.php' method='POST'>
+			echo "<form action='admin.php' method='post'>
 					<input type='hidden' name='stato' value='gestione_prenotazioni'>
 					<input type='submit' class='bottone'  name='conferma' value='NO'>
 				</form>";
 			break;
 			
 		case "accetta_prenotazione":
-			$codice_prenotazione = $_REQUEST["codice"];
-			conferma_prenotazione($codice_prenotazione, 1);
-			echo "<form action='admin.php' method='POST'>
+			$codice_prenotazione = htmlentities($_REQUEST["codice"], ENT_QUOTES);
+			$msg = htmlentities($_REQUEST["msg"], ENT_QUOTES);
+			conferma_prenotazione($codice_prenotazione, 1, $msg);
+			echo "<form action='admin.php' method='post'>
 					<input type='hidden' name='stato' value='gestione_prenotazioni'>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";
 			break;
 			
 		case "rifiuta_prenotazione":
-			$codice_prenotazione = $_REQUEST["codice"];
-			conferma_prenotazione($codice_prenotazione, 2);
-			echo "<form action='admin.php' method='POST'>
+			$codice_prenotazione = htmlentities($_REQUEST["codice"], ENT_QUOTES);
+			$msg = htmlentities($_REQUEST["msg"], ENT_QUOTES);
+			conferma_prenotazione($codice_prenotazione, 2, $msg);
+			echo "<form action='admin.php' method='post'>
 					<input type='hidden' name='stato' value='gestione_prenotazioni'>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";
@@ -281,14 +284,14 @@
 					<input type='submit' class='bottone'  value='".Inserisci."'>
 					<input type='hidden' name='action' value='upload'>
 				</form>";
-			echo "<form method='POST' action='admin.php'>
+			echo "<form method='post' action='admin.php'>
 					<input type='hidden' name='stato' value='gestione_news'>
 					<input type='submit' class='bottone'  value='".Annulla."'>
 				</form>";
 			break;
 		
 		case "modifica_news":
-			$codice = $_REQUEST["codice"];
+			$codice = htmlentities($_REQUEST["codice"], ENT_QUOTES);
 			$dati = select_news($codice);
 			echo "<h3>".Aggiorna." news</h3>";
 			echo "<form action='admin.php' method='post' enctype='multipart/form-data'>
@@ -307,17 +310,17 @@
 					<input type='submit' class='bottone'  value='".Aggiorna."'>
 					<input type='hidden' name='action' value='upload'>
 				</form>";	
-			echo "<form method='POST' action='admin.php'>
+			echo "<form method='post' action='admin.php'>
 					<input type='hidden' name='stato' value='gestione_news'>
 					<input type='submit' class='bottone'  value='".Annulla."'>
 				</form>";
 			break;
 			
 		case "cancella_news":
-			$codice = $_REQUEST["codice"];
+			$codice = htmlentities($_REQUEST["codice"], ENT_QUOTES);
 			$dati = select_news($codice);
 			echo "<h3>".Cancella." news</h3>";
-			echo "<form action='admin.php' method='POST'>";
+			echo "<form action='admin.php' method='post'>";
 				echo "<input type='hidden' name='stato' value='delete_news'>";
 				echo "<input type='hidden' name='codice' value='$codice'>";
 				echo "<label for='titolo'>".Titolo.": </label>
@@ -332,45 +335,45 @@
 					<input type='file' id='file' name='file' disabled>";
 				echo "<input type='submit' class='bottone'  value='".Cancella."'>";
 			echo "</form>";
-			echo "<form method='POST' action='admin.php'>
+			echo "<form method='post' action='admin.php'>
 					<input type='hidden' name='stato' value='gestione_news'>
 					<input type='submit' class='bottone'  value='".Annulla."'>
 				</form>";
 			break;
 			
 		case "delete_news":
-			$codice = $_REQUEST["codice"];
+			$codice = htmlentities($_REQUEST["codice"], ENT_QUOTES);
 			delete_news($codice);
-			echo "<form action='admin.php' method='POST'>
+			echo "<form action='admin.php' method='post'>
 					<input type='hidden' name='stato' value='gestione_news'>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";
 			break;
 			
 		case "insert_news":
-			$titolo = addslashes(htmlentities($_REQUEST["titolo"]));
-			$titolo_en = addslashes(htmlentities($_REQUEST["titolo_en"]));
-			$contenuto = addslashes(htmlentities($_REQUEST["contenuto"]));
-			$contenuto_en = addslashes(htmlentities($_REQUEST["contenuto_en"]));
+			$titolo = htmlentities($_REQUEST["titolo"], ENT_QUOTES);
+			$titolo_en = htmlentities($_REQUEST["titolo_en"], ENT_QUOTES);
+			$contenuto = htmlentities($_REQUEST["contenuto"], ENT_QUOTES);
+			$contenuto_en = htmlentities($_REQUEST["contenuto_en"], ENT_QUOTES);
 					
 			insert_news($titolo, $contenuto, $contenuto_en, $titolo_en, $newFileName);
 			
-			echo "<form action='admin.php' method='POST'>
+			echo "<form action='admin.php' method='post'>
 					<input type='hidden' name='stato' value='gestione_news'>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";
 			break;
 		
 		case "update_news":
-			$codice = $_REQUEST["codice"];
-			$titolo = addslashes(htmlentities($_REQUEST["titolo"]));
-			$titolo_en = addslashes(htmlentities($_REQUEST["titolo_en"]));
-			$contenuto = addslashes(htmlentities($_REQUEST["contenuto"]));
-			$contenuto_en = addslashes(htmlentities($_REQUEST["contenuto_en"]));
+			$codice = htmlentities($_REQUEST["codice"], ENT_QUOTES);
+			$titolo = htmlentities($_REQUEST["titolo"], ENT_QUOTES);
+			$titolo_en = htmlentities($_REQUEST["titolo_en"], ENT_QUOTES);
+			$contenuto = htmlentities($_REQUEST["contenuto"], ENT_QUOTES);
+			$contenuto_en = htmlentities($_REQUEST["contenuto_en"], ENT_QUOTES);
 					
 			update_news($codice, $titolo, $contenuto, $contenuto_en, $titolo_en, $newFileName);
 			
-			echo "<form action='admin.php' method='POST'>
+			echo "<form action='admin.php' method='post'>
 					<input type='hidden' name='stato' value='gestione_news'>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";
@@ -404,14 +407,14 @@
 					<input type='submit' class='bottone'  value='".Inserisci."'>
 					<input type='hidden' name='action' value='upload'>
 				</form>";
-			echo "<form method='POST' action='admin.php'>
+			echo "<form method='post' action='admin.php'>
 					<input type='hidden' name='stato' value='gestione_piatti'>
 					<input type='submit' class='bottone'  value='".Annulla."'>
 				</form>";
 			break;
 		
 		case "modifica_piatto":
-			$codice = $_REQUEST["codice"];
+			$codice = htmlentities($_REQUEST["codice"], ENT_QUOTES);
 			$dati = select_piatto($codice);
 			echo "<h3>".modifica_piatto."</h3>";
 			echo "<form action='admin.php' method='post' enctype='multipart/form-data'>
@@ -449,17 +452,17 @@
 					<input type='submit' class='bottone'  value='".Aggiorna."'>
 					<input type='hidden' name='action' value='upload'>
 				</form>";	
-			echo "<form method='POST' action='admin.php'>
+			echo "<form method='post' action='admin.php'>
 					<input type='hidden' name='stato' value='gestione_piatti'>
 					<input type='submit' class='bottone'  value='".Annulla."'>
 				</form>";
 			break;
 			
 		case "cancella_piatto":
-			$codice = $_REQUEST["codice"];
+			$codice = htmlentities($_REQUEST["codice"], ENT_QUOTES);
 			$dati = select_piatto($codice);
 			echo "<h3>".cancella_piatto."</h3>";
-			echo "<form action='admin.php' method='POST'>";
+			echo "<form action='admin.php' method='post'>";
 				echo "<input type='hidden' name='stato' value='delete_piatto'>";
 				echo "<input type='hidden' name='codice' value='$codice'>";
 				echo "<label for='titolo'>".Titolo.": </label>
@@ -488,60 +491,60 @@
 					";
 				echo "<input type='submit' class='bottone'  value='".Cancella."'>";
 			echo "</form>";
-			echo "<form method='POST' action='admin.php'>
+			echo "<form method='post' action='admin.php'>
 					<input type='hidden' name='stato' value='gestione_piatti'>
 					<input type='submit' class='bottone'  value='".Annulla."'>
 				</form>";
 			break;
 			
 		case "delete_piatto":
-			$codice = $_REQUEST["codice"];
+			$codice = htmlentities($_REQUEST["codice"], ENT_QUOTES);
 			delete_piatto($codice);
-			echo "<form action='admin.php' method='POST'>
+			echo "<form action='admin.php' method='post'>
 					<input type='hidden' name='stato' value='gestione_piatti'>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";
 			break;
 			
 		case "insert_piatto":
-			$titolo = addslashes(htmlentities($_REQUEST["titolo"]));
-			$titolo_en = addslashes(htmlentities($_REQUEST["titolo_en"]));
-			$contenuto = addslashes(htmlentities($_REQUEST["contenuto"]));
-			$contenuto_en = addslashes(htmlentities($_REQUEST["contenuto_en"]));
-			$prezzo = addslashes(htmlentities($_REQUEST["prezzo"]));
-			$tipo = addslashes(htmlentities($_REQUEST["tipo"]));
+			$titolo = htmlentities($_REQUEST["titolo"], ENT_QUOTES);
+			$titolo_en = htmlentities($_REQUEST["titolo_en"], ENT_QUOTES);
+			$contenuto = htmlentities($_REQUEST["contenuto"], ENT_QUOTES);
+			$contenuto_en = htmlentities($_REQUEST["contenuto_en"], ENT_QUOTES);
+			$prezzo = htmlentities($_REQUEST["prezzo"], ENT_QUOTES);
+			$tipo = htmlentities($_REQUEST["tipo"], ENT_QUOTES);
 					
 			insert_piatto($titolo, $contenuto, $contenuto_en, $titolo_en, $newFileName, $prezzo, $tipo);
 			
-			echo "<form action='admin.php' method='POST'>
+			echo "<form action='admin.php' method='post'>
 					<input type='hidden' name='stato' value='gestione_piatto'>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";
 			break;
 		
 		case "update_piatto":
-			$codice = $_REQUEST["codice"];
-			$titolo = addslashes(htmlentities($_REQUEST["titolo"]));
-			$titolo_en = addslashes(htmlentities($_REQUEST["titolo_en"]));
-			$contenuto = addslashes(htmlentities($_REQUEST["contenuto"]));
-			$contenuto_en = addslashes(htmlentities($_REQUEST["contenuto_en"]));
-			$prezzo = addslashes(htmlentities($_REQUEST["prezzo"]));
-			$tipo = addslashes(htmlentities($_REQUEST["tipo"]));
+			$codice = htmlentities($_REQUEST["codice"], ENT_QUOTES);
+			$titolo = htmlentities($_REQUEST["titolo"], ENT_QUOTES);
+			$titolo_en = htmlentities($_REQUEST["titolo_en"], ENT_QUOTES);
+			$contenuto = htmlentities($_REQUEST["contenuto"], ENT_QUOTES);
+			$contenuto_en = htmlentities($_REQUEST["contenuto_en"], ENT_QUOTES);
+			$prezzo = htmlentities($_REQUEST["prezzo"], ENT_QUOTES);
+			$tipo = htmlentities($_REQUEST["tipo"], ENT_QUOTES);
 					
 			update_piatto($codice, $titolo, $contenuto, $contenuto_en, $titolo_en, $newFileName, $prezzo, $tipo);
 			
-			echo "<form action='admin.php' method='POST'>
+			echo "<form action='admin.php' method='post'>
 					<input type='hidden' name='stato' value='gestione_piatto'>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";
 			break;
 			
 		case "killer":
-			echo "<form action='admin.php' method='POST'>
+			echo "<form action='admin.php' method='post'>
 					<input type='hidden' name='stato' value='drop'>
 					<input type='submit' class='bottone'  name='conferma' value='DISTRUGGI TUTTE LE TABELLE'>
 				</form>";
-			echo "<form action='admin.php' method='POST'>
+			echo "<form action='admin.php' method='post'>
 					<input type='hidden' name='stato' value='login'>
 					<input type='submit' class='bottone'  value='".Annulla."'>
 				</form>";

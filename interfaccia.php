@@ -86,6 +86,12 @@
 		echo "<a href=\"javascript:void(0);\" class=\"icon\" onclick=\"menu()\">&#9776;</a>";
 		
 		echo "<a ";
+		if ($pagina_attiva == "contatti") {
+			echo " class='active_link' ";
+		}
+		echo "href=\"contatti.php\">".Contatti."</a>";
+		
+		echo "<a ";
 		if ($pagina_attiva == "piatti") {
 			echo " class='active_link' ";
 		}
@@ -96,12 +102,6 @@
 			echo " class='active_link' ";
 		}
 		echo "href=\"news.php\">News</a>";
-
-		echo "<a ";
-		if ($pagina_attiva == "contatti") {
-			echo " class='active_link' ";
-		}
-		echo "href=\"contatti.php\">".Contatti."</a>";
 		
 		echo "<a ";
 		if ($pagina_attiva == "prenotazioni") {
@@ -110,14 +110,14 @@
 		echo "href=\"prenotazioni.php\">".Prenota."</a>";
 				
 		echo "<a>";
-		echo "<form action='index.php' method='POST' class='buttonLingua'>";
+		echo "<form action='index.php' method='post' class='buttonLingua'>";
 		echo "<input type='hidden' name='lang' value='it'/>";
 		echo "<input type='submit' value='' style=\"background:url('media/it.png'); background-size:cover; width:30px; height:18px; border:none;\">";
 		echo "</form>";
 		echo "</a>";
 		
 		echo "<a>";
-		echo "<form action='index.php' method='POST' class='buttonLingua'>";
+		echo "<form action='index.php' method='post' class='buttonLingua'>";
 		echo "<input type='hidden' name='lang' value='en'/>";
 		echo "<input type='submit' value='' style=\"background:url('media/en.png'); background-size:cover; width:40px; height:18px; border:none;\">";
 		echo "</form>";

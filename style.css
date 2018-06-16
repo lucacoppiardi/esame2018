@@ -339,6 +339,8 @@ input[type=submit] {
 	color: navy;
 }
 
+/* NEWS */
+
 .contenuto_notizia {
 	display: table;
 }
@@ -490,6 +492,20 @@ input[type=submit] {
 	background-color: #E5E5E5;
 }
 
+/* INFO */
+@media screen and (min-width: 700px) {
+	.mappa {
+		width: 650px;
+		height: 400px;
+	}
+}
+
+@media screen and (max-width: 700px) {
+	.mappa {
+		width: 400px;
+		height: 250px;
+	}
+}
 
 
 /*

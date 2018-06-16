@@ -1,7 +1,7 @@
 <?php
 	define("Piatti","Meals");
 	define("Foto","Photos");
-	define("Contatti","Contacts");
+	define("Contatti","Info");
 	define("Prenota","Reservations");
 	define("realizzato_da","Made by Luca Coppiardi");
 	define("Amministrazione","Administration");
@@ -119,5 +119,16 @@
 	define("Dolce", "Desserts");
 	define("Altro", "Other");
 	define("No_piatti", "No dishes have been published yet. Please check back later!");
+	define("subject_news", "Request of info about news number");
+	define("msg_per_cliente", "Message for the customer");
+	define("Prenotazione", "Reservation");
+	define("Indirizzo", "Address");
+	define("Indicazioni", "Directions");
+	define("clicca_mappa", "Click the map to open Google Maps or go straight to the ");
+	define("Contattaci", "Contact us");
+	define("Oggetto", "Subject");
+	define("Messaggio", "Message");
+	define("inviata", "sent");
+	define("Invia", "Send");
 	
 ?>

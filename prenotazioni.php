@@ -3,12 +3,10 @@
 	head();
 	topbar("prenotazioni");
 	
-	getStato();
-	
 	echo "<h1 class='titolo_pagina'>".Prenotazioni."</h1>";
 
 	function form_registra() {
-		echo "<form method='POST' action='prenotazioni.php' onSubmit='return checkMail()'>";
+		echo "<form method='post' action='prenotazioni.php' onSubmit='return checkMail()'>";
 		echo "<input type='hidden' name='stato' value='registrato'>";
 		echo "<label for='nome'>".Nome.": </label>";
 		echo "<input type='text' id='nome' name='nome' maxlength='250' placeholder='".Nome."' required>";
@@ -22,7 +20,7 @@
 		echo "<input type='password' id='pass' name='pass' placeholder='Password' required>";
 		echo "<input type='submit' class='bottone'  value='".Registrati."'>";
 		echo "</form>";
-		echo "<form method='POST' action='prenotazioni.php'>";
+		echo "<form method='post' action='prenotazioni.php'>";
 		echo "<input type='submit' class='bottone'  value='".Annulla."'>";
 		echo "</form>";
 	}
@@ -34,7 +32,7 @@
 		echo "<p>".Ora_attuale.": <br/>
 			<iframe src=\"http://free.timeanddate.com/clock/i6a63iop/n215/tlit6/fn15/fs20/tct/pct/ahl/tt0/tw1/tm1/tb1\" frameborder=\"0\" width=\"300\" height=\"30\" allowTransparency=\"true\"></iframe>
 			</p>";
-		echo "<form method='POST' action='prenotazioni.php'>";
+		echo "<form method='post' action='prenotazioni.php'>";
 		echo "<input type='hidden' name='stato' value='inserisci'>";
 		echo "<label for='data'>".Data.": </label>";
 		echo "<input type='date' id='data' name='data' placeholder='".Data."' required>";
@@ -53,7 +51,7 @@
 	
 	function form_accedi() {
 		echo "<h2>".Accedi."</h2>";
-		echo "<form method='POST' action='prenotazioni.php'>";
+		echo "<form method='post' action='prenotazioni.php'>";
 		echo "<input type='hidden' name='stato' value='login'>";
 		echo "<label for='mail'>Mail: </label>";
 		echo "<input type='email' id='mail' name='mail' placeholder='Mail' required>";
@@ -61,11 +59,11 @@
 		echo "<input type='password' id='password' name='password' placeholder='Password' required>";
 		echo "<input type='submit' class='bottone'  value='".Accedi."'>";
 		echo "</form>";
-		echo "<form method='POST' action='prenotazioni.php'>";		
+		echo "<form method='post' action='prenotazioni.php'>";		
 		echo "<input type='submit' class='bottone'  value='".Annulla."'>";
 		echo "<input type='hidden' name='stato' value=''>";
 		echo "</form>";
-		echo "<form method='POST' action='prenotazioni.php'>";
+		echo "<form method='post' action='prenotazioni.php'>";
 		echo "<input type='submit' class='bottone'  value='".Recupero_password."'>";
 		echo "<input type='hidden' name='stato' value='recupera_password'>";
 		echo "</form>";
@@ -73,11 +71,11 @@
 	
 	function pagina() {
 		echo "<h3 class='avviso'>".intro_prenotazione."</h3>";
-		echo "<form method='POST' action='prenotazioni.php'>";
+		echo "<form method='post' action='prenotazioni.php'>";
 		echo "<input type='submit' class='bottone'  value='".Registrati."' >";
 		echo "<input type='hidden' name='stato' value='registra'>";
 		echo "</form>";
-		echo "<form method='POST' action='prenotazioni.php'>";
+		echo "<form method='post' action='prenotazioni.php'>";
 		echo "<input type='submit' class='bottone'  value='".Accedi."'>";
 		echo "<input type='hidden' name='stato' value='accedi'>";
 		echo "</form>";
@@ -87,7 +85,7 @@
 		$mail = null;
 		$pass = null;
 		if(!empty($_REQUEST["mail"]) and !empty($_REQUEST["password"])) {
-			$mail = $_REQUEST["mail"];
+			$mail = htmlentities($_REQUEST["mail"], ENT_QUOTES);
 			$pass = md5($_REQUEST["password"]);
 		}
 		if(empty($_REQUEST["mail"]) and empty($_REQUEST["password"]) and !empty($_SESSION["mail"]) and !empty($_SESSION["password"])) {
@@ -115,12 +113,12 @@
 				echo Primo_accesso;
 			}
 			echo "</h4>";
-			echo "<form action='prenotazioni.php' method='POST'>
+			echo "<form action='prenotazioni.php' method='post'>
 					<input type='hidden' name='stato' value='logout'>
 					<input type='submit' class='bottone'  value='Logout'>
 				</form>";
 			
-			echo "<form action='prenotazioni.php' method='POST'>";
+			echo "<form action='prenotazioni.php' method='post'>";
 				echo "<select name='stato'>";
 					echo "<option>".Seleziona_altre_impostazioni.": </option>";
 					echo "<option disabled></option>";
@@ -146,11 +144,11 @@
 			break;
 			
 		case "registrato":
-			$nome = addslashes(htmlentities($_REQUEST["nome"]));
-			$mail = addslashes(htmlentities($_REQUEST["mail"]));
-			$conferma_mail = addslashes(htmlentities($_REQUEST["conferma_mail"]));
+			$nome = htmlentities($_REQUEST["nome"], ENT_QUOTES);
+			$mail = htmlentities($_REQUEST["mail"], ENT_QUOTES);
+			$conferma_mail = htmlentities($_REQUEST["conferma_mail"], ENT_QUOTES);
 			$password = md5($_REQUEST["pass"]);
-			$telefono = addslashes(htmlentities($_REQUEST["telefono"]));
+			$telefono = htmlentities($_REQUEST["telefono"], ENT_QUOTES);
 			if ($mail != $conferma_mail) {
 				echo "<h2 class='errore'>".Mail_non_valida."</h2>";
 				form_registra();
@@ -158,7 +156,7 @@
 			}
 			crea_utente($mail,$password,$nome,$telefono);
 			echo "<h3 class='avviso'>".Conferma_iscrizione_cliccando_link."</h3>";
-			echo "<form action='prenotazioni.php' method='POST'>
+			echo "<form action='prenotazioni.php' method='post'>
 					<input type='hidden' name='stato' value='accedi'>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";
@@ -177,23 +175,23 @@
 			break;
 			
 		case "inserisci":
-			$data = addslashes(htmlentities($_REQUEST["data"]));
-			$ora = addslashes(htmlentities($_REQUEST["ora"]));
-			$nome = addslashes(htmlentities($_REQUEST["nome"]));
-			$num_persone = addslashes(htmlentities($_REQUEST["num_persone"]));
-			$richieste = addslashes(htmlentities($_REQUEST["richieste"]));
+			$data = htmlentities($_REQUEST["data"], ENT_QUOTES);
+			$ora = htmlentities($_REQUEST["ora"], ENT_QUOTES);
+			$nome = htmlentities($_REQUEST["nome"], ENT_QUOTES);
+			$num_persone = htmlentities($_REQUEST["num_persone"], ENT_QUOTES);
+			$richieste = htmlentities($_REQUEST["richieste"], ENT_QUOTES);
 			inserisci_prenotazione($data, $ora, $nome, $num_persone, $richieste);
 			mail_riepilogo($data, $ora, $nome, $num_persone, $richieste);
-			echo "<form action='prenotazioni.php' method='POST'>
+			echo "<form action='prenotazioni.php' method='post'>
 						<input type='submit' class='bottone'  value='OK'>
 					</form>";
 			break;
 			
 		case "modifica_prenotazione":
 			echo "<h3>".Modifica_prenotazione."</h3>";
-			$codice = $_REQUEST["codice"];
+			$codice = htmlentities($_REQUEST["codice"], ENT_QUOTES);
 			$dati = select_prenotazione($codice);
-			echo "<form action='prenotazioni.php' method='POST'>";
+			echo "<form action='prenotazioni.php' method='post'>";
 			echo "<input type='hidden' name='stato' value='update_prenotazione'>";
 			
 			echo "<input type='hidden' name='codice' value='$codice'>";
@@ -209,16 +207,16 @@
 			echo "<textarea id='richieste' name='richieste' rows='6' cols='40' maxlength='250'>$dati[4]</textarea>";
 			echo "<input type='submit' class='bottone'  value='".Aggiorna."'>";
 			echo "</form>";
-			echo "<form method='POST' action='prenotazioni.php'>
+			echo "<form method='post' action='prenotazioni.php'>
 					<input type='submit' class='bottone'  value='".Annulla."'>
 				</form>";
 			break;
 			
 		case "cancella_prenotazione":
 			echo "<h3>".Cancella_prenotazione."</h3>";
-			$codice = $_REQUEST["codice"];
+			$codice = htmlentities($_REQUEST["codice"], ENT_QUOTES);
 			$dati = select_prenotazione($codice);
-			echo "<form action='prenotazioni.php' method='POST'>";
+			echo "<form action='prenotazioni.php' method='post'>";
 			echo "<input type='hidden' name='stato' value='delete_prenotazione'>";
 			echo "<input type='hidden' name='codice' value='$codice'>";
 			echo "<label for='data'>".Data.": </label>";
@@ -233,42 +231,42 @@
 			echo "<textarea id='richieste' name='richieste' rows='6' cols='40' maxlength='250' readonly>$dati[4]</textarea>";
 			echo "<input type='submit' class='bottone'  value='".Cancella."'>";
 			echo "</form>";
-			echo "<form action='prenotazioni.php' method='POST'>
+			echo "<form action='prenotazioni.php' method='post'>
 					<input type='submit' class='bottone'  value='".Annulla."'>
 				</form>";
 			break;
 			
 		case "delete_prenotazione":
-			$codice = $_REQUEST["codice"];
-			$data = addslashes(htmlentities($_REQUEST["data"]));
-			$ora = addslashes(htmlentities($_REQUEST["ora"]));
-			$nome = addslashes(htmlentities($_REQUEST["nome"]));
-			$num_persone = addslashes(htmlentities($_REQUEST["num_persone"]));
-			$richieste = addslashes(htmlentities($_REQUEST["richieste"]));
+			$codice = htmlentities($_REQUEST["codice"], ENT_QUOTES);
+			$data = htmlentities($_REQUEST["data"], ENT_QUOTES);
+			$ora = htmlentities($_REQUEST["ora"], ENT_QUOTES);
+			$nome = htmlentities($_REQUEST["nome"], ENT_QUOTES);
+			$num_persone = htmlentities($_REQUEST["num_persone"], ENT_QUOTES);
+			$richieste = htmlentities($_REQUEST["richieste"], ENT_QUOTES);
 			delete_prenotazione($codice);
 			mail_riepilogo_cancella($data, $ora, $nome, $num_persone, $richieste);
-			echo "<form action='prenotazioni.php' method='POST'>
+			echo "<form action='prenotazioni.php' method='post'>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";
 			break;
 		
 		case "update_prenotazione":
-			$codice_prenotazione = $_REQUEST["codice"];
-			$data = addslashes(htmlentities($_REQUEST["data"]));
-			$ora = addslashes(htmlentities($_REQUEST["ora"]));
-			$nome = addslashes(htmlentities($_REQUEST["nome"]));
-			$num_persone = addslashes(htmlentities($_REQUEST["num_persone"]));
-			$richieste = addslashes(htmlentities($_REQUEST["richieste"]));
+			$codice_prenotazione = htmlentities($_REQUEST["codice"], ENT_QUOTES);
+			$data = htmlentities($_REQUEST["data"], ENT_QUOTES);
+			$ora = htmlentities($_REQUEST["ora"], ENT_QUOTES);
+			$nome = htmlentities($_REQUEST["nome"], ENT_QUOTES);
+			$num_persone = htmlentities($_REQUEST["num_persone"], ENT_QUOTES);
+			$richieste = htmlentities($_REQUEST["richieste"], ENT_QUOTES);
 			update_prenotazione($codice_prenotazione, $data, $ora, $nome, $num_persone, $richieste);
 			mail_riepilogo_modifica($data, $ora, $nome, $num_persone, $richieste);
-			echo "<form action='prenotazioni.php' method='POST'>
+			echo "<form action='prenotazioni.php' method='post'>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";
 			break;
 			
 		case "reset_password":
 			echo "<h3>Reset password</h3>";
-			echo "<form action='prenotazioni.php' method='POST' onSubmit='return checkPw()'>";
+			echo "<form action='prenotazioni.php' method='post' onSubmit='return checkPw()'>";
 			echo "<input type='hidden' name='stato' value='reset_password_conferma'>";
 			echo "<label for='old_pw'>".Vecchia_password.": </label>";
 			echo "<input type='password' id='old_pw' name='old_pw' placeholder='".Vecchia_password."' required>";
@@ -278,7 +276,7 @@
 			echo "<input type='password' name='new_pw_conferma' id='new_pw_conferma' placeholder='".Nuova_password_conferma."' required>";
 			echo "<input type='submit' class='bottone'  value='Reset'>";
 			echo "</form>";
-			echo "<form method='POST' action='prenotazioni.php'>";		
+			echo "<form method='post' action='prenotazioni.php'>";		
 			echo "<input type='submit' class='bottone'  value='".Annulla."'>";
 			echo "</form>";
 			break;
@@ -289,14 +287,14 @@
 			$new_pw_conferma = md5($_REQUEST["new_pw_conferma"]);
 			if (!reset_password($old_pw, $new_pw)) {
 				echo "<h2 class='errore'>".Ricontrollare_password."</h2>";
-				echo "<form action='prenotazioni.php' method='POST'>
+				echo "<form action='prenotazioni.php' method='post'>
 						<input type='hidden' name='stato' value='reset_password'>
 						<input type='submit' class='bottone'  value='OK'>
 					</form>";
 			} else {
 				$_SESSION["password"] = md5($_REQUEST["new_pw"]);
 				echo "<h3 class='avviso'>".Password_cambiata_correttamente."</h3>";
-				echo "<form action='prenotazioni.php' method='POST'>
+				echo "<form action='prenotazioni.php' method='post'>
 						<input type='hidden' name='stato' value='accedi'>
 						<input type='submit' class='bottone'  value='OK'>
 					</form>";
@@ -306,21 +304,21 @@
 			
 		case "recupera_password":
 			echo "<h3>".Recupero_password."</h3>";
-			echo "<form action='prenotazioni.php' method='POST'>
+			echo "<form action='prenotazioni.php' method='post'>
 					<input type='hidden' name='stato' value='recupera_pwd'>
 					<label for='email'>Email: </label>
 					<input type='email' id='email' name='email' placeholder='Mail' required>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";
-			echo "<form method='POST' action='prenotazioni.php'>";		
+			echo "<form method='post' action='prenotazioni.php'>";		
 				echo "<input type='submit' class='bottone'  value='".Annulla."'>";
 				echo "<input type='hidden' name='stato' value=''>";
 			echo "</form>";
 			break;
 
 		case "recupera_pwd":
-			mail_recupero_password($_REQUEST["email"]);
-			echo "<form action='prenotazioni.php' method='POST'>
+			mail_recupero_password(htmlentities($_REQUEST["email"], ENT_QUOTES));
+			echo "<form action='prenotazioni.php' method='post'>
 					<input type='hidden' name='stato' value='accedi'>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";
@@ -329,18 +327,18 @@
 			
 		case "disiscrizione":
 			echo "<h3 class='attenzione'>".confermare_eliminazione_account."?</h3>";
-			echo "<form action='prenotazioni.php' method='POST'>
+			echo "<form action='prenotazioni.php' method='post'>
 					<input type='hidden' name='stato' value='delete_account'>
 					<input type='submit' class='bottone'  value='".Conferma."'>
 				</form>";
-			echo "<form action='prenotazioni.php' method='POST'>
+			echo "<form action='prenotazioni.php' method='post'>
 					<input type='submit' class='bottone'  value='".Annulla."'>
 				</form>";
 			break;
 
 		case "delete_account":
 			delete_account();
-			echo "<form action='prenotazioni.php' method='POST'>
+			echo "<form action='prenotazioni.php' method='post'>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";
 			unset($_SESSION["mail"], $_SESSION["password"], $_SESSION["cod_utente"]);
@@ -348,24 +346,24 @@
 			
 		case "cambia_email":
 			echo "<h3>".cambio_mail."</h3>";
-			echo "<form action='prenotazioni.php' method='POST'>
+			echo "<form action='prenotazioni.php' method='post'>
 					<label for='newmail'>".Nuovo_indirizzo.": </label>
 					<input type='hidden' name='stato' value='cambio_mail'>
 					<input type='mail' id='newmail' name='newmail' placeholder='".Nuovo_indirizzo."' required>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";
-			echo "<form action='prenotazioni.php' method='POST'>
+			echo "<form action='prenotazioni.php' method='post'>
 					<input type='submit' class='bottone'  value='".Annulla."'>
 				</form>";
 			break;
 		
 		case "cambio_mail":
-			update_indirizzo_mail($_REQUEST["newmail"]);
+			update_indirizzo_mail(htmlentities($_REQUEST["newmail"], ENT_QUOTES));
 			unset($_SESSION["mail"], $_SESSION["password"], $_SESSION["cod_utente"]);
 			break;
 			
 		case "conferma_nuova_mail":
-			confermata_nuova_mail($_REQUEST["hash"]);
+			confermata_nuova_mail(htmlentities($_REQUEST["hash"], ENT_QUOTES));
 			break;
 						
 		case "logout":
