@@ -60,6 +60,8 @@
 			echo "</p>";
 		}
 		
+		echo "<br style='clear:both'>";
+
 		echo "</div>";
 
 		echo "<footer id='footer'>";

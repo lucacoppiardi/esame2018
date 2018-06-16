@@ -6,13 +6,14 @@
 	echo "<h1 class='titolo_pagina'>".Contatti."</h1>";
 	
 	echo "<div>";
+	echo "<img src='media/logo.png' class='logo_info'>";
 	echo "<p><strong>".Indirizzo.": </strong>Cimbriolo (Mantova)</p>";
 	echo "<p><strong>".Telefono.": </strong><a href='tel:+39-0376-123456'>+39 0376 123456</a></p>";
 	echo "<p><strong>Mail: </strong><a href='mailto:lucacoppiardi@altervista.org'>lucacoppiardi@altervista.org</a></p>";
+	echo "<br style='clear:both'>";
 	echo "</div>";
-	
-	echo clicca_mappa;
-	echo "<a href='https://www.google.com/maps/dir//Cimbriolo,+Provincia+di+Mantova/'>".Indicazioni."</a>";
+		
+	echo "<p>".clicca_mappa."<a href='https://www.google.com/maps/dir//Cimbriolo,+Provincia+di+Mantova/'>".Indicazioni."</a></p>";
 	echo "<div id='scroll_tabella'>";
 	echo "<a href='https://www.google.com/maps/place/Cimbriolo+MN/'>
 		<img class='mappa' src='media/cartina.png' alt='google maps'>
