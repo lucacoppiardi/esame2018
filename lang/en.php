@@ -1,7 +1,7 @@
 <?php
 	define("Piatti","Meals");
 	define("Foto","Photos");
-	define("Contatti","Contacts");
+	define("Contatti","Info");
 	define("Prenota","Reservations");
 	define("realizzato_da","Made by Luca Coppiardi");
 	define("Amministrazione","Administration");
@@ -103,5 +103,32 @@
 	define("testo_home", "For over 50 years Corte Ada has been offering their customers appreciated products of valued quality.
 						Located in the countryside of Cimbriolo (Mantua), it is a welcoming place where you can relax from the city,
 						and appreciate typical dishes - rigorously homemade - of Mantuan cuisine.");
+	define("testo_piatti", "In this page we show you some of our best dishes. They are all homemade with the best ingredients.");
+	define("inserisci_piatto", "Insert dish");
+	define("modifica_piatto", "Update dish");
+	define("cancella_piatto", "Delete dish");
+	define("piatto_inserito", "Dish added");
+	define("piatto_modificato", "Dish updated");
+	define("piatto_cancellato", "Dish deleted");
+	define("Prezzo", "Price");
+	define("Tipo", "Type");
+	define("Antipasti", "Starters");
+	define("PrimoPiatto", "First courses");
+	define("SecondoPiatto", "Second courses");
+	define("Contorno", "Side dishes");
+	define("Dolce", "Desserts");
+	define("Altro", "Other");
+	define("No_piatti", "No dishes have been published yet. Please check back later!");
+	define("subject_news", "Request of info about news number");
+	define("msg_per_cliente", "Message for the customer");
+	define("Prenotazione", "Reservation");
+	define("Indirizzo", "Address");
+	define("Indicazioni", "Directions");
+	define("clicca_mappa", "Click the map to open Google Maps or go straight to the ");
+	define("Contattaci", "Contact us");
+	define("Oggetto", "Subject");
+	define("Messaggio", "Message");
+	define("inviata", "sent");
+	define("Invia", "Send");
 	
 ?>

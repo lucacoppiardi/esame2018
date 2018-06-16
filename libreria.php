@@ -41,7 +41,7 @@ function query($s, $conn, $tab) {
 
 function torna_indietro() {
 	echo "<h2 class='errore'>".Errore_query.". </h2>";
-	echo "<form action='".basename($_SERVER['PHP_SELF'])."' method='POST'>
+	echo "<form action='".basename($_SERVER['PHP_SELF'])."' method='post'>
 			<input type='submit' class='bottone'  value='".Torna_indietro."'>
 		</form>";
 	tail();
@@ -128,6 +128,32 @@ function crea_tab_news() {
 	close($db_conn);
 }
 
+function crea_tab_piatti() {
+	$db_conn=connessione();
+	if ($db_conn) {
+		$s="CREATE TABLE IF NOT EXISTS piatti (
+		codice INT(11) NOT NULL AUTO_INCREMENT,
+		cod_admin INT(11) NOT NULL,
+		titolo VARCHAR(255) NOT NULL UNIQUE,
+		titolo_en VARCHAR(255) NOT NULL UNIQUE,
+		testo VARCHAR(255) NOT NULL,
+		testo_en VARCHAR(255) NOT NULL,
+		tipo INT(11) NOT NULL,
+		immagine VARCHAR(255),
+		prezzo FLOAT(8,2),
+		PRIMARY KEY (codice),
+		FOREIGN KEY (cod_admin) REFERENCES amministratori(codice)
+		ON DELETE CASCADE
+		);";
+		if (!query($s, $db_conn, "creata piatti")) {
+			torna_indietro();
+		}
+	} else {
+		echo Errore_connessione_database."<br/>";
+	}
+	close($db_conn);
+}
+
 function crea_tab_admin() {
 	$db_conn=connessione();
 	if ($db_conn) {
@@ -164,7 +190,9 @@ function drop() {
 		if (query($s, $db_conn, "drop")) echo "utenti cancellata<br/>";
 		$s="DROP TABLE amministratori";
 		if (query($s, $db_conn, "drop")) echo "amministratori cancellata<br/>";
-		echo "<form action='admin.php' method='POST'>
+		$s="DROP TABLE piatti";
+		if (query($s, $db_conn, "drop")) echo "piatti cancellata<br/>";
+		echo "<form action='admin.php' method='post'>
 				<input type='submit' class='bottone'  value='".Torna_indietro."'>
 			</form>";
 	} else {
@@ -176,13 +204,13 @@ function drop() {
 function crea_utente($mail,$password,$nome,$telefono) {
 	$db_conn=connessione();
 	if ($db_conn and !empty($mail) and !empty($password) and !empty($nome) and !empty($telefono)) {
-		$s="INSERT INTO utenti (mail,password,nome,telefono,data_iscrizione,hash) VALUES ('".addslashes($mail)."','$password','$nome','$telefono',NOW(),'".md5($mail)."') ";
+		$s="INSERT INTO utenti (mail,password,nome,telefono,data_iscrizione,hash) VALUES ('$mail','$password','$nome','$telefono',NOW(),'".md5($mail)."') ";
 		$result = query($s, $db_conn, "insert utenti");
 		
 		if ($result != false and mysqli_affected_rows($db_conn) == 1) {
-			$to = addslashes($mail);
+			$to = $mail;
 			$subject = grazie_iscrizione;
-			$message = conferma_a_questo_link.": ".link_al_sito."prenotazioni.php?stato=conferma_registrazione&lang=".$_SESSION["lang"]."&hash=".md5($mail)."\n".ringraziamenti_email;
+			$message = conferma_a_questo_link.": ".link_al_sito."prenotazioni.php?stato=conferma_registrazione&lang=".$_SESSION["lang"]."&hash=".md5($mail)."\n\n".ringraziamenti_email;
 			$headers = "From: lucacoppiardi@altervista.org";
 
 			$esito_mail = mail($to,$subject,$message,$headers);
@@ -217,14 +245,14 @@ function crea_utente($mail,$password,$nome,$telefono) {
 function login($mail, $pass) {
 	$db_conn=connessione();
 	if ($db_conn and !empty($mail) and !empty($pass)) {
-		$s="SELECT confermato FROM utenti WHERE mail='".addslashes($mail)."' AND password='$pass'";
+		$s="SELECT confermato FROM utenti WHERE mail='$mail' AND password='$pass'";
 		$result=query($s, $db_conn, "select confermato login");
 		if (mysqli_num_rows($result) == 1) {
 			$row = fetch_row($result);
 			if ($row[0] != 1) {
 				echo "<h3 class='avviso'>".Conferma_iscrizione_cliccando_link."</h3>";
 				
-				$to = addslashes($mail);
+				$to = $mail;
 				$subject = grazie_iscrizione;
 				$message = conferma_a_questo_link.": ".link_al_sito."prenotazioni.php?stato=conferma_registrazione&lang=".$_SESSION["lang"]."&hash=".md5($mail)."\n".ringraziamenti_email;
 				$headers = "From: lucacoppiardi@altervista.org";
@@ -249,7 +277,7 @@ function login($mail, $pass) {
 					echo $message;
 				}
 				
-				echo "<form action='prenotazioni.php' method='POST'>
+				echo "<form action='prenotazioni.php' method='post'>
 						<input type='submit' class='bottone'  value='OK'>
 					</form>";
 					
@@ -257,11 +285,11 @@ function login($mail, $pass) {
 				die();
 				
 			} else {
-				$s="SELECT codice,mail,ultimo_accesso,password FROM utenti WHERE mail='".addslashes($mail)."' AND password='$pass'";
+				$s="SELECT codice,mail,ultimo_accesso,password FROM utenti WHERE mail='$mail' AND password='$pass'";
 				$result=query($s, $db_conn, "select login");
 				if (mysqli_num_rows($result) == 1) {
 					$row = fetch_row($result);
-					$sql = "UPDATE utenti SET ultimo_accesso = NOW() WHERE mail='".addslashes($mail)."' AND password='$pass'";
+					$sql = "UPDATE utenti SET ultimo_accesso = NOW() WHERE mail='$mail' AND password='$pass'";
 					query($sql, $db_conn, "update ultimo accesso");
 					return $row;
 				} else {
@@ -278,11 +306,11 @@ function login($mail, $pass) {
 function admin_login($mail, $pass) {
 	$db_conn=connessione();
 	if ($db_conn and !empty($mail) and !empty($pass)) {
-		$s="SELECT codice,mail,ultimo_accesso,password FROM amministratori WHERE mail='".addslashes($mail)."' AND password='$pass'";
+		$s="SELECT codice,mail,ultimo_accesso,password FROM amministratori WHERE mail='$mail' AND password='$pass'";
 		$result=query($s, $db_conn, "select admin login");
 		if (mysqli_num_rows($result) == 1) {
 			$row = fetch_row($result);
-			$sql = "UPDATE amministratori SET ultimo_accesso = NOW() WHERE mail='".addslashes($mail)."' AND password='$pass'";
+			$sql = "UPDATE amministratori SET ultimo_accesso = NOW() WHERE mail='$mail' AND password='$pass'";
 			query($sql, $db_conn, "update ultimo accesso");
 			return $row;
 		}
@@ -310,7 +338,7 @@ function visualizza_utenti() {
 				}
 			}
 			echo "<td>
-				<form action='admin.php' method='POST'>
+				<form action='admin.php' method='post'>
 					<input type='hidden' name='stato' value='cancella_utente'>
 					<input type='submit' class='bottonePiccolo'  value='".Cancella."'>
 					<input type='hidden' name='codice' value='$row[0]'>
@@ -363,12 +391,12 @@ function visualizza_prenotazioni() {
 			echo "<td><div class='nota'>$row[8]</div></td>";
 			if ($row[9] == 0) {
 				echo "<td>
-				<form action='admin.php' method='POST'>
+				<form action='admin.php' method='post'>
 					<input type='hidden' name='stato' value='conferma_scelta'>
 					<input type='submit' class='bottonePiccolo'  name='accetta' value='".Accetta."'>
 					<input type='hidden' name='codice' value='$row[0]'>
 				</form>
-				<form action='admin.php' method='POST'>
+				<form action='admin.php' method='post'>
 					<input type='hidden' name='stato' value='conferma_scelta'>
 					<input type='submit' class='bottonePiccolo'  name='rifiuta' value='".Rifiuta."'>
 					<input type='hidden' name='codice' value='$row[0]'>
@@ -411,23 +439,73 @@ function visualizza_news() {
 			echo "</a></div></td>";
 			echo "<td><div class='nota'>";
 			if ($_SESSION["lang"] == "en") {
-				/*echo substr($row[6],0,50);
-				if (strlen($row[6])>=50) echo "...";*/
 				echo $row[6];
 			} else {
-				/*echo substr($row[4],0,50);
-				if (strlen($row[4])>=50) echo "...";*/
 				echo $row[4];
 			}
 			echo "</div></td>";
 			echo "<td>
-				<form action='admin.php' method='POST'>
+				<form action='admin.php' method='post'>
 					<input type='hidden' name='stato' value='modifica_news'>
 					<input type='submit' class='bottonePiccolo'  value='".Modifica."'>
 					<input type='hidden' name='codice' value='$row[0]'>
 				</form>
-				<form action='admin.php' method='POST'>
+				<form action='admin.php' method='post'>
 					<input type='hidden' name='stato' value='cancella_news'>
+					<input type='submit' class='bottonePiccolo'  value='".Cancella."'>
+					<input type='hidden' name='codice' value='$row[0]'>
+				</form>
+				</td>";
+			echo "</tr>";
+		}
+		echo "</table>";
+		echo "</div>";
+	} else {
+		torna_indietro();
+	}
+	close($db_conn);
+}
+
+function visualizza_piatti() {
+	$db_conn=connessione();
+	if ($db_conn and !empty($_SESSION["mail_admin"]) and !empty($_SESSION["password_admin"]) and !empty($_SESSION["cod_admin"])) {
+		$cod_admin = $_SESSION["cod_admin"];
+		$s="SELECT codice, titolo, testo, titolo_en, testo_en, prezzo, tipo FROM piatti WHERE cod_admin = $cod_admin ORDER BY tipo ASC";
+		$result=query($s, $db_conn, "select visualizza_piatti");
+		echo "<div id='scroll_tabella'>";
+		echo "<table class='dati_stampati'>";
+		echo "<tr class='prima_riga'><td>".Titolo."</td><td>".Testo."</td><td>".Prezzo."</td><td>".Tipo."</td></tr>";
+		while ($row=fetch_row($result)) {	
+			echo "<tr class='altre_righe'>";
+			echo "<td><a href='piatti.php#$row[0]'>";
+			if ($_SESSION["lang"] == "en") {
+				echo $row[3];
+			} else {
+				echo $row[1];
+			}
+			echo "</a></td>";
+			echo "<td><div class='nota'>";
+			if ($_SESSION["lang"] == "en") {
+				echo $row[4];
+			} else {
+				echo $row[2];
+			}
+			echo "</div></td>";
+			echo "<td>";
+			if ($_SESSION["lang"] == "en") {
+				echo $row[6];
+			} else {
+				echo $row[4];
+			}
+			echo "</div></td>";
+			echo "<td>
+				<form action='admin.php' method='post'>
+					<input type='hidden' name='stato' value='modifica_piatto'>
+					<input type='submit' class='bottonePiccolo'  value='".Modifica."'>
+					<input type='hidden' name='codice' value='$row[0]'>
+				</form>
+				<form action='admin.php' method='post'>
+					<input type='hidden' name='stato' value='cancella_piatto'>
 					<input type='submit' class='bottonePiccolo'  value='".Cancella."'>
 					<input type='hidden' name='codice' value='$row[0]'>
 				</form>
@@ -486,7 +564,7 @@ function mail_riepilogo($data, $ora, $nome, $num_persone, $richieste) {
 		$to = $mail[0];
 		$subject = subject_email;
 		$message = 
-			riepilogo_email."\n".
+			riepilogo_email."\n\n".
 			Data.": ".$data."\n".
 			Ora.": ".$ora."\n".
 			Nome_tavolo.": ".$nome."\n".
@@ -532,7 +610,7 @@ function mail_riepilogo_cancella($data, $ora, $nome, $num_persone, $richieste) {
 		
 		$to = $mail[0];
 		$subject = Prenotazione_cancellata;
-			$message = Prenotazione_cancellata."\n"
+			$message = Prenotazione_cancellata."\n\n"
 			.Data.": ".$data."\n".
 			Ora.": ".$ora."\n".
 			Nome_tavolo.": ".$nome."\n".
@@ -578,7 +656,7 @@ function mail_riepilogo_modifica($data, $ora, $nome, $num_persone, $richieste) {
 		
 		$to = $mail[0];
 		$subject = Prenotazione_modificata;
-			$message = Prenotazione_modificata."\n"
+			$message = Prenotazione_modificata."\n\n"
 			.Data.": ".$data."\n".
 			Ora.": ".$ora."\n".
 			Nome_tavolo.": ".$nome."\n".
@@ -610,7 +688,7 @@ function mail_riepilogo_modifica($data, $ora, $nome, $num_persone, $richieste) {
 	close($db_conn);
 }
 
-function conferma_prenotazione($cod_prenotazione, $stato) {
+function conferma_prenotazione($cod_prenotazione, $stato, $msg) {
 	$db_conn=connessione();
 	if ($db_conn and !empty($cod_prenotazione) and !empty($stato) and !empty($_SESSION["mail_admin"]) and !empty($_SESSION["password_admin"]) and !empty($_SESSION["cod_admin"])) {
 		$sql = "UPDATE prenotazioni SET stato=$stato WHERE codice=$cod_prenotazione";
@@ -644,23 +722,25 @@ function conferma_prenotazione($cod_prenotazione, $stato) {
 		
 		if($stato == 1) {
 			$subject = Prenotazione_inserita;
-			$message = Prenotazione_confermata.":\n"
+			$message = Prenotazione_confermata.":\n\n"
 			.Data.": ".$row[0]."\n".
 			Ora.": ".$row[1]."\n".
 			Nome_tavolo.": ".$row[2]."\n".
 			Numero_persone.": ".$row[3]."\n".
 			Richieste_particolari.": ".$row[4]."\n\n".
+			msg_per_cliente.": ".$msg."\n\n".
 			ringraziamenti_email
 			;
 		}
 		else if ($stato == 2) {
 			$subject = Prenotazione_non_inserita;
-			$message = Prenotazione_rifiutata.":\n"
+			$message = Prenotazione_rifiutata.":\n\n"
 			.Data.": ".$row[0]."\n".
 			Ora.": ".$row[1]."\n".
 			Nome_tavolo.": ".$row[2]."\n".
 			Numero_persone.": ".$row[3]."\n".
 			Richieste_particolari.": ".$row[4]."\n\n".
+			msg_per_cliente.": ".$msg."\n\n".
 			ringraziamenti_email
 			;
 		}
@@ -704,12 +784,12 @@ function prenotazioni_utente() {
 			echo "<td><div class='nota'>$row[5]</div></td>";
 			if ($row[6] == 0) {
 				echo "<td>
-					<form action='prenotazioni.php' method='POST'>
+					<form action='prenotazioni.php' method='post'>
 					<input type='submit' class='bottonePiccolo'  value='".Modifica."'>
 					<input type='hidden' name='stato' value='modifica_prenotazione'>
 					<input type='hidden' name='codice' value='$row[0]'>
 					</form>
-					<form action='prenotazioni.php' method='POST'>
+					<form action='prenotazioni.php' method='post'>
 					<input type='submit' class='bottonePiccolo'  value='".Cancella."'>
 					<input type='hidden' name='stato' value='cancella_prenotazione'>
 					<input type='hidden' name='codice' value='$row[0]'>
@@ -783,6 +863,24 @@ function select_news($codice) {
 	close($db_conn);
 }
 
+function select_piatto($codice) {
+	$db_conn=connessione();
+	$cod_admin = $_SESSION["cod_admin"];
+	if ($db_conn and !empty($codice) and !empty($cod_admin)) {
+		$s="SELECT titolo,testo,prezzo,immagine,cod_admin,testo_en,titolo_en,tipo FROM piatti WHERE codice = $codice AND cod_admin = $cod_admin";
+		$result = query($s, $db_conn, "select piatto");
+		if (mysqli_num_rows($result) == 1) {
+			$row = fetch_row($result);
+			return $row;
+		} else {
+			torna_indietro();
+		}
+	} else {
+		torna_indietro();
+	}
+	close($db_conn);
+}
+
 function update_prenotazione($codice, $data, $ora, $nome, $num_persone, $richieste) {
 	$db_conn=connessione();
 	if ($db_conn and !empty($codice) and !empty($data) and !empty($ora) and !empty($nome) and !empty($num_persone) and $num_persone>0) {
@@ -831,6 +929,38 @@ function update_news($codice, $titolo, $contenuto, $contenuto_en, $titolo_en, $f
 			}
 			if (query($s, $db_conn, "update news") and mysqli_affected_rows($db_conn)==1) {
 				echo "<h3 class='avviso'>".News_aggiornata."</h3>";
+			} else {
+				torna_indietro();
+			}
+		} else {
+			torna_indietro();
+		}
+	} else {
+		torna_indietro();
+	}
+	close($db_conn);
+}
+
+function update_piatto($codice, $titolo, $contenuto, $contenuto_en, $titolo_en, $filename, $prezzo, $tipo) {
+	$db_conn=connessione();
+	if ($db_conn and !empty($codice) and !empty($titolo) and !empty($contenuto) and !empty($contenuto_en) and !empty($titolo_en) and !empty($prezzo) and !empty($tipo)) {
+		$cod_admin = $_SESSION["cod_admin"];
+		$s = "SELECT cod_admin FROM piatti WHERE codice=$codice";
+		$result=query($s, $db_conn, "select per controllo update piatti");
+		$row = null;
+		if (mysqli_num_rows($result) == 1) {
+			$row = fetch_row($result);
+		} else {
+			torna_indietro();
+		}
+		if ($cod_admin == $row[0]) {
+			if ($filename == "") {
+				$s="UPDATE piatti SET titolo='$titolo', testo='$contenuto', testo_en='$contenuto_en', titolo_en='$titolo_en', immagine=null, prezzo=$prezzo, tipo=$tipo WHERE codice = $codice AND cod_admin = $cod_admin";
+			} else {
+				$s="UPDATE piatti SET titolo='$titolo', testo='$contenuto', testo_en='$contenuto_en', titolo_en='$titolo_en', immagine='$filename', prezzo=$prezzo, tipo=$tipo WHERE codice = $codice AND cod_admin = $cod_admin";
+			}
+			if (query($s, $db_conn, "update piatto") and mysqli_affected_rows($db_conn)==1) {
+				echo "<h3 class='avviso'>".piatto_modificato."</h3>";
 			} else {
 				torna_indietro();
 			}
@@ -897,6 +1027,34 @@ function delete_news($codice) {
 	close($db_conn);
 }
 
+function delete_piatto($codice) {
+	$db_conn=connessione();
+	if ($db_conn and !empty($codice)) {
+		$cod_admin = $_SESSION["cod_admin"];
+		$s = "SELECT cod_admin FROM piatti WHERE codice=$codice";
+		$result=query($s, $db_conn, "select per controllo delete piatto");
+		$row = null;
+		if (mysqli_num_rows($result) == 1) {
+			$row = fetch_row($result);
+		} else {
+			torna_indietro();
+		}
+		if ($cod_admin == $row[0]) {
+			$s="DELETE FROM piatti WHERE codice = $codice AND cod_admin = $cod_admin";
+			if (query($s, $db_conn, "delete piatti") and mysqli_affected_rows($db_conn)==1) {
+				echo "<h3 class='avviso'>".piatto_cancellato."</h3>";
+			} else {
+				torna_indietro();
+			}
+		} else {
+			torna_indietro();
+		}
+	} else {
+		torna_indietro();
+	}
+	close($db_conn);
+}
+
 function reset_password($old_pw, $new_pw) {
 	$db_conn=connessione();
 	if ($db_conn and !empty($old_pw) and !empty($new_pw)) {
@@ -920,8 +1078,9 @@ function reset_password($old_pw, $new_pw) {
 	close($db_conn);
 }
 
-function insert_news($cod_admin, $titolo, $contenuto, $contenuto_en, $titolo_en, $filename) {
+function insert_news($titolo, $contenuto, $contenuto_en, $titolo_en, $filename) {
 	$db_conn=connessione();
+	$cod_admin = $_SESSION["cod_admin"];
 	if ($db_conn and !empty($cod_admin) and !empty($titolo) and !empty($contenuto) and !empty($contenuto_en) and !empty($titolo_en)) {
 		if ($filename == "") {
 			$s="INSERT INTO news (cod_admin, titolo, testo, testo_en, titolo_en, immagine, data, ora) VALUES ($cod_admin, '$titolo', '$contenuto', '$contenuto_en', '$titolo_en', null, NOW(), NOW())";
@@ -937,13 +1096,48 @@ function insert_news($cod_admin, $titolo, $contenuto, $contenuto_en, $titolo_en,
 	close($db_conn);
 }
 
+function insert_piatto($titolo, $contenuto, $contenuto_en, $titolo_en, $filename, $prezzo, $tipo) {
+	$db_conn=connessione();
+	$cod_admin = $_SESSION["cod_admin"];
+	if ($db_conn and !empty($cod_admin) and !empty($titolo) and !empty($contenuto) and !empty($contenuto_en) and !empty($titolo_en) and !empty($prezzo) and !empty($tipo)) {
+		if ($filename == "") {
+			$s="INSERT INTO piatti (cod_admin, titolo, testo, testo_en, titolo_en, immagine, prezzo, tipo) VALUES ($cod_admin, '$titolo', '$contenuto', '$contenuto_en', '$titolo_en', null, $prezzo, $tipo)";
+		} else {
+			$s="INSERT INTO piatti (cod_admin, titolo, testo, testo_en, titolo_en, immagine, prezzo, tipo) VALUES ($cod_admin, '$titolo', '$contenuto', '$contenuto_en', '$titolo_en', '$filename', $prezzo, $tipo)";
+		}
+		if (query($s, $db_conn, "insert piatto") and mysqli_affected_rows($db_conn)==1) {
+			echo "<h3 class='avviso'>".piatto_inserito."</h3>";
+		}
+	} else {
+		torna_indietro();
+	}
+	close($db_conn);
+}
+
 function pagina_news() {
 	$db_conn=connessione();
 	if ($db_conn) {
-		$s="SELECT news.codice, news.data, news.titolo, news.testo, news.immagine, news.cod_admin, amministratori.nome, news.ora, news.testo_en, news.titolo_en FROM news,amministratori WHERE amministratori.codice = news.cod_admin ORDER BY news.data DESC, news.ora DESC";
+		$s="SELECT news.codice, news.data, news.titolo, news.testo, news.immagine, news.cod_admin, amministratori.nome, news.ora, news.testo_en, news.titolo_en, amministratori.mail FROM news,amministratori WHERE amministratori.codice = news.cod_admin ORDER BY news.data DESC, news.ora DESC";
 		$result=query($s, $db_conn, "select pagina news");
 		if (mysqli_num_rows($result) == 0) {
 			echo "<h3 class='errore'>".No_notizie."</h3>";
+			tail();
+			die();
+		}
+		return $result;
+	} else {
+		torna_indietro();
+	}
+	close($db_conn);
+}
+
+function pagina_piatti() {
+	$db_conn=connessione();
+	if ($db_conn) {
+		$s="SELECT codice, titolo, titolo_en, testo, testo_en, prezzo, tipo, immagine FROM piatti ORDER BY tipo ASC";
+		$result=query($s, $db_conn, "select pagina piatti");
+		if (mysqli_num_rows($result) == 0) {
+			echo "<h3 class='errore'>".No_piatti."</h3>";
 			tail();
 			die();
 		}
@@ -964,7 +1158,7 @@ function mail_recupero_password($mail) {
 			$new_pw .= $alfabeto[rand(0,$len-1)];
 		}
 		
-		$s = "SELECT confermato FROM utenti WHERE mail='".addslashes($mail)."'";
+		$s = "SELECT confermato FROM utenti WHERE mail='$mail'";
 		$result = query($s, $db_conn, "select confermato per recupero password");
 		$row = null;
 		if (mysqli_num_rows($result) == 1) {
@@ -972,13 +1166,13 @@ function mail_recupero_password($mail) {
 		}
 		
 		if ($row[0] == 1) {
-			$s = "UPDATE utenti SET confermato=0, password='".md5($new_pw)."' WHERE mail='".addslashes($mail)."'";
+			$s = "UPDATE utenti SET confermato=0, password='".md5($new_pw)."' WHERE mail='$mail'";
 			if (query($s, $db_conn, "update password temp recupero") and mysqli_affected_rows($db_conn)==1) {
 				echo "<h3 class='avviso'>".Password_inviata_mail."</h3>";
 			} else {
 				torna_indietro();
 			}
-			$to = addslashes($mail);
+			$to = $mail;
 			$subject = Recupero_password;
 			$message = la_tua_nuova_password.": $new_pw".ringraziamenti_email;
 			$headers = "From: lucacoppiardi@altervista.org";
@@ -1057,14 +1251,14 @@ function update_indirizzo_mail($newmail) {
 	$db_conn=connessione();
 	$mail = $_SESSION["mail"];
 	if ($db_conn and !empty($mail) and !empty($newmail)) {
-		$s = "UPDATE utenti SET mail='".addslashes($newmail)."', hash='".md5($newmail)."', confermato=0 WHERE mail='".addslashes($mail)."'";
+		$s = "UPDATE utenti SET mail='$newmail', hash='".md5($newmail)."', confermato=0 WHERE mail='$mail'";
 		if (query($s, $db_conn, "cambio mail") and mysqli_affected_rows($db_conn)==1) {
 			echo "<h3 class='avviso'>".Indirizzo_aggiornato."<br/>".Conferma_iscrizione_cliccando_link."</h3>";
-			echo "<form action='prenotazioni.php' method='POST'>
+			echo "<form action='prenotazioni.php' method='post'>
 					<input type='hidden' name='stato' value='accedi'>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";
-			$to = addslashes($newmail);
+			$to = $newmail;
 			$subject = cambio_mail;
 			$message = conferma_a_questo_link.": ".link_al_sito."prenotazioni.php?stato=conferma_nuova_mail&lang=".$_SESSION["lang"]."&hash=".md5($newmail)."\n".ringraziamenti_email;
 			$headers = "From: lucacoppiardi@altervista.org";
@@ -1104,7 +1298,7 @@ function registrazione_confermata($hash) {
 		$s = "UPDATE utenti SET confermato=1 WHERE hash='$hash'";
 		if (query($s, $db_conn, "conferma hash") and mysqli_affected_rows($db_conn)==1) {
 			echo "<h3 class='avviso'>".Registrazione_riuscita."</h3>";
-			echo "<form action='prenotazioni.php' method='POST'>
+			echo "<form action='prenotazioni.php' method='post'>
 					<input type='hidden' name='stato' value='accedi'>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";
@@ -1123,7 +1317,7 @@ function confermata_nuova_mail($hash) {
 		$s = "UPDATE utenti SET confermato=1 WHERE hash='$hash'";
 		if (query($s, $db_conn, "conferma hash") and mysqli_affected_rows($db_conn)==1) {
 			echo "<h3 class='avviso'>".Indirizzo_aggiornato."</h3>";
-			echo "<form action='prenotazioni.php' method='POST'>
+			echo "<form action='prenotazioni.php' method='post'>
 					<input type='hidden' name='stato' value='accedi'>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";
@@ -1134,6 +1328,41 @@ function confermata_nuova_mail($hash) {
 		torna_indietro();
 	}
 	close($db_conn);
+}
+
+function mail_form_contatti($mail, $oggetto, $messaggio) {
+	if (!empty($mail) and !empty($oggetto) and !empty($messaggio)) {
+		
+		$to = "lucacoppiardi@altervista.org";
+		$subject = "[".Contattaci."]: ".$oggetto;
+		$message = $messaggio;
+		$headers = "From: ".$mail;
+		
+		$esito_mail = mail($to,$subject,$message,$headers);
+		
+		if ($esito_mail) {
+			echo "<h3 class='avviso'>Mail ".inviata."</h3>";
+		} else {
+			torna_indietro();
+		}
+		
+		if (isDebug()) {
+			echo $esito_mail;
+			if (!$esito_mail) {
+				echo "EMAIL ERROR"."<br/>";
+			}			
+			else {
+				echo "EMAIL OK"."<br/>";
+			}
+			echo $to."<br/>";
+			echo $subject."<br/>";
+			echo $message."<br/>";
+			echo $headers."<br/>";
+		}		
+		
+	} else {
+		torna_indietro();
+	}
 }
 
 ?>
