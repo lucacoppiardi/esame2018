@@ -289,7 +289,7 @@ input[type=submit] {
 	padding: 5px 10px;
 	background-color: #005600 /*138117*/;
 	margin-bottom: 10px;
-	vertical-align: center;
+	vertical-align: middle;
 }
 
 .bottonePiccolo:hover {
