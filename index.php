@@ -96,7 +96,7 @@
 		}
 		i++;
 	}
-	var timer = setInterval(gira_automatico, 5000);
+	var timer = setInterval(gira_automatico, 10000);
 	</script>";
 	
 	echo "

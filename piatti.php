@@ -67,13 +67,13 @@
 		echo "</td>";
 		
 		if ($_SESSION["lang"] == "en") {
-			echo "<td><p><strong>".$piatti[$i][2]."</strong></p></td>";
-			echo "<td><p>".$piatti[$i][4]."</p></td>";
+			echo "<td><p class='margine_tab_piatti'><strong>".$piatti[$i][2]."</strong></p></td>";
+			echo "<td><p class='margine_tab_piatti'>".$piatti[$i][4]."</p></td>";
 		} else {
-			echo "<td><p><strong>".$piatti[$i][1]."</strong></p></td>";
-			echo "<td><p>".$piatti[$i][3]."</p></td>";
+			echo "<td><p class='margine_tab_piatti'><strong>".$piatti[$i][1]."</strong></p></td>";
+			echo "<td><p class='margine_tab_piatti'>".$piatti[$i][3]."</p></td>";
 		}
-		echo "<td><p>".$piatti[$i][5]." &euro;"."</p></td>";
+		echo "<td><p class='margine_tab_piatti'>".$piatti[$i][5]." &euro;"."</p></td>";
 		
 		echo "</tr>";
 		

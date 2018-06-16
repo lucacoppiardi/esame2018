@@ -9,7 +9,7 @@
 	include("libreria.php");
 	
 	function isDebug() {
-		return true;
+		return false;
 	}
 
 	function getStato() {
@@ -60,6 +60,8 @@
 			echo "</p>";
 		}
 		
+		echo "<br style='clear:both'>";
+
 		echo "</div>";
 
 		echo "<footer id='footer'>";

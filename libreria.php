@@ -474,7 +474,7 @@ function visualizza_piatti() {
 		$result=query($s, $db_conn, "select visualizza_piatti");
 		echo "<div id='scroll_tabella'>";
 		echo "<table class='dati_stampati'>";
-		echo "<tr class='prima_riga'><td>".Titolo."</td><td>".Testo."</td><td>".Prezzo."</td><td>".Tipo."</td></tr>";
+		echo "<tr class='prima_riga'><td>".Titolo."</td><td>".Testo."</td><td>".Prezzo."</td><td>".Tipo."</td><td></td></tr>";
 		while ($row=fetch_row($result)) {	
 			echo "<tr class='altre_righe'>";
 			echo "<td><a href='piatti.php#$row[0]'>";
@@ -491,13 +491,15 @@ function visualizza_piatti() {
 				echo $row[2];
 			}
 			echo "</div></td>";
+			echo "<td>$row[5] &euro;</td>";
 			echo "<td>";
-			if ($_SESSION["lang"] == "en") {
-				echo $row[6];
-			} else {
-				echo $row[4];
-			}
-			echo "</div></td>";
+				if ($row[6]==1) echo Antipasti;
+				if ($row[6]==2) echo PrimoPiatto;
+				if ($row[6]==3) echo SecondoPiatto;
+				if ($row[6]==4) echo Contorno;
+				if ($row[6]==5) echo Dolce;
+				if ($row[6]==6) echo Altro;
+			echo "</td>";
 			echo "<td>
 				<form action='admin.php' method='post'>
 					<input type='hidden' name='stato' value='modifica_piatto'>

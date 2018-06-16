@@ -1,10 +1,11 @@
 <?php
+
 	include("interfaccia.php");
 	
 	if (getStato() == "gestione_prenotazioni") {
-		echo "<meta http-equiv='refresh' content='60'>";
+		header("refresh:60;url=admin.php?stato=gestione_prenotazioni");
 	}
-	
+
 	head();
 
 	topbar("admin");
@@ -124,12 +125,6 @@
 					<input type='hidden' name='stato' value='logout' >
 					<input type='submit' class='bottone'  value='Logout' >
 				</form>";
-			if (isDebug()) {
-				echo "<form action='admin.php' method='post' style='margin-top:20px'>
-					<input type='hidden' name='stato' value='killer'>
-					<input type='submit' class='bottone'  value='DISTRUGGI TUTTO'>
-				</form>";
-			}
 		}
 	}
 
@@ -204,7 +199,7 @@
 			break;
 			
 		case "delete_account_admin":
-			delete_account_admin(htmlentities(htmlentities($_REQUEST["codice"], ENT_QUOTES), ENT_QUOTES));
+			delete_account_admin(htmlentities($_REQUEST["codice"], ENT_QUOTES));
 			echo "<form method='post' action='admin.php'>
 					<input type='hidden' name='stato' value='gestione_utenti'>
 					<input type='submit' class='bottone'  value='OK'>
@@ -212,17 +207,17 @@
 			break;
 			
 		case "conferma_scelta":
-			$codice_prenotazione = htmlentities(htmlentities($_REQUEST["codice"], ENT_QUOTES), ENT_QUOTES);
+			$codice_prenotazione = htmlentities($_REQUEST["codice"], ENT_QUOTES);
 			$dati = select_prenotazione_admin($codice_prenotazione);
 			echo "<form action='admin.php' method='post'>";
-				if (isset($_REQUEST["accetta"]) and $_REQUEST["accetta"]=="Accetta") {
+				if (isset($_REQUEST["accetta"])) {
 					echo "<input type='hidden' name='stato' value='accetta_prenotazione'>";
-				} else if (isset($_REQUEST["rifiuta"]) and $_REQUEST["rifiuta"]=="Rifiuta") {
+				} else if (isset($_REQUEST["rifiuta"])) {
 					echo "<input type='hidden' name='stato' value='rifiuta_prenotazione'>";
 				};
-				if (isset($_REQUEST["accetta"]) and $_REQUEST["accetta"]=="Accetta") {
+				if (isset($_REQUEST["accetta"])) {
 					echo "<h4 class='attenzione'>".Conferma." \"".Accetta."\"?</h4>";
-				} else if (isset($_REQUEST["rifiuta"]) and $_REQUEST["rifiuta"]=="Rifiuta") {
+				} else if (isset($_REQUEST["rifiuta"])) {
 					echo "<h4 class='attenzione'>".Conferma." \"".Rifiuta."\"?</h4>";
 				};
 				echo "<label for='msg'>".msg_per_cliente.": </label>";
@@ -537,23 +532,6 @@
 					<input type='hidden' name='stato' value='gestione_piatto'>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";
-			break;
-			
-		case "killer":
-			echo "<form action='admin.php' method='post'>
-					<input type='hidden' name='stato' value='drop'>
-					<input type='submit' class='bottone'  name='conferma' value='DISTRUGGI TUTTE LE TABELLE'>
-				</form>";
-			echo "<form action='admin.php' method='post'>
-					<input type='hidden' name='stato' value='login'>
-					<input type='submit' class='bottone'  value='".Annulla."'>
-				</form>";
-			break;
-			
-		case "drop":
-			if (isDebug() and isset($_REQUEST["conferma"]) and ($_REQUEST["conferma"] === "DISTRUGGI TUTTE LE TABELLE")) 
-				drop();
-			session_unset();
 			break;
 			
 		case "logout":
