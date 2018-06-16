@@ -240,7 +240,6 @@
 					<input type='hidden' name='stato' value='gestione_prenotazioni'>
 					<input type='submit' class='bottone'  name='conferma' value='NO'>
 				</form>";
-			echo "<br><br>";
 			break;
 			
 		case "accetta_prenotazione":
@@ -407,7 +406,6 @@
 					<input type='hidden' name='stato' value='gestione_piatti'>
 					<input type='submit' class='bottone'  value='".Annulla."'>
 				</form>";
-			echo "<br><br>";
 			break;
 		
 		case "modifica_piatto":
