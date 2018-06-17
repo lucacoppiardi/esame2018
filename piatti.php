@@ -1,4 +1,10 @@
 <?php
+
+	/* piatti.php
+	 * 
+	 * In questa pagina sono mostrati i piatti pubblicati dall'amminstrazione
+	 */
+	
 	include("interfaccia.php");
 	head();
 	topbar("piatti");

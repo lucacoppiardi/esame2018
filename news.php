@@ -1,4 +1,10 @@
 <?php
+
+	/* news.php
+	 * 
+	 * In questa pagina sono mostrate le notizie pubblicate dall'amministrazione
+	 */
+	
 	include("interfaccia.php");
 	head();
 	topbar("news");

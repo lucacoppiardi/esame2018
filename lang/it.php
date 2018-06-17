@@ -34,7 +34,11 @@
 	define("Nome_prenotazione", "Nome prenotazione");
 	define("subject_email","La tua prenotazione");
 	define("riepilogo_email", "Ecco un riepilogo della tua prenotazione:");
-	define("link_al_sito", "https://lucacoppiardi.altervista.org/maturita2018/");
+	if (isDebug()) {
+		define("link_al_sito", "http://127.0.0.1/tesina/");
+	} else {
+		define("link_al_sito", "https://lucacoppiardi.altervista.org/maturita2018/");
+	}
 	define("ringraziamenti_email", "\nGrazie per la preferenza accordataci\n".link_al_sito);
 	define("Accetta","Accetta");
 	define("Accettata", "Accettata");
@@ -50,7 +54,7 @@
 	define("Nuova_password_conferma", "Nuova password (confermare)");
 	define("Ricontrollare_password", "Ricontrollare la password inserita");
 	define("Password_cambiata_correttamente", "Password cambiata correttamente");
-	define("Password_inviata_mail", "Password cambiata correttamente ed inviata via mail");
+	define("Password_inviata_mail", "Link per il recupero password inviato via mail");
 	define("tabella_non_esiste", "La tabella non esiste");
 	define("file_non_immagine", "Il file non &egrave; un'immagine");
 	define("file_gia_esistente", "File gi&agrave; esistente");
@@ -70,7 +74,7 @@
 	define("Pubblicata_il", "Pubblicata il");
 	define("da", "da");
 	define("Recupero_password", "Recupero password");
-	define("la_tua_nuova_password", "La tua nuova password &egrave;");
+	define("la_tua_nuova_password", "Clicca qui per impostare la tua nuova password");
 	define("Utenti", "Utenti");
 	define("Prenotazioni", "Prenotazioni");
 	define("confermare_eliminazione_account", "Confermare l'eliminazione dell'account");
@@ -131,5 +135,9 @@
 	define("Messaggio", "Messaggio");
 	define("inviata", "inviata");
 	define("Invia", "Invia");
+	define("requisiti_password", "La password deve essere almeno di 8 caratteri tra cui un numero, una lettera maiuscola ed una minuscola.");
+	define("Clicca_link_per_recupero_password", "Clicca sul link che hai ricevuto per recuperare la password");
+	define("cambia_dati_personali", "Aggiorna dati personali");
+	define("Dati_aggiornati", "Dati aggiornati");
 	
 ?>

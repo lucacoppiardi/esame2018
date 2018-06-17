@@ -1,18 +1,29 @@
 <?php
 
-	session_start();
-	
+	/* interfaccia.php
+	 * 
+	 * si occupa di includere i file con le stringhe per la traduzione del sito,
+	 * stampa i tag di intestazione, la barra superiore ed il footer,
+	 * include il file con le query SQL (libreria.php) in modo da non doverlo includere nelle altre pagine,
+	 * inizia la sessione PHP,
+	 * infine contiene la funzione isDebug: quando è true, sulle pagine sono mostrati dati come le query eseguite o i valori di alcuni variabili.
+	 */
+
+	/* per evitare session hijacking */
+	ini_set('session.use_trans_sid', 0);
 	ini_set('session.use_only_cookies', 1);
 	ini_set('session.cookie_httponly', 1);
 	ini_set('session.cookie_secure', 1);
-
-	include("libreria.php");
 	
-	function isDebug() {
-		return false;
+	session_start(); // apre la sessione
+	
+	include("libreria.php"); // funzioni SQL che serviranno in altre pagine
+	
+	function isDebug() { /* se è true, le pagine stampano ad esempio le query eseguite o altre informazioni */
+		return true;
 	}
 
-	function getStato() {
+	function getStato() { // per controllare lo stato in cui sono (es.: inserisci prenotazione, modifica, cancella, ... )
 		if (!isset($_REQUEST["stato"])) {
 			$stato="";
 		} else {
@@ -21,46 +32,47 @@
 		return $stato;
 	}
 	
-	if (empty($_SESSION["lang"])) {
-		$_SESSION["lang"] = "it"; // ita di default
+	if (empty($_SESSION["lang"])) { // se nessuna lingua è stata impostata,
+		$_SESSION["lang"] = "it"; // imposto nella sessione l'italiano come lingua predefinita.
+	}
+	if (!empty($_REQUEST["lang"])) { // se viene settata un'altra lingua,
+		if ($_REQUEST["lang"] == "it" or $_REQUEST["lang"] == "en") { // controllo sia una lingua di cui ho le traduzioni,
+			$_SESSION["lang"] = $_REQUEST["lang"]; // la salvo in SESSION.
+			include("lang/".$_REQUEST["lang"].".php"); // includo la traduzione nel sito.
+		} else { // se la lingua non ha traduzione includo quella predefinita.
+			include("lang/".$_SESSION["lang"].".php");
+		}
+	}
+	if (empty($_REQUEST["lang"])) { // in caso di lingua non specificata tengo quella predefinita.
+		include("lang/".$_SESSION["lang"].".php"); 
 	}
 	
-	if (!empty($_REQUEST["lang"])) { // se viene settata un'altra lingua...
-		$lang = $_REQUEST["lang"]; // la salvo...
-		if ($lang == "it" or $lang == "en") { // controllo sia una lingua di cui ho le traduzioni...
-			$_SESSION["lang"] = $lang; // la salvo in SESSION
-			include_once("lang/$lang.php"); // includo la traduzione nel sito
-		}
-	} else if(empty($_REQUEST["lang"])) { // in caso di lingua non specificata tengo quella pre-impostata
-		$lang = $_SESSION["lang"];
-		include_once("lang/$lang.php"); 
-	}
-
-	function head() {
+	function head() { // stampa i tag di intestazione
 		echo "<!DOCTYPE HTML>";
-		echo "<html lang=\"it\">";
+		echo "<html lang=\"".$_SESSION["lang"]."\">";
 		echo "<head>";
 		echo "<title>Corte Ada</title>";
 		echo "<meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\"/>"; /*iso-8859-1*/
 		echo "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">";
+		
 		echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\">";
 		echo "<script language=\"JavaScript\" type=\"text/javascript\" src=\"scripts.js\"></script>";
-		//echo "<link href=\"https://fonts.googleapis.com/css?family=Cookie\" rel=\"stylesheet\"/>";
 		echo "<link rel=\"icon\" href=\"media/logo.png\">";
+		
 		echo "</head>";
-		echo "<body onload='resizeFooter();'>";
+		echo "<body>";
 	}
 	
-	function tail() {
+	function tail() { // stampa il footer
 	
+		echo "<br style='clear:both'>";
+		
 		if (isDebug()) {
-			echo "<p style='font-family: monospace'>";
+			echo "<pre>";
 			print_r($_SESSION);
 			echo "PHPSESSID: ".session_id();
-			echo "</p>";
+			echo "</pre>";
 		}
-		
-		echo "<br style='clear:both'>";
 
 		echo "</div>";
 
@@ -75,7 +87,7 @@
 		
 	}
 
-	function topbar($pagina_attiva) {
+	function topbar($pagina_attiva) { // stampa la barra di navigazione superiore, evidenziando la pagina aperta
 	
 		echo "<div id='pagina'>";
 		echo "<nav class=\"menu\" id=\"barra\">";
@@ -124,19 +136,7 @@
 		echo "<input type='submit' value='' style=\"background:url('media/en.png'); background-size:cover; width:40px; height:18px; border:none;\">";
 		echo "</form>";
 		echo "</a>";
-		
-		/*
-		echo "<a ";
-		if ($pagina_attiva == "admin") {
-			echo " class='active_link' ";
-		}
-		echo "href=\"admin.php?lang=".getLang()."\" style='padding-top: 11px; padding-bottom:5px'><img src='media/lock.png' alt='admin' width='32px' heigth='32px'></a>";
-		*/
-		
-		//echo "<a href=\"?lang=it\"><img src='it.png' width='20px' heigth='20px' alt='it'></a>";
-		
-		//echo "<a href=\"?lang=en\"><img src='en.png' width='24px' heigth='24px' alt='en'></a>";
-				
+						
 		echo "</div>";
 		echo "</nav>";
 		

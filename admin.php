@@ -1,7 +1,15 @@
 <?php
 
+	/* admin.php
+	 * In questa pagina dedicata all'amministrazione gli amministratori possono:
+	 * - Vedere le prenotazioni inserite dai clienti, approvarle o respingerle
+	 * - Gestire le notizie ed i piatti pubblicati
+	 * - Visualizzare i dati degli utenti ed eventualmente cancellarli dal database
+	 */
+
 	include("interfaccia.php");
 	
+	/* quando sto visualizzando la tabella delle prenotazioni, ogni minuto la pagina viene automaticamente aggiornata per mostrare eventuali nuove prenotazioni */
 	if (getStato() == "gestione_prenotazioni") {
 		header("refresh:60;url=admin.php?stato=gestione_prenotazioni");
 	}
@@ -23,40 +31,41 @@
 	
 	echo "<h1 class='titolo_pagina'>".Amministrazione."</h1>";
 		
+	/* gestisco il caricamento di immagini */
 	if(isset($_POST['action']) and $_POST['action'] == 'upload') {
+		
 		define("UPLOAD_DIR", "./uploads/");
 		
 		$checkUpload = false;
-		
 		$newFileName = "";
 		$checkImg = 0;
 		$temp = "";
 		
-		if(isset($_FILES['file'])) {
+		if(isset($_FILES['file'])) { // un file è stato caricato
 			$file = $_FILES['file'];
 			if (!empty($file["name"])) {
-				$checkImg = getimagesize($file["tmp_name"]);
-				$temp = explode(".",$file["name"]);
-				$newFileName = UPLOAD_DIR.md5($file["name"]).".".end($temp);
+				$checkImg = getimagesize($file["tmp_name"]); // controlla che il file sia un'immagine
+				$temp = explode(".",$file["name"]); // prendo il nome del file
+				$newFileName = UPLOAD_DIR.md5($file["name"]).".".end($temp); // rinomino il file con il suo hash mantenendo l'estensione, per controllare poi che non sia già stato caricato precedentemente
 			}
-			if($file['error'] == UPLOAD_ERR_OK and is_uploaded_file($file['tmp_name']))	{
+			if($file['error'] == UPLOAD_ERR_OK and is_uploaded_file($file['tmp_name']))	{ // upload andato a buon fine
 				if($checkImg == true) {
 					if (isDebug()) echo "File is an image - " . $checkImg["mime"] . "<br/>";
-				} else if($checkImg == false) {
+				} else if($checkImg == false) { // il file non è un'immagine
 					echo non_immagine."<br/>";
 					$checkUpload = true;
 				}
-				if (file_exists($newFileName)) {
+				if (file_exists($newFileName)) { // il file esiste già
 					echo file_gia_esistente."<br/>";
 					$checkUpload = true;
 				}
-				if ($_FILES['file']['size'] > 5000000) {
+				if ($_FILES['file']['size'] > 5000000) { // il file pesa più di 5 MB
 					echo file_troppo_grande."<br/>";
 					$checkUpload = true;
 				}
-				if ($checkUpload==false) {
-					if (move_uploaded_file($file['tmp_name'], $newFileName)) {
-						echo "File ".caricato."<br/>";
+				if ($checkUpload==false) { // se i controlli sono stati superati,
+					if (move_uploaded_file($file['tmp_name'], $newFileName)) { // salvo il file
+						echo "File ".caricato."<br/>"; // il file è stato caricato e ha superato i controlli precedenti
 					} else {
 						echo "File ".non_caricato."<br/>";
 					}
@@ -73,27 +82,29 @@
 		echo "!post";
 	}*/
 	
-	function paginaLogged() {
+	function paginaLogged() { /* controllo se l'amministratore è loggato */
 		$mail = null;
 		$pass = null;
-		if(!empty($_REQUEST["mail"]) and !empty($_REQUEST["password"])) {
+		$salt = "3yRqgiTjp0ftpePtFLN5qWZtAHjx6S";
+		if (!empty($_REQUEST["mail"]) and !empty($_REQUEST["password"])) { // accesso dal form di login
 			$mail = htmlentities($_REQUEST["mail"], ENT_QUOTES);
-			$pass = md5($_REQUEST["password"]);
+			$pass = md5($_REQUEST["password"].$salt);
 		}
-		if(empty($_REQUEST["mail"]) and empty($_REQUEST["password"]) and !empty($_SESSION["mail_admin"]) and !empty($_SESSION["password_admin"])) {
+		if (empty($_REQUEST["mail"]) and empty($_REQUEST["password"]) and !empty($_SESSION["mail_admin"]) and !empty($_SESSION["password_admin"])) { // admin già loggato
 			$mail = $_SESSION["mail_admin"];
 			$pass = $_SESSION["password_admin"];
 		}
-		if (empty($mail) and empty($password)) {
+		if (empty($mail) and empty($password)) { // utente non loggato
 			pagina();
 			tail();
 			die();
 		}
-		$login = admin_login($mail, $pass);
+		$login = admin_login($mail, $pass); // ottengo i dati dell'amministratore
 		if (!$login) {
 			echo "<h2 class='errore'>".Login_errato."</h2>";
 			pagina();
 		} else {
+			/* salvo i dati di accesso dell'amministratore nella sessione */
 			$_SESSION["mail_admin"] = $login[1];
 			$_SESSION["password_admin"] = $login[3];
 			$_SESSION["cod_admin"] = $login[0];
@@ -105,6 +116,7 @@
 				echo Primo_accesso;
 			}
 			echo "</h4>";
+			/* stampo i pulsanti per la gestione del sito */
 			echo "<form action='admin.php' method='post'>
 					<input type='hidden' name='stato' value='gestione_prenotazioni'>
 					<input type='submit' class='bottone'  value='".Prenotazioni."' >
@@ -131,10 +143,10 @@
 	switch(getStato()) {
 		
 		case "login":
-			paginaLogged();
+			paginaLogged(); // login amministratore
 			break;
 			
-		case "gestione_prenotazioni":
+		case "gestione_prenotazioni": /* mostra la tabella con le prenotazioni inserite */
 			echo "<h2>".Prenotazioni_online."</h2>";
 			crea_tab_utenti();
 			crea_tab_prenotazioni();
@@ -145,7 +157,7 @@
 				</form>";
 			break;
 			
-		case "gestione_news":
+		case "gestione_news": /* mostra la tabella con le notizie inserite */
 			echo "<h2>News</h2>";
 			echo "<form action='admin.php' method='post'>
 					<input type='hidden' name='stato' value='inserisci_news'>
@@ -159,7 +171,7 @@
 				</form>";
 			break;
 			
-		case "gestione_piatti":
+		case "gestione_piatti": /* mostra la tabella con i piatti inseriti */
 			echo "<h2>".Piatti."</h2>";
 			echo "<form action='admin.php' method='post'>
 					<input type='hidden' name='stato' value='inserisci_piatto'>
@@ -173,7 +185,7 @@
 				</form>";
 			break;
 			
-		case "gestione_utenti":
+		case "gestione_utenti": /* mostra la tabella con gli utenti registrati */
 			echo "<h2>".Utenti."</h2>";
 			crea_tab_utenti();
 			visualizza_utenti();
@@ -183,13 +195,13 @@
 				</form>";
 			break;
 			
-		case "cancella_utente":
+		case "cancella_utente": /* form di conferma eliminazione utente */
 			echo "<form action='admin.php' method='post'>
 					<h4 class='attenzione'>".confermare_eliminazione_account.":</h4>"
 					."<label for='nome'>".Nome.":</label> <input type='text' id='nome' readonly value='".$_REQUEST["nome"]."'>
 					<label for='mail'>Mail: </label><input type='text' id='mail' readonly value='".$_REQUEST["mail"]."'>
 					<input type='hidden' name='stato' value='delete_account_admin'>
-					<input type='hidden' name='codice' value='".htmlentities($_REQUEST["codice"], ENT_QUOTES)."'>
+					<input type='hidden' name='codice' value='".$_REQUEST["codice"]."'>
 					<input type='submit' class='bottone'  value='OK' >
 				</form>";
 			echo "<form action='admin.php' method='post'>
@@ -198,7 +210,7 @@
 				</form>";
 			break;
 			
-		case "delete_account_admin":
+		case "delete_account_admin": /* elimina l'utente */
 			delete_account_admin(htmlentities($_REQUEST["codice"], ENT_QUOTES));
 			echo "<form method='post' action='admin.php'>
 					<input type='hidden' name='stato' value='gestione_utenti'>
@@ -206,10 +218,11 @@
 				</form>";
 			break;
 			
-		case "conferma_scelta":
+		case "conferma_scelta": /* form di conferma accettazione/respingimento prenotazione */
 			$codice_prenotazione = htmlentities($_REQUEST["codice"], ENT_QUOTES);
 			$dati = select_prenotazione_admin($codice_prenotazione);
 			echo "<form action='admin.php' method='post'>";
+				/* in base al pulsante Accetta/Rifiuta premuto, cambio lo stato in cui passare e il messaggio di conferma sulla pagina */
 				if (isset($_REQUEST["accetta"])) {
 					echo "<input type='hidden' name='stato' value='accetta_prenotazione'>";
 				} else if (isset($_REQUEST["rifiuta"])) {
@@ -221,7 +234,7 @@
 					echo "<h4 class='attenzione'>".Conferma." \"".Rifiuta."\"?</h4>";
 				};
 				echo "<label for='msg'>".msg_per_cliente.": </label>";
-				echo "<textarea id='msg' name='msg' rows='6' cols='40' maxlength='250'></textarea>";
+				echo "<textarea id='msg' name='msg' rows='6' cols='40' maxlength='250'></textarea>"; // messaggio da mandare al cliente
 				echo "<h4 style='clear: both'>".Prenotazione.":</h4>";
 				echo "<input type='hidden' name='codice' value='$codice_prenotazione'>";
 				echo "<label for='data'>".Data.": </label>";
@@ -242,7 +255,7 @@
 				</form>";
 			break;
 			
-		case "accetta_prenotazione":
+		case "accetta_prenotazione": /* prenotazione accettata */
 			$codice_prenotazione = htmlentities($_REQUEST["codice"], ENT_QUOTES);
 			$msg = htmlentities($_REQUEST["msg"], ENT_QUOTES);
 			conferma_prenotazione($codice_prenotazione, 1, $msg);
@@ -252,7 +265,7 @@
 				</form>";
 			break;
 			
-		case "rifiuta_prenotazione":
+		case "rifiuta_prenotazione": /* prenotazione rifiutata */
 			$codice_prenotazione = htmlentities($_REQUEST["codice"], ENT_QUOTES);
 			$msg = htmlentities($_REQUEST["msg"], ENT_QUOTES);
 			conferma_prenotazione($codice_prenotazione, 2, $msg);
@@ -262,7 +275,7 @@
 				</form>";
 			break;
 			
-		case "inserisci_news":
+		case "inserisci_news": /* form inserimento notizia */
 			echo "<h3>".inserisci_news."</h3>";
 			echo "<form action='admin.php' method='post' enctype='multipart/form-data'>
 					<input type='hidden' name='stato' value='insert_news'>
@@ -285,7 +298,7 @@
 				</form>";
 			break;
 		
-		case "modifica_news":
+		case "modifica_news": /* form modifica notizia */
 			$codice = htmlentities($_REQUEST["codice"], ENT_QUOTES);
 			$dati = select_news($codice);
 			echo "<h3>".Aggiorna." news</h3>";
@@ -311,7 +324,7 @@
 				</form>";
 			break;
 			
-		case "cancella_news":
+		case "cancella_news": /* form eliminazione notizia */
 			$codice = htmlentities($_REQUEST["codice"], ENT_QUOTES);
 			$dati = select_news($codice);
 			echo "<h3>".Cancella." news</h3>";
@@ -336,7 +349,7 @@
 				</form>";
 			break;
 			
-		case "delete_news":
+		case "delete_news": /* elimina notizia dal db */
 			$codice = htmlentities($_REQUEST["codice"], ENT_QUOTES);
 			delete_news($codice);
 			echo "<form action='admin.php' method='post'>
@@ -345,7 +358,7 @@
 				</form>";
 			break;
 			
-		case "insert_news":
+		case "insert_news": /* inserisce notizia nel db */
 			$titolo = htmlentities($_REQUEST["titolo"], ENT_QUOTES);
 			$titolo_en = htmlentities($_REQUEST["titolo_en"], ENT_QUOTES);
 			$contenuto = htmlentities($_REQUEST["contenuto"], ENT_QUOTES);
@@ -359,7 +372,7 @@
 				</form>";
 			break;
 		
-		case "update_news":
+		case "update_news": /* aggiorna notizia sul db */
 			$codice = htmlentities($_REQUEST["codice"], ENT_QUOTES);
 			$titolo = htmlentities($_REQUEST["titolo"], ENT_QUOTES);
 			$titolo_en = htmlentities($_REQUEST["titolo_en"], ENT_QUOTES);
@@ -374,11 +387,11 @@
 				</form>";
 			break;
 			
-		case "inserisci_piatto":
+		case "inserisci_piatto": /* form inserimento piatto */
 			echo "<h3>".inserisci_piatto."</h3>";
 			echo "<form action='admin.php' method='post' enctype='multipart/form-data'>
-					<input type='hidden' name='stato' value='insert_piatto'>
-					<label for='titolo'>".Titolo.": </label>
+					<input type='hidden' name='stato' value='insert_piatto'>"; // passa all'inserimento del piatto nel db
+				echo "<label for='titolo'>".Titolo.": </label>
 					<input type='text' id='titolo' name='titolo' placeholder='".Titolo."' maxlength='250' required>
 					<label for='titolo_en'>".Titolo." (english): </label>
 					<input type='text' id='titolo_en' name='titolo_en' placeholder='".Titolo." (english)' maxlength='250' required>
@@ -408,13 +421,13 @@
 				</form>";
 			break;
 		
-		case "modifica_piatto":
+		case "modifica_piatto": /* form modifica piatto */
 			$codice = htmlentities($_REQUEST["codice"], ENT_QUOTES);
 			$dati = select_piatto($codice);
 			echo "<h3>".modifica_piatto."</h3>";
 			echo "<form action='admin.php' method='post' enctype='multipart/form-data'>
-					<input type='hidden' name='stato' value='update_piatto'>
-					<input type='hidden' name='codice' value='$codice'>
+					<input type='hidden' name='stato' value='update_piatto'>"; // passa alla modifica del piatto sul db
+				echo "<input type='hidden' name='codice' value='$codice'> 
 					<label for='titolo'>".Titolo.": </label>
 					<input type='text' id='titolo' name='titolo' maxlength='250' value='$dati[0]' required>
 					<label for='titolo_en'>".Titolo." (english): </label>
@@ -453,12 +466,12 @@
 				</form>";
 			break;
 			
-		case "cancella_piatto":
+		case "cancella_piatto": /* form cancella piatto */
 			$codice = htmlentities($_REQUEST["codice"], ENT_QUOTES);
 			$dati = select_piatto($codice);
 			echo "<h3>".cancella_piatto."</h3>";
 			echo "<form action='admin.php' method='post'>";
-				echo "<input type='hidden' name='stato' value='delete_piatto'>";
+				echo "<input type='hidden' name='stato' value='delete_piatto'>"; // passa ad eliminare piatto dal db
 				echo "<input type='hidden' name='codice' value='$codice'>";
 				echo "<label for='titolo'>".Titolo.": </label>
 					<input type='text' id='titolo' name='titolo' maxlength='250' value='$dati[0]' required readonly>
@@ -492,7 +505,7 @@
 				</form>";
 			break;
 			
-		case "delete_piatto":
+		case "delete_piatto": /* cancella piatto dal db */
 			$codice = htmlentities($_REQUEST["codice"], ENT_QUOTES);
 			delete_piatto($codice);
 			echo "<form action='admin.php' method='post'>
@@ -501,7 +514,7 @@
 				</form>";
 			break;
 			
-		case "insert_piatto":
+		case "insert_piatto": /* inserisce piatto nel db */
 			$titolo = htmlentities($_REQUEST["titolo"], ENT_QUOTES);
 			$titolo_en = htmlentities($_REQUEST["titolo_en"], ENT_QUOTES);
 			$contenuto = htmlentities($_REQUEST["contenuto"], ENT_QUOTES);
@@ -517,7 +530,7 @@
 				</form>";
 			break;
 		
-		case "update_piatto":
+		case "update_piatto": /* modifica piatto nel db */
 			$codice = htmlentities($_REQUEST["codice"], ENT_QUOTES);
 			$titolo = htmlentities($_REQUEST["titolo"], ENT_QUOTES);
 			$titolo_en = htmlentities($_REQUEST["titolo_en"], ENT_QUOTES);
@@ -534,12 +547,12 @@
 				</form>";
 			break;
 			
-		case "logout":
+		case "logout": /* disconnessione amministratore */
 			unset($_SESSION["mail_admin"], $_SESSION["password_admin"], $_SESSION["cod_admin"]);
 			pagina();
 			break;
 		
-		default:
+		default: /* crea tabella amministratori se non esiste già e mostra la pagina appropriata se non c'è un admin loggato o viceversa */
 			crea_tab_admin();
 			if (!empty($_SESSION["mail_admin"]) and !empty($_SESSION["password_admin"]) and !empty($_SESSION["cod_admin"])) {
 				paginaLogged();
