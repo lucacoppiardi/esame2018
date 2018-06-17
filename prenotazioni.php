@@ -165,8 +165,8 @@
 			$salt = "3yRqgiTjp0ftpePtFLN5qWZtAHjx6S";
 			$password = md5($_REQUEST["pass"].$salt);
 			$telefono = htmlentities($_REQUEST["telefono"], ENT_QUOTES);
-			crea_utente($mail,$password,$nome,$telefono); // iscrivo l'utente, riceverà una mail per controllare se l'indirizzo è valido ed attivare l'account
 			echo "<h3 class='avviso'>".Conferma_iscrizione_cliccando_link."</h3>";
+			crea_utente($mail,$password,$nome,$telefono); // iscrivo l'utente, riceverà una mail per controllare se l'indirizzo è valido ed attivare l'account
 			echo "<form action='prenotazioni.php' method='post'>
 					<input type='hidden' name='stato' value='accedi'>
 					<input type='submit' class='bottone'  value='OK'>

@@ -20,7 +20,7 @@
 	include("libreria.php"); // funzioni SQL che serviranno in altre pagine
 	
 	function isDebug() { /* se è true, le pagine stampano ad esempio le query eseguite o altre informazioni */
-		return true;
+		return false;
 	}
 
 	function getStato() { // per controllare lo stato in cui sono (es.: inserisci prenotazione, modifica, cancella, ... )
@@ -52,7 +52,7 @@
 		echo "<html lang=\"".$_SESSION["lang"]."\">";
 		echo "<head>";
 		echo "<title>Corte Ada</title>";
-		echo "<meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\"/>"; /*iso-8859-1*/
+		echo "<meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\"/>";
 		echo "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">";
 		
 		echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\">";

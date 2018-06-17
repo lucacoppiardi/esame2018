@@ -5,7 +5,7 @@
  * In questo file sono contenute tutte le funzioni SQL usate dal sito.
  */ 
 
-function connessione() {
+function connessione() { /* collegamento al database con i parametri del file connessione.php */
 	include("connessione.php");
 	$conn = mysqli_connect($db_host,$db_user,$db_password, $db_name);
 	if (!$conn) {
@@ -19,7 +19,7 @@ function connessione() {
 	return $conn;
 }
 
-function close($conn){
+function close($conn){ /* chiusura connessione db */
 	if(!mysqli_close($conn)){
 		echo "<h2 class='errore'>".Errore_connessione_database."</h2>";
 		tail();
@@ -27,7 +27,7 @@ function close($conn){
 	}
 }
 
-function query($s, $conn, $tab) {
+function query($s, $conn, $tab) { /* esegue la query $s sul database della connessione $conn, $tab è usato come nome della query eseguita */
 	if (isDebug()) {
 		echo "<p style='font-family: monospace'>".$tab."<br/>".$s."</p>"; // se il debug è attivo mostro la sintassi della query eseguita
 	}
@@ -53,7 +53,7 @@ function torna_indietro() { /* se la query non può essere eseguita, termina e m
 }
 
 function fetch_row($result) {
-	$row=mysqli_fetch_row($result);
+	$row=mysqli_fetch_row($result); // estrae una riga dal risultato della query
 	return $row;
 }
 
@@ -68,10 +68,13 @@ function crea_tab_utenti() {
 		telefono VARCHAR(15) NOT NULL,
 		data_iscrizione DATE NOT NULL,
 		hash VARCHAR(255) UNIQUE NOT NULL,
-		confermato INT(1),
+		confermato BIT,
 		ultimo_accesso DATETIME,
 		PRIMARY KEY (codice)
 		);";
+		/* "hash" è usato come token ad esempio per il recupero della password o la conferma dell'iscrizione.
+		 * "confermato" vale 1 solo se l'utente ha cliccato sul link ricevuto per convalidare la propria iscrizione. Se non vale 1 non può accedere.
+		 */
 		if (!query($s, $db_conn, "creata utenti")) {
 			torna_indietro();
 		}
@@ -97,6 +100,11 @@ function crea_tab_prenotazioni() {
 		FOREIGN KEY (cod_utente) REFERENCES utenti(codice)
 		ON DELETE CASCADE
 		);";
+		/* "stato" indica lo stato della prenotazione:
+		 * - 0 quando è stata inserita e l'amministrazione deve ancora confermarla/respingerla, è ancora possibile per il cliente modificarla
+		 * - 1 quando è stata accettata (l'utente non può più modificarla)
+		 * - 2 quando è stata respinta (l'utente non può più modificarla)
+		 */
 		if (!query($s, $db_conn, "creata prenotazioni")) {
 			torna_indietro();
 		}
@@ -184,11 +192,11 @@ function crea_tab_admin() {
 	close($db_conn);
 }
 
-function crea_utente($mail,$password,$nome,$telefono) {
+function crea_utente($mail,$password,$nome,$telefono) { /* salva sul db i dati di un utente appena iscritto */
 	$db_conn=connessione();
 	if ($db_conn and !empty($mail) and !empty($password) and !empty($nome) and !empty($telefono)) {
 		$salt = "3yRqgiTjp0ftpePtFLN5qWZtAHjx6S";
-		$s="INSERT INTO utenti (mail,password,nome,telefono,data_iscrizione,hash) VALUES ('$mail','$password','$nome','$telefono',NOW(),'".md5($mail.$salt)."') ";
+		$s="INSERT INTO utenti (mail,password,nome,telefono,data_iscrizione,hash,confermato) VALUES ('$mail','$password','$nome','$telefono',NOW(),'".md5($mail.$salt)."',0) ";
 		$result = query($s, $db_conn, "insert utenti"); // inserisce l'utente nel db
 		
 		if ($result != false and mysqli_affected_rows($db_conn) == 1) { // se l'utente è inserito, mando la mail per confermare la sua iscrizione

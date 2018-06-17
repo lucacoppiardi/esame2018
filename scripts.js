@@ -26,7 +26,7 @@ function link_attivo(link) { /* colora nella topbar il link della pagina corrent
 	link.className = "active_link";
 }
 
-function checkPw() { /* controlla la concordanza delle nuove password prima di inviare i form */
+function checkPw() { /* controlla la concordanza delle password prima di inviare il form */
 	if (document.getElementById("new_pw").value != document.getElementById("new_pw_conferma").value) {
 		alert("IT: Ricontrollare la password inserita\nEN: Please check the password you typed");
 		return false;
@@ -34,7 +34,7 @@ function checkPw() { /* controlla la concordanza delle nuove password prima di i
 	return true;
 }
 
-function checkMail() { /* controlla la concordanza delle nuove email prima di inviare i form */
+function checkMail() { /* controlla la concordanza delle email prima di inviare il form */
 	if (document.getElementById("mail").value != document.getElementById("conferma_mail").value) {
 		alert("IT: Ricontrollare la mail\nEN: Please check the email address");
 		return false;
@@ -42,7 +42,7 @@ function checkMail() { /* controlla la concordanza delle nuove email prima di in
 	return true;
 }
 
-function spoilerNuovaPrenotazione() { /* dopo aver premuto il bottone 'nuova prenotazione',svela il form per inserire una nuova prenotazione */
+function spoilerNuovaPrenotazione() { /* dopo aver premuto il bottone 'nuova prenotazione', svela il form per inserire una nuova prenotazione */
 	if (document.getElementById('nuova_prenotazione').style.display=='none') {
 		document.getElementById('nuova_prenotazione').style.display='';
 		document.getElementById('btn_nuova_prenotazione').style.display='none';
