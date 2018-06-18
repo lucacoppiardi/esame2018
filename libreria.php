@@ -1,5 +1,11 @@
 <?php
-function connessione() {
+
+/* libreria.php
+ * 
+ * In questo file sono contenute tutte le funzioni SQL usate dal sito.
+ */ 
+
+function connessione() { /* collegamento al database con i parametri del file connessione.php */
 	include("connessione.php");
 	$conn = mysqli_connect($db_host,$db_user,$db_password, $db_name);
 	if (!$conn) {
@@ -13,7 +19,7 @@ function connessione() {
 	return $conn;
 }
 
-function close($conn){
+function close($conn){ /* chiusura connessione db */
 	if(!mysqli_close($conn)){
 		echo "<h2 class='errore'>".Errore_connessione_database."</h2>";
 		tail();
@@ -21,9 +27,9 @@ function close($conn){
 	}
 }
 
-function query($s, $conn, $tab) {
+function query($s, $conn, $tab) { /* esegue la query $s sul database della connessione $conn, $tab è usato come nome della query eseguita */
 	if (isDebug()) {
-		echo "<p style='font-family: monospace'>".$tab."<br/>".$s."</p>";
+		echo "<p style='font-family: monospace'>".$tab."<br/>".$s."</p>"; // se il debug è attivo mostro la sintassi della query eseguita
 	}
 	if (!$request=mysqli_query($conn, $s)) {
 		if (isDebug()) {
@@ -32,14 +38,12 @@ function query($s, $conn, $tab) {
 		if (mysqli_errno($conn) == 1146 or mysqli_errno($conn) == 1051) {
 			echo "<h3 class='errore'>".tabella_inesistente."</h3>"; // la tabella non esiste
 		}
-		if ($tab != "drop") { // pulsante per tornare indietro, in caso la query non fosse eseguita
-			torna_indietro();
-		}
+		torna_indietro(); // pulsante per tornare indietro, in caso la query non fosse eseguita
 	}
 	return $request;
 }
 
-function torna_indietro() {
+function torna_indietro() { /* se la query non può essere eseguita, termina e mostra un messaggio di errore con un pulsante per tornare indietro */
 	echo "<h2 class='errore'>".Errore_query.". </h2>";
 	echo "<form action='".basename($_SERVER['PHP_SELF'])."' method='post'>
 			<input type='submit' class='bottone'  value='".Torna_indietro."'>
@@ -49,7 +53,7 @@ function torna_indietro() {
 }
 
 function fetch_row($result) {
-	$row=mysqli_fetch_row($result);
+	$row=mysqli_fetch_row($result); // estrae una riga dal risultato della query
 	return $row;
 }
 
@@ -64,10 +68,13 @@ function crea_tab_utenti() {
 		telefono VARCHAR(15) NOT NULL,
 		data_iscrizione DATE NOT NULL,
 		hash VARCHAR(255) UNIQUE NOT NULL,
-		confermato INT(1),
+		confermato BIT,
 		ultimo_accesso DATETIME,
 		PRIMARY KEY (codice)
 		);";
+		/* "hash" è usato come token ad esempio per il recupero della password o la conferma dell'iscrizione.
+		 * "confermato" vale 1 solo se l'utente ha cliccato sul link ricevuto per convalidare la propria iscrizione. Se non vale 1 non può accedere.
+		 */
 		if (!query($s, $db_conn, "creata utenti")) {
 			torna_indietro();
 		}
@@ -88,11 +95,16 @@ function crea_tab_prenotazioni() {
 		nome VARCHAR(255) NOT NULL,
 		partecipanti INT(5) NOT NULL,
 		richieste VARCHAR(255),
-		stato int(1),
+		stato INT(1),
 		PRIMARY KEY (codice),
 		FOREIGN KEY (cod_utente) REFERENCES utenti(codice)
 		ON DELETE CASCADE
 		);";
+		/* "stato" indica lo stato della prenotazione:
+		 * - 0 quando è stata inserita e l'amministrazione deve ancora confermarla/respingerla, è ancora possibile per il cliente modificarla
+		 * - 1 quando è stata accettata (l'utente non può più modificarla)
+		 * - 2 quando è stata respinta (l'utente non può più modificarla)
+		 */
 		if (!query($s, $db_conn, "creata prenotazioni")) {
 			torna_indietro();
 		}
@@ -169,7 +181,8 @@ function crea_tab_admin() {
 		if (!query($s, $db_conn, "creata amministratori")) {
 			torna_indietro();
 		}
-		$s = "INSERT IGNORE INTO amministratori (codice,mail,password,nome,telefono,ultimo_accesso) VALUES (1,'lucacoppiardi@altervista.org', MD5('luca'), 'Luca', '1234121212', NOW());";
+		$salt = "3yRqgiTjp0ftpePtFLN5qWZtAHjx6S";
+		$s = "INSERT IGNORE INTO amministratori (codice,mail,password,nome,telefono,ultimo_accesso) VALUES (1,'lucacoppiardi@altervista.org', MD5('luca".$salt."'), 'Luca', '1234121212', NOW());"; /* per comodità creo automaticamente il mio utente */
 		if (!query($s, $db_conn, "insert admin")) {
 			torna_indietro();
 		}
@@ -179,47 +192,26 @@ function crea_tab_admin() {
 	close($db_conn);
 }
 
-function drop() {
-	$db_conn=connessione();
-	if ($db_conn) {
-		$s="DROP TABLE prenotazioni";
-		if (query($s, $db_conn, "drop")) echo "prenotazioni cancellata<br/>";
-		$s="DROP TABLE news";
-		if (query($s, $db_conn, "drop")) echo "news cancellata<br/>";
-		$s="DROP TABLE utenti";
-		if (query($s, $db_conn, "drop")) echo "utenti cancellata<br/>";
-		$s="DROP TABLE amministratori";
-		if (query($s, $db_conn, "drop")) echo "amministratori cancellata<br/>";
-		$s="DROP TABLE piatti";
-		if (query($s, $db_conn, "drop")) echo "piatti cancellata<br/>";
-		echo "<form action='admin.php' method='post'>
-				<input type='submit' class='bottone'  value='".Torna_indietro."'>
-			</form>";
-	} else {
-		torna_indietro();
-	}
-	close($db_conn);
-}
-
-function crea_utente($mail,$password,$nome,$telefono) {
+function crea_utente($mail,$password,$nome,$telefono) { /* salva sul db i dati di un utente appena iscritto */
 	$db_conn=connessione();
 	if ($db_conn and !empty($mail) and !empty($password) and !empty($nome) and !empty($telefono)) {
-		$s="INSERT INTO utenti (mail,password,nome,telefono,data_iscrizione,hash) VALUES ('$mail','$password','$nome','$telefono',NOW(),'".md5($mail)."') ";
-		$result = query($s, $db_conn, "insert utenti");
+		$salt = "3yRqgiTjp0ftpePtFLN5qWZtAHjx6S";
+		$s="INSERT INTO utenti (mail,password,nome,telefono,data_iscrizione,hash,confermato) VALUES ('$mail','$password','$nome','$telefono',NOW(),'".md5($mail.$salt)."',0) ";
+		$result = query($s, $db_conn, "insert utenti"); // inserisce l'utente nel db
 		
-		if ($result != false and mysqli_affected_rows($db_conn) == 1) {
+		if ($result != false and mysqli_affected_rows($db_conn) == 1) { // se l'utente è inserito, mando la mail per confermare la sua iscrizione
 			$to = $mail;
 			$subject = grazie_iscrizione;
-			$message = conferma_a_questo_link.": ".link_al_sito."prenotazioni.php?stato=conferma_registrazione&lang=".$_SESSION["lang"]."&hash=".md5($mail)."\n\n".ringraziamenti_email;
+			$message = conferma_a_questo_link.": ".link_al_sito."prenotazioni.php?stato=conferma_registrazione&lang=".$_SESSION["lang"]."&hash=".md5($mail.$salt)."\n\n".ringraziamenti_email;
 			$headers = "From: lucacoppiardi@altervista.org";
 
 			$esito_mail = mail($to,$subject,$message,$headers);
 			
 			if (!isDebug()) {
-				echo $message;
+				echo $message; // mostro comunque il link perchè l'invio di mail da Altervista non sempre funziona correttamente
 			}
 			
-			if (isDebug()) {
+			if (isDebug()) { // se il debug è attivo mostro la mail inviata
 				echo $esito_mail;
 				if (!$esito_mail) {
 					echo " EMAIL ERROR"."<br/>";
@@ -232,12 +224,13 @@ function crea_utente($mail,$password,$nome,$telefono) {
 				echo $message."<br/>";
 				echo $headers."<br/>";
 			}
+			
 		} else {
-			torna_indietro();
+			torna_indietro(); // l'utente non è stato inserito, torno alla pagina di registrazione
 		}
 				
 	} else {
-		torna_indietro();
+		torna_indietro(); // se ci sono campi vuoti, torno alla pagina di registrazione
 	}
 	close($db_conn);
 }
@@ -246,15 +239,17 @@ function login($mail, $pass) {
 	$db_conn=connessione();
 	if ($db_conn and !empty($mail) and !empty($pass)) {
 		$s="SELECT confermato FROM utenti WHERE mail='$mail' AND password='$pass'";
-		$result=query($s, $db_conn, "select confermato login");
-		if (mysqli_num_rows($result) == 1) {
+		$result=query($s, $db_conn, "select confermato login"); // controllo se l'utente ha confermato l'iscrizione
+		if (mysqli_num_rows($result) == 1) { // controllo che un utente solo voglia loggarsi (per evitare SQL injection)
 			$row = fetch_row($result);
-			if ($row[0] != 1) {
+			if ($row[0] != 1) { // se l'utente non è confermato, rimando la mail con il link per confermare l'iscrizione
 				echo "<h3 class='avviso'>".Conferma_iscrizione_cliccando_link."</h3>";
+				
+				$salt = "3yRqgiTjp0ftpePtFLN5qWZtAHjx6S";
 				
 				$to = $mail;
 				$subject = grazie_iscrizione;
-				$message = conferma_a_questo_link.": ".link_al_sito."prenotazioni.php?stato=conferma_registrazione&lang=".$_SESSION["lang"]."&hash=".md5($mail)."\n".ringraziamenti_email;
+				$message = conferma_a_questo_link.": ".link_al_sito."prenotazioni.php?stato=conferma_registrazione&lang=".$_SESSION["lang"]."&hash=".md5($mail.$salt)."\n".ringraziamenti_email;
 				$headers = "From: lucacoppiardi@altervista.org";
 				
 				$esito_mail = mail($to,$subject,$message,$headers);
@@ -287,11 +282,11 @@ function login($mail, $pass) {
 			} else {
 				$s="SELECT codice,mail,ultimo_accesso,password FROM utenti WHERE mail='$mail' AND password='$pass'";
 				$result=query($s, $db_conn, "select login");
-				if (mysqli_num_rows($result) == 1) {
+				if (mysqli_num_rows($result) == 1) { // l'utente è stato selezionato
 					$row = fetch_row($result);
-					$sql = "UPDATE utenti SET ultimo_accesso = NOW() WHERE mail='$mail' AND password='$pass'";
+					$sql = "UPDATE utenti SET ultimo_accesso = NOW() WHERE mail='$mail' AND password='$pass'"; // aggiorno il suo ultimo accesso
 					query($sql, $db_conn, "update ultimo accesso");
-					return $row;
+					return $row; // restituisco i dati selezionati alla pagina delle prenotazioni
 				} else {
 					torna_indietro();
 				}
@@ -303,7 +298,7 @@ function login($mail, $pass) {
 	close($db_conn);
 }
 
-function admin_login($mail, $pass) {
+function admin_login($mail, $pass) { /* consente il login dell'amministrazione */
 	$db_conn=connessione();
 	if ($db_conn and !empty($mail) and !empty($pass)) {
 		$s="SELECT codice,mail,ultimo_accesso,password FROM amministratori WHERE mail='$mail' AND password='$pass'";
@@ -320,7 +315,7 @@ function admin_login($mail, $pass) {
 	close($db_conn);
 }
 
-function visualizza_utenti() {
+function visualizza_utenti() { /* mostra all'amministrazione i dati degli utenti registrati */
 	$db_conn=connessione();
 	if ($db_conn and !empty($_SESSION["mail_admin"]) and !empty($_SESSION["password_admin"]) and !empty($_SESSION["cod_admin"])) {
 		$s="SELECT codice,nome,mail,telefono,data_iscrizione FROM utenti ORDER BY data_iscrizione";
@@ -356,7 +351,7 @@ function visualizza_utenti() {
 	close($db_conn);
 }
 
-function delete_account_admin($id) {
+function delete_account_admin($id) { /* consente all'amministrazione di cancellare un account */
 	$db_conn=connessione();
 	if ($db_conn and !empty($id) and !empty($_SESSION["mail_admin"]) and !empty($_SESSION["password_admin"]) and !empty($_SESSION["cod_admin"])) {
 		$s="DELETE FROM utenti WHERE codice=$id";
@@ -372,7 +367,7 @@ function delete_account_admin($id) {
 	close($db_conn);
 }
 
-function visualizza_prenotazioni() {
+function visualizza_prenotazioni() { /* mostra all'amministrazione le prenotazioni inserite, con la possibilità di approvarle/respingerle */
 	$db_conn=connessione();
 	if ($db_conn and !empty($_SESSION["mail_admin"]) and !empty($_SESSION["password_admin"]) and !empty($_SESSION["cod_admin"])) {
 		$s="SELECT prenotazioni.codice, utenti.nome, utenti.mail, utenti.telefono, prenotazioni.data, prenotazioni.ora, prenotazioni.nome, prenotazioni.partecipanti, prenotazioni.richieste, prenotazioni.stato FROM prenotazioni,utenti WHERE prenotazioni.cod_utente = utenti.codice ORDER BY prenotazioni.data, prenotazioni.ora, prenotazioni.stato";
@@ -418,7 +413,7 @@ function visualizza_prenotazioni() {
 	close($db_conn);
 }
 
-function visualizza_news() {
+function visualizza_news() { /* mostra all'amministrazione le notizie pubblicate, consentendone la modifica */
 	$db_conn=connessione();
 	if ($db_conn and !empty($_SESSION["mail_admin"]) and !empty($_SESSION["password_admin"]) and !empty($_SESSION["cod_admin"])) {
 		$cod_admin = $_SESSION["cod_admin"];
@@ -466,7 +461,7 @@ function visualizza_news() {
 	close($db_conn);
 }
 
-function visualizza_piatti() {
+function visualizza_piatti() { /* mostra all'amministrazione i piatti pubblicati, permettendone la modifica */
 	$db_conn=connessione();
 	if ($db_conn and !empty($_SESSION["mail_admin"]) and !empty($_SESSION["password_admin"]) and !empty($_SESSION["cod_admin"])) {
 		$cod_admin = $_SESSION["cod_admin"];
@@ -522,7 +517,7 @@ function visualizza_piatti() {
 	close($db_conn);
 }
 
-function inserisci_prenotazione($data, $ora, $nome, $partecipanti, $richieste) {
+function inserisci_prenotazione($data, $ora, $nome, $partecipanti, $richieste) { /* inserisce le prenotazioni nel db */
 	$db_conn=connessione();
 	$cod = $_SESSION["cod_utente"];
 	if ($db_conn and !empty($_SESSION["mail"]) and !empty($_SESSION["password"]) and !empty($cod) and !empty($data) and !empty($ora) and !empty($nome) and !empty($partecipanti)) {
@@ -542,7 +537,7 @@ function inserisci_prenotazione($data, $ora, $nome, $partecipanti, $richieste) {
 	close($db_conn);
 }
 
-function mail_riepilogo($data, $ora, $nome, $num_persone, $richieste) {
+function mail_riepilogo($data, $ora, $nome, $num_persone, $richieste) { /* invia un promemoria al cliente coi dati della prenotazione appena inserita */
 	$db_conn=connessione();
 	if ($db_conn and !empty($_SESSION["mail"]) and !empty($_SESSION["password"]) and !empty($_SESSION["cod_utente"]) and !empty($data) and !empty($ora) and !empty($nome) and !empty($num_persone) and $num_persone>0) {
 		$id_utente = $_SESSION["cod_utente"];
@@ -598,7 +593,7 @@ function mail_riepilogo($data, $ora, $nome, $num_persone, $richieste) {
 	close($db_conn);
 }
 
-function mail_riepilogo_cancella($data, $ora, $nome, $num_persone, $richieste) {
+function mail_riepilogo_cancella($data, $ora, $nome, $num_persone, $richieste) { /* invia un promemoria al cliente coi dati della prenotazione che ha appena cancellato */
 	$db_conn=connessione();
 	if ($db_conn and !empty($_SESSION["mail"]) and !empty($_SESSION["password"]) and !empty($_SESSION["cod_utente"]) and !empty($data) and !empty($ora) and !empty($nome) and !empty($num_persone) and $num_persone>0) {
 		$id_utente = $_SESSION["cod_utente"];
@@ -644,7 +639,7 @@ function mail_riepilogo_cancella($data, $ora, $nome, $num_persone, $richieste) {
 	close($db_conn);
 }
 
-function mail_riepilogo_modifica($data, $ora, $nome, $num_persone, $richieste) {
+function mail_riepilogo_modifica($data, $ora, $nome, $num_persone, $richieste) { /* invia un promemoria al cliente coi dati della prenotazione che ha appena modificato */
 	$db_conn=connessione();
 	if ($db_conn and !empty($_SESSION["mail"]) and !empty($_SESSION["password"]) and !empty($_SESSION["cod_utente"]) and !empty($data) and !empty($ora) and !empty($nome) and !empty($num_persone) and $num_persone>0) {
 		$id_utente = $_SESSION["cod_utente"];
@@ -690,10 +685,11 @@ function mail_riepilogo_modifica($data, $ora, $nome, $num_persone, $richieste) {
 	close($db_conn);
 }
 
-function conferma_prenotazione($cod_prenotazione, $stato, $msg) {
+function conferma_prenotazione($cod_prenotazione, $stato, $msg) { /* l'amministrazione ha approvato/respinto una prenotazione, il cliente riceverà una mail di notifica e l'amministrazione può allegare un messaggio */
 	$db_conn=connessione();
 	if ($db_conn and !empty($cod_prenotazione) and !empty($stato) and !empty($_SESSION["mail_admin"]) and !empty($_SESSION["password_admin"]) and !empty($_SESSION["cod_admin"])) {
-		$sql = "UPDATE prenotazioni SET stato=$stato WHERE codice=$cod_prenotazione";
+		
+		$sql = "UPDATE prenotazioni SET stato=$stato WHERE codice=$cod_prenotazione"; // aggiorno lo stato della prenotazione sul db
 		query($sql, $db_conn, "update stato confermato");
 		if ($stato == 1 and mysqli_affected_rows($db_conn)==1) {
 			echo "<h3 class='avviso'>".Prenotazione_confermata."</h3>";
@@ -702,10 +698,11 @@ function conferma_prenotazione($cod_prenotazione, $stato, $msg) {
 		} else {
 			torna_indietro();
 		}
-		$s = "SELECT cod_utente FROM prenotazioni WHERE codice = $cod_prenotazione";
+		
+		$s = "SELECT cod_utente FROM prenotazioni WHERE codice = $cod_prenotazione"; // seleziono il codice dell'utente dalla prenotazione per ottenere la sua mail
 		$result = query($s, $db_conn, "select cod_utente");
 		$row = fetch_row($result);
-		$s = "SELECT mail FROM utenti WHERE codice = $row[0]";
+		$s = "SELECT mail FROM utenti WHERE codice = $row[0]"; // con il codice selezionato prima, seleziono la mail del cliente
 		$result = query($s, $db_conn, "select cod_utente");
 		if (mysqli_num_rows($result) == 1) {
 			$row = fetch_row($result);
@@ -714,7 +711,7 @@ function conferma_prenotazione($cod_prenotazione, $stato, $msg) {
 		}
 		$to = $row[0];
 		
-		$s = "SELECT data, ora, nome, partecipanti, richieste FROM prenotazioni WHERE codice = $cod_prenotazione";
+		$s = "SELECT data, ora, nome, partecipanti, richieste FROM prenotazioni WHERE codice = $cod_prenotazione"; // seleziono i dati della prenotazione accettata/rifiutata
 		$result = query($s, $db_conn, "select prenotazione");
 		if (mysqli_num_rows($result) == 1) {
 			$row = fetch_row($result);
@@ -722,7 +719,7 @@ function conferma_prenotazione($cod_prenotazione, $stato, $msg) {
 			torna_indietro();
 		}
 		
-		if($stato == 1) {
+		if ($stato == 1) { // invio una mail di notifica al cliente
 			$subject = Prenotazione_inserita;
 			$message = Prenotazione_confermata.":\n\n"
 			.Data.": ".$row[0]."\n".
@@ -733,8 +730,7 @@ function conferma_prenotazione($cod_prenotazione, $stato, $msg) {
 			msg_per_cliente.": ".$msg."\n\n".
 			ringraziamenti_email
 			;
-		}
-		else if ($stato == 2) {
+		} else if ($stato == 2) {
 			$subject = Prenotazione_non_inserita;
 			$message = Prenotazione_rifiutata.":\n\n"
 			.Data.": ".$row[0]."\n".
@@ -769,7 +765,7 @@ function conferma_prenotazione($cod_prenotazione, $stato, $msg) {
 	close($db_conn);
 }
 
-function prenotazioni_utente() {
+function prenotazioni_utente() { /* mostra all'utente le sue prenotazioni e ne permette la gestione */
 	$db_conn=connessione();
 	if ($db_conn and !empty($_SESSION["mail"]) and !empty($_SESSION["password"]) and !empty($_SESSION["cod_utente"])) {
 		$cod = $_SESSION["cod_utente"];
@@ -812,7 +808,7 @@ function prenotazioni_utente() {
 	close($db_conn);
 }
 
-function select_prenotazione($codice) {
+function select_prenotazione($codice) { // seleziona i dati di una prenotazione in base al codice e li ritorna allo stato (modifica, cancella, ...) che li ha richiesti
 	$db_conn=connessione();
 	$cod = $_SESSION["cod_utente"];
 	if ($db_conn and !empty($codice) and !empty($cod)) {
@@ -830,7 +826,7 @@ function select_prenotazione($codice) {
 	close($db_conn);
 }	
 
-function select_prenotazione_admin($codice) {
+function select_prenotazione_admin($codice) { // seleziona i dati di una prenotazione in base al codice per permettere all'amministrazione di accettarla/respingerla
 	$db_conn=connessione();
 	if ($db_conn and !empty($codice) and !empty($_SESSION["cod_admin"])) {
 		$s="SELECT data,ora,nome,partecipanti,richieste,cod_utente FROM prenotazioni WHERE codice = $codice";
@@ -847,7 +843,7 @@ function select_prenotazione_admin($codice) {
 	close($db_conn);
 }	
 
-function select_news($codice) {
+function select_news($codice) { // seleziona i dati di una news in base al codice per la sua gestione
 	$db_conn=connessione();
 	$cod_admin = $_SESSION["cod_admin"];
 	if ($db_conn and !empty($codice) and !empty($cod_admin)) {
@@ -865,7 +861,7 @@ function select_news($codice) {
 	close($db_conn);
 }
 
-function select_piatto($codice) {
+function select_piatto($codice) { // seleziona i dati di un piatto in base al codice per la sua gestione
 	$db_conn=connessione();
 	$cod_admin = $_SESSION["cod_admin"];
 	if ($db_conn and !empty($codice) and !empty($cod_admin)) {
@@ -883,7 +879,7 @@ function select_piatto($codice) {
 	close($db_conn);
 }
 
-function update_prenotazione($codice, $data, $ora, $nome, $num_persone, $richieste) {
+function update_prenotazione($codice, $data, $ora, $nome, $num_persone, $richieste) { // aggiorna i dati di una prenotazione  (controllando il codice utente)
 	$db_conn=connessione();
 	if ($db_conn and !empty($codice) and !empty($data) and !empty($ora) and !empty($nome) and !empty($num_persone) and $num_persone>0) {
 		$cod_utente = $_SESSION["cod_utente"];
@@ -911,7 +907,7 @@ function update_prenotazione($codice, $data, $ora, $nome, $num_persone, $richies
 	close($db_conn);
 }
 
-function update_news($codice, $titolo, $contenuto, $contenuto_en, $titolo_en, $filename) {
+function update_news($codice, $titolo, $contenuto, $contenuto_en, $titolo_en, $filename) { // aggiorna una notizia (controllando il codice amministratore)
 	$db_conn=connessione();
 	if ($db_conn and !empty($codice) and !empty($titolo) and !empty($contenuto) and !empty($contenuto_en) and !empty($titolo_en)) {
 		$cod_admin = $_SESSION["cod_admin"];
@@ -943,7 +939,7 @@ function update_news($codice, $titolo, $contenuto, $contenuto_en, $titolo_en, $f
 	close($db_conn);
 }
 
-function update_piatto($codice, $titolo, $contenuto, $contenuto_en, $titolo_en, $filename, $prezzo, $tipo) {
+function update_piatto($codice, $titolo, $contenuto, $contenuto_en, $titolo_en, $filename, $prezzo, $tipo) { // aggiorna un piatto (controllando il codice amministratore)
 	$db_conn=connessione();
 	if ($db_conn and !empty($codice) and !empty($titolo) and !empty($contenuto) and !empty($contenuto_en) and !empty($titolo_en) and !empty($prezzo) and !empty($tipo)) {
 		$cod_admin = $_SESSION["cod_admin"];
@@ -975,7 +971,7 @@ function update_piatto($codice, $titolo, $contenuto, $contenuto_en, $titolo_en, 
 	close($db_conn);
 }
 
-function delete_prenotazione($codice) {
+function delete_prenotazione($codice) { // cancella una prenotazione (controllando il codice utente)
 	$db_conn=connessione();
 	if ($db_conn and !empty($codice)) {
 		$cod_utente = $_SESSION["cod_utente"];
@@ -1001,7 +997,7 @@ function delete_prenotazione($codice) {
 	close($db_conn);
 }
 
-function delete_news($codice) {
+function delete_news($codice) { // cancella una notizia (controllando il codice amministratore)
 	$db_conn=connessione();
 	if ($db_conn and !empty($codice)) {
 		$cod_admin = $_SESSION["cod_admin"];
@@ -1029,7 +1025,7 @@ function delete_news($codice) {
 	close($db_conn);
 }
 
-function delete_piatto($codice) {
+function delete_piatto($codice) { // cancella un piatto (controllando il codice amministratore)
 	$db_conn=connessione();
 	if ($db_conn and !empty($codice)) {
 		$cod_admin = $_SESSION["cod_admin"];
@@ -1057,7 +1053,7 @@ function delete_piatto($codice) {
 	close($db_conn);
 }
 
-function reset_password($old_pw, $new_pw) {
+function reset_password($old_pw, $new_pw) { // cambia la password di un utente (controllando quella attuale)
 	$db_conn=connessione();
 	if ($db_conn and !empty($old_pw) and !empty($new_pw)) {
 		$id_utente = $_SESSION["cod_utente"];
@@ -1068,7 +1064,7 @@ function reset_password($old_pw, $new_pw) {
 			return false;
 		} else {
 			$s="UPDATE utenti SET password='$new_pw' WHERE codice=$id_utente AND password='$old_pw'";
-			if (query($s, $db_conn, "update password")) {
+			if (query($s, $db_conn, "update password") and mysqli_affected_rows($db_conn)==1) {
 				return true;
 			} else {
 				return false;
@@ -1080,7 +1076,7 @@ function reset_password($old_pw, $new_pw) {
 	close($db_conn);
 }
 
-function insert_news($titolo, $contenuto, $contenuto_en, $titolo_en, $filename) {
+function insert_news($titolo, $contenuto, $contenuto_en, $titolo_en, $filename) { // inserisce una notizia nel db
 	$db_conn=connessione();
 	$cod_admin = $_SESSION["cod_admin"];
 	if ($db_conn and !empty($cod_admin) and !empty($titolo) and !empty($contenuto) and !empty($contenuto_en) and !empty($titolo_en)) {
@@ -1098,7 +1094,7 @@ function insert_news($titolo, $contenuto, $contenuto_en, $titolo_en, $filename) 
 	close($db_conn);
 }
 
-function insert_piatto($titolo, $contenuto, $contenuto_en, $titolo_en, $filename, $prezzo, $tipo) {
+function insert_piatto($titolo, $contenuto, $contenuto_en, $titolo_en, $filename, $prezzo, $tipo) { // inserisce un piatto nel db
 	$db_conn=connessione();
 	$cod_admin = $_SESSION["cod_admin"];
 	if ($db_conn and !empty($cod_admin) and !empty($titolo) and !empty($contenuto) and !empty($contenuto_en) and !empty($titolo_en) and !empty($prezzo) and !empty($tipo)) {
@@ -1116,7 +1112,7 @@ function insert_piatto($titolo, $contenuto, $contenuto_en, $titolo_en, $filename
 	close($db_conn);
 }
 
-function pagina_news() {
+function pagina_news() { // ritorna alla pagina news.php le notizie inserite nel database, o avvisa se non ci sono notizie pubblicate
 	$db_conn=connessione();
 	if ($db_conn) {
 		$s="SELECT news.codice, news.data, news.titolo, news.testo, news.immagine, news.cod_admin, amministratori.nome, news.ora, news.testo_en, news.titolo_en, amministratori.mail FROM news,amministratori WHERE amministratori.codice = news.cod_admin ORDER BY news.data DESC, news.ora DESC";
@@ -1133,7 +1129,7 @@ function pagina_news() {
 	close($db_conn);
 }
 
-function pagina_piatti() {
+function pagina_piatti() { // ritorna alla pagina piatti.php i piatti inseriti nel database, o avvisa se non ci sono piatti pubblicati
 	$db_conn=connessione();
 	if ($db_conn) {
 		$s="SELECT codice, titolo, titolo_en, testo, testo_en, prezzo, tipo, immagine FROM piatti ORDER BY tipo ASC";
@@ -1150,64 +1146,66 @@ function pagina_piatti() {
 	close($db_conn);
 }
 
-function mail_recupero_password($mail) {
+function mail_recupero_password($mail) { // invia all'utente un link dove può recuperare la password se l'ha dimenticata
 	$db_conn=connessione();
 	if ($db_conn and !empty($mail)) {
-		$alfabeto = "1234567890QWERTYUIOPASDFGHJKLZXCVBNM1234567890";
-		$len = strlen($alfabeto);
-		$new_pw = "";
-		for ($i=0; $i<10; $i++) {
-			$new_pw .= $alfabeto[rand(0,$len-1)];
-		}
 		
-		$s = "SELECT confermato FROM utenti WHERE mail='$mail'";
-		$result = query($s, $db_conn, "select confermato per recupero password");
+		$s = "SELECT hash FROM utenti WHERE mail='$mail'"; // controllo l'hash se corrisponde a quello nel db
+		$result = query($s, $db_conn, "select hash per recupero password");
 		$row = null;
 		if (mysqli_num_rows($result) == 1) {
 			$row = fetch_row($result);
-		}
-		
-		if ($row[0] == 1) {
-			$s = "UPDATE utenti SET confermato=0, password='".md5($new_pw)."' WHERE mail='$mail'";
-			if (query($s, $db_conn, "update password temp recupero") and mysqli_affected_rows($db_conn)==1) {
-				echo "<h3 class='avviso'>".Password_inviata_mail."</h3>";
-			} else {
-				torna_indietro();
-			}
-			$to = $mail;
-			$subject = Recupero_password;
-			$message = la_tua_nuova_password.": $new_pw".ringraziamenti_email;
-			$headers = "From: lucacoppiardi@altervista.org";
-			
-			$esito_mail = mail($to,$subject,$message,$headers);
-			
-			if (isDebug()) {
-				echo $esito_mail;
-				if (!$esito_mail) {
-					echo "EMAIL ERROR"."<br/>";
-				}			
-				else {
-					echo "EMAIL OK"."<br/>";
-				}
-				echo $to."<br/>";
-				echo $subject."<br/>";
-				echo $message."<br/>";
-				echo $headers."<br/>";
-			}
-			
-			if (!isDebug()) {
-				echo $message."<br/>";
-			}
 		} else {
 			torna_indietro();
-		}						
+		}
+		
+		$to = $mail;
+		$subject = Recupero_password;
+		$message = la_tua_nuova_password.": ".link_al_sito."prenotazioni.php?stato=reset_password_link&mail=$mail&hash=$row[0]".ringraziamenti_email;
+		$headers = "From: lucacoppiardi@altervista.org";
+		
+		$esito_mail = mail($to,$subject,$message,$headers);
+		
+		if (isDebug()) {
+			echo $esito_mail;
+			if (!$esito_mail) {
+				echo "EMAIL ERROR"."<br/>";
+			}			
+			else {
+				echo "EMAIL OK"."<br/>";
+			}
+			echo $to."<br/>";
+			echo $subject."<br/>";
+			echo $message."<br/>";
+			echo $headers."<br/>";
+		}
+		
+		if (!isDebug()) {
+			echo $message."<br/>";
+		}
+					
 	} else {
 		torna_indietro();
 	}
 	close($db_conn);
 }
 
-function delete_account() {
+function reset_password_link($mail, $hash, $new_pw) { // controlla mail ed hash ed esegue il cambio password
+	$db_conn=connessione();
+	if ($db_conn and !empty($mail) and !empty($hash) and !empty($new_pw)) {
+		$s="UPDATE utenti SET password='$new_pw' WHERE mail='$mail' AND hash='$hash'";
+		if (query($s, $db_conn, "update password") and mysqli_affected_rows($db_conn)==1) {
+			return true;
+		} else {
+			return false;
+		}
+	} else {
+		torna_indietro();
+	}
+	close($db_conn);
+}
+
+function delete_account() { // permette al cliente di disiscriversi
 	$db_conn=connessione();
 	$codice = $_SESSION["cod_utente"];
 	$mail = $_SESSION["mail"];
@@ -1249,20 +1247,24 @@ function delete_account() {
 	close($db_conn);
 }
 
-function update_indirizzo_mail($newmail) {
+function update_indirizzo_mail($newmail) { // permette all'utente di aggiornare la propria mail, dopo il cambio deve confermare il nuovo indirizzo cliccando un link ricevuto
 	$db_conn=connessione();
 	$mail = $_SESSION["mail"];
 	if ($db_conn and !empty($mail) and !empty($newmail)) {
-		$s = "UPDATE utenti SET mail='$newmail', hash='".md5($newmail)."', confermato=0 WHERE mail='$mail'";
+		$salt = "3yRqgiTjp0ftpePtFLN5qWZtAHjx6S";
+		$s = "UPDATE utenti SET mail='$newmail', hash='".md5($newmail.$salt)."', confermato=0 WHERE mail='$mail'";
 		if (query($s, $db_conn, "cambio mail") and mysqli_affected_rows($db_conn)==1) {
 			echo "<h3 class='avviso'>".Indirizzo_aggiornato."<br/>".Conferma_iscrizione_cliccando_link."</h3>";
 			echo "<form action='prenotazioni.php' method='post'>
 					<input type='hidden' name='stato' value='accedi'>
 					<input type='submit' class='bottone'  value='OK'>
 				</form>";
+				
+			$salt = "3yRqgiTjp0ftpePtFLN5qWZtAHjx6S";
+			
 			$to = $newmail;
 			$subject = cambio_mail;
-			$message = conferma_a_questo_link.": ".link_al_sito."prenotazioni.php?stato=conferma_nuova_mail&lang=".$_SESSION["lang"]."&hash=".md5($newmail)."\n".ringraziamenti_email;
+			$message = conferma_a_questo_link.": ".link_al_sito."prenotazioni.php?stato=conferma_nuova_mail&lang=".$_SESSION["lang"]."&hash=".md5($newmail.$salt)."\n".ringraziamenti_email;
 			$headers = "From: lucacoppiardi@altervista.org";
 		
 			$esito_mail = mail($to,$subject,$message,$headers);
@@ -1294,7 +1296,7 @@ function update_indirizzo_mail($newmail) {
 	close($db_conn);
 }
 
-function registrazione_confermata($hash) {
+function registrazione_confermata($hash) { // conferma l'indirizzo dell'utente e gli permette di accedere al sito
 	$db_conn=connessione();
 	if ($db_conn and !empty($hash)) {
 		$s = "UPDATE utenti SET confermato=1 WHERE hash='$hash'";
@@ -1313,7 +1315,7 @@ function registrazione_confermata($hash) {
 	close($db_conn);
 }
 
-function confermata_nuova_mail($hash) {
+function confermata_nuova_mail($hash) { // conferma il nuovo indirizzo dell'utente e gli permette di accedere al sito
 	$db_conn=connessione();
 	if ($db_conn and !empty($hash)) {
 		$s = "UPDATE utenti SET confermato=1 WHERE hash='$hash'";
@@ -1332,7 +1334,7 @@ function confermata_nuova_mail($hash) {
 	close($db_conn);
 }
 
-function mail_form_contatti($mail, $oggetto, $messaggio) {
+function mail_form_contatti($mail, $oggetto, $messaggio) { // invia all'amministrazione i messaggi inviati dal form Contattaci della pagina Info
 	if (!empty($mail) and !empty($oggetto) and !empty($messaggio)) {
 		
 		$to = "lucacoppiardi@altervista.org";
@@ -1365,6 +1367,41 @@ function mail_form_contatti($mail, $oggetto, $messaggio) {
 	} else {
 		torna_indietro();
 	}
+}
+
+
+function select_dati_personali() { /* seleziona i dati personali dell'utente per la modifica */
+	$db_conn=connessione();
+	$cod = $_SESSION["cod_utente"];
+	if ($db_conn and !empty($cod)) {
+		$s="SELECT nome, telefono FROM utenti WHERE codice = $cod";
+		$result = query($s, $db_conn, "select dati utente");
+		if (mysqli_num_rows($result) == 1) {
+			$row = fetch_row($result);
+			return $row;
+		} else {
+			torna_indietro();
+		}
+	} else {
+		torna_indietro();
+	}
+	close($db_conn);
+}
+
+function update_dati_personali($nome, $telefono) { /* aggiorna i dati personali dell'utente */
+	$db_conn=connessione();
+	$cod = $_SESSION["cod_utente"];
+	if ($db_conn and !empty($cod)) {
+		$s="UPDATE utenti SET nome='$nome', telefono='$telefono' WHERE codice = $cod";
+		if (query($s, $db_conn, "update dati utente") and mysqli_affected_rows($db_conn) == 1) {
+			echo "<h3 class='avviso'>".Dati_aggiornati."</h3>";
+		} else {
+			torna_indietro();
+		}
+	} else {
+		torna_indietro();
+	}
+	close($db_conn);
 }
 
 ?>

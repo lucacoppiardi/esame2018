@@ -1,4 +1,11 @@
 <?php
+
+	/* index.php
+	 * 
+	 * La pagina iniziale contiene un breve testo introduttivo
+	 * ed uno slideshow di immagini
+	 */
+
 	include("interfaccia.php");
 	head();
 	topbar("home");

@@ -1,4 +1,11 @@
 <?php
+	
+	/* contatti.php
+	 * 
+	 * In questa pagina sono riportate le informazioni di contatto
+	 * È anche presente un form per inviare un messaggio ai gestori
+	 */
+	
 	include("interfaccia.php");
 	head();
 	topbar("contatti");

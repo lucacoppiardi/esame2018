@@ -33,16 +33,68 @@
 	display: none;
 }
 
+footer {
+	width: 100%;
+	background-color: #138117;
+	height: 60px;
+	position: absolute;
+	bottom: 0;
+}
+
+.footer_p {
+	color: white;
+	margin: 0;
+	padding: 5px 5px 2px 5px; /*top-right-bottom-left*/
+	text-align: center;
+}
+
+.footer_a {
+	color: white;
+}
+
+@media screen and (min-width: 700px) {
+	
+	.links {
+		float: right;
+	}
+	
+}
+
+@media screen and (max-width: 700px) {
+
+	.menu a:not(:first-child) {
+		display: none;
+	}
+	
+	.menu a.icon {
+		float: right;
+		display: block;
+		font-size: 18px;
+	}
+	
+	.menu.responsive .icon {
+		position: absolute;
+		right: 0;
+		top: 0;
+	}
+	.menu.responsive a {
+		float: none;
+		display: table;
+		text-align: left;
+	}
+	
+}
+
+
 html, body {
 	margin:0;
 	padding:0;
 	height: 100%;
-	/*min-height: 100%; calc(100% - 52px);*/
 	background-image: url("media/campagna_campo_cielo.jpg");
     background-repeat: no-repeat;
     background-attachment: fixed;
 	background-position: center;
-	background-size: cover;/*1400px 700px;*/
+	background-size: cover;
 	font-family: serif;
 }
 
@@ -77,7 +129,7 @@ html, body {
 	font-family: 'Cookie-local';
 	font-size: 34px;
 	padding: 8px 20px 2px 20px;
-	margin: 2px 2px 2px 2px; /* top-right-bottom-left */
+	margin: 2px;
 }
 
 .avviso {
@@ -150,69 +202,7 @@ html, body {
 @media screen and (max-width: 700px) {
 	#scroll_tabella {
 		overflow-x: scroll;
-		/*margin-bottom: 80px;*/
 	}
-}
-
-footer {
-	width: 100%;
-	background-color: #138117;
-	height: 60px;
-	position: absolute;
-	bottom: 0;
-}
-
-.footer_p {
-	color: white;
-	margin: 0;
-	padding: 5px 5px 2px 5px; /*top-right-bottom-left*/
-	text-align: center;
-}
-
-.footer_a {
-	color: white;
-}
-
-/*@media screen and (max-width: 700px) {
-	.content {
-		padding-bottom: 0;
-	}
-	footer {
-		position: unset;
-	}
-}*/
-
-@media screen and (min-width: 700px) {
-	
-	.links {
-		float: right;
-	}
-	
-}
-
-@media screen and (max-width: 700px) {
-
-	.menu a:not(:first-child) {
-		display: none;
-	}
-	.menu a.icon {
-		float: right;
-		display: block;
-		font-size: 18px;
-	}
-	
-	/*.menu.responsive {position: relative;}*/
-	.menu.responsive .icon {
-		position: absolute;
-		right: 0;
-		top: 0;
-	}
-	.menu.responsive a {
-		float: none;
-		display: table;
-		text-align: left;
-	}
-	
 }
 
 label {
@@ -287,7 +277,7 @@ input[type=submit] {
 	color: white;
 	font-size: 14px;
 	padding: 5px 10px;
-	background-color: #005600 /*138117*/;
+	background-color: #005600;
 	margin-bottom: 10px;
 	vertical-align: middle;
 }
@@ -391,6 +381,9 @@ input[type=submit] {
 	margin-top: 50px;
 }
 
+address {
+	margin-top: 20px;
+}
 
 /*INDEX*/
 
@@ -498,6 +491,7 @@ input[type=submit] {
 }
 
 /* INFO */
+
 @media screen and (min-width: 700px) {
 	.mappa {
 		width: 650px;

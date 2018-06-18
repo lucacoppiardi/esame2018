@@ -34,7 +34,11 @@
 	define("Nome_prenotazione", "Reservation name");
 	define("subject_email","Your booking");
 	define("riepilogo_email", "Details of your reservation:");
-	define("link_al_sito", "https://lucacoppiardi.altervista.org/maturita2018/");
+	if (isDebug()) {
+		define("link_al_sito", "http://127.0.0.1/tesina/");
+	} else {
+		define("link_al_sito", "https://lucacoppiardi.altervista.org/maturita2018/");
+	}
 	define("ringraziamenti_email", "\nThank you for choosing us\n".link_al_sito);
 	define("Accetta","Accept");
 	define("Accettata", "Accepted");
@@ -50,7 +54,7 @@
 	define("Nuova_password_conferma", "New password (confirm)");
 	define("Ricontrollare_password", "Please check the password you typed");
 	define("Password_cambiata_correttamente", "Password changed correctly");
-	define("Password_inviata_mail", "Password changed correctly and sent via email");
+	define("Password_inviata_mail", "Link for password change sent via email");
 	define("tabella_non_esiste", "The table does not exist");
 	define("file_non_immagine", "File is not an image");
 	define("file_gia_esistente", "File already exists");
@@ -70,7 +74,7 @@
 	define("Pubblicata_il", "Published on");
 	define("da", "by");
 	define("Recupero_password", "Reset password");
-	define("la_tua_nuova_password", "Your new password is");
+	define("la_tua_nuova_password", "Click here to reset your password");
 	define("Utenti", "Users");
 	define("Prenotazioni", "Reservations");
 	define("confermare_eliminazione_account", "Are you sure you want to delete the account?");
@@ -130,5 +134,9 @@
 	define("Messaggio", "Message");
 	define("inviata", "sent");
 	define("Invia", "Send");
+	define("requisiti_password", "The password must be at least 8 characters long and must contain a number, a lowercase letter, an uppercase letter.");
+	define("Clicca_link_per_recupero_password", "Click on the link you received to reset your password");
+	define("cambia_dati_personali", "Update personal info");
+	define("Dati_aggiornati", "Data updated");
 	
 ?>
