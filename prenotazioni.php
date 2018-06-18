@@ -327,9 +327,9 @@
 
 		case "recupera_pwd": /* invia una mail al cliente con un link per resettare la password se dimenticata */
 			echo "<h3>".Recupero_password."</h3>";
-			echo "<h4 class='avviso'>".Clicca_link_per_recupero_password."</h4>";
 			$mail = htmlentities($_REQUEST["email"], ENT_QUOTES);
 			mail_recupero_password($mail);
+			echo "<h4 class='avviso'>".Clicca_link_per_recupero_password."</h4>";
 			echo "<form action='prenotazioni.php' method='post'>
 					<input type='hidden' name='stato' value=''>
 					<input type='submit' class='bottone'  value='OK'>
