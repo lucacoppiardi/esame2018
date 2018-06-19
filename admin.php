@@ -401,7 +401,7 @@
 					<textarea id='contenuto_en' name='contenuto_en' rows='6' cols='40' placeholder='".Testo." (english)' maxlength='250' required></textarea>
 					<label for='file'>".immagine_facoltativa.": </label>
 					<input type='file' id='file' name='file'>
-					<label for='titolo'>".Titolo.": </label>
+					<label for='prezzo'>".Prezzo.": </label>
 					<input type='number' id='prezzo' name='prezzo' placeholder='".Prezzo."' step='0.01' required>
 					<label for='tipo'>".Tipo."</label>
 					<select id='tipo' name='tipo'>
